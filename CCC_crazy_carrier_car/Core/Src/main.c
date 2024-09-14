@@ -23,6 +23,14 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
+/*头文件引用区
+ * 
+ * 
+ * 
+ * 
+*/
+
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,12 +52,34 @@
 
 /* USER CODE BEGIN PV */
 
+/* 全局变量区
+ * 
+ * 
+ * 
+ * 
+ * 
+*/
+
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-void hello_world_test(void);
+
+
+/* 函数声明区
+ *  
+ * 
+ * 
+ * 
+ * 
+ * 
+ */
+
+
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -88,6 +118,20 @@ int main(void)
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
 
+    /* 各种模块的初始化
+     * 
+     * 
+     * 
+     * 
+     */
+
+
+    /* 具体的的主程序代码执行区域
+     * 
+     * 
+     */
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -97,7 +141,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	hello_world_test();
+
+    // 在比赛中整个的代码是一个单次的，所以不会进入循环，这里主要是一些测试代码
+
+
+
 	HAL_Delay(1000);
 
 
@@ -152,13 +200,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-/// @brief 测试函数，板载led等
-/// @param  
-void hello_world_test(void)
-{
-  HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5);
-  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
-}
+
 
 
 
