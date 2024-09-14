@@ -1,0 +1,26 @@
+--cpu=Cortex-M4.fp.sp
+"ccc_crazy_carrier_car\startup_stm32f407xx.o"
+"ccc_crazy_carrier_car\main.o"
+"ccc_crazy_carrier_car\gpio.o"
+"ccc_crazy_carrier_car\stm32f4xx_it.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_msp.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_tim.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_tim_ex.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_rcc.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_rcc_ex.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_flash.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_flash_ex.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_flash_ramfunc.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_gpio.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_dma_ex.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_dma.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_pwr.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_pwr_ex.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_cortex.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal.o"
+"ccc_crazy_carrier_car\stm32f4xx_hal_exti.o"
+"ccc_crazy_carrier_car\system_stm32f4xx.o"
+--strict --scatter "CCC_crazy_carrier_car\CCC_crazy_carrier_car.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "CCC_crazy_carrier_car.map" -o CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf
