@@ -28,4 +28,10 @@ ccc_crazy_carrier_car\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f
 ccc_crazy_carrier_car\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 ccc_crazy_carrier_car\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 ccc_crazy_carrier_car\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+ccc_crazy_carrier_car\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
+ccc_crazy_carrier_car\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
+ccc_crazy_carrier_car\stm32f4xx_it.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+ccc_crazy_carrier_car\stm32f4xx_it.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdio.h
+ccc_crazy_carrier_car\stm32f4xx_it.o: D:\MDK\ARM\ARMCC\Bin\..\include\string.h
 ccc_crazy_carrier_car\stm32f4xx_it.o: ../Core/Inc/stm32f4xx_it.h
+ccc_crazy_carrier_car\stm32f4xx_it.o: ../Core/Inc/usart.h

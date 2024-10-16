@@ -17,21 +17,42 @@ Library Manager: ArmAr.exe V5.06 update 7 (build 960)
 Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
 CPU DLL:         SARMCM3.DLL V5.36.0.0
 Dialog DLL:      DCM.DLL V1.17.3.0
-Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.9.0
+Target DLL:      CMSIS_AGDI.dll V1.33.0.0
 Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
-D:\My_projects\STM32F407\CCC_crazy_carrier_car\MDK-ARM\CCC_crazy_carrier_car.uvprojx
-Project File Date:  09/14/2024
+D:\My_projects\Carrier_car_project\CCC_crazy_carrier_car\MDK-ARM\CCC_crazy_carrier_car.uvprojx
+Project File Date:  10/15/2024
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling main.c...
+compiling my_usart.c...
+../motor_control/motor.h(51): warning:  #1295-D: Deprecated declaration test_move - give arg types
+  void test_move();
+../motor_control/motor.h(52): warning:  #1295-D: Deprecated declaration stop - give arg types
+  void stop();
+..\communication\my_usart.h(20): warning:  #1295-D: Deprecated declaration UART_handle_function_1 - give arg types
+  void UART_handle_function_1();
+..\communication\my_usart.h(21): warning:  #1295-D: Deprecated declaration UART_handle_function_2 - give arg types
+  void UART_handle_function_2();
+..\communication\my_usart.h(22): warning:  #1295-D: Deprecated declaration UART_handle_function_3 - give arg types
+  void UART_handle_function_3();
+..\communication\my_usart.h(23): warning:  #1295-D: Deprecated declaration UART_receive_process_1 - give arg types
+  void UART_receive_process_1();
+..\communication\my_usart.h(24): warning:  #1295-D: Deprecated declaration UART_receive_process_2 - give arg types
+  void UART_receive_process_2();
+..\communication\my_usart.h(25): warning:  #1295-D: Deprecated declaration UART_receive_process_3 - give arg types
+  void UART_receive_process_3();
+..\communication\my_usart.c(409): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+              x_move_position += 0.1;
+..\communication\my_usart.c(414): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+              x_move_position -= 0.1;
+..\communication\my_usart.c: 10 warnings, 0 errors
 linking...
-Program Size: Code=3286 RO-data=442 RW-data=16 ZI-data=1632  
+Program Size: Code=8656 RO-data=448 RW-data=36 ZI-data=1612  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 0 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 10 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -55,7 +76,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

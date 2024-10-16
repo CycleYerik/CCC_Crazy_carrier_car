@@ -14,6 +14,9 @@
 #define test_GPIO GPIOC
 
 
+#include "main.h" // 可能需要一些HAL库的头文件，先尝试引用main.h，如果编译报错，再添加其他头文件
+
+
 void test_STM32_led(void);
 
 #endif

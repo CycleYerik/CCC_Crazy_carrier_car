@@ -29,3 +29,8 @@ ccc_crazy_carrier_car\gpio.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_
 ccc_crazy_carrier_car\gpio.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 ccc_crazy_carrier_car\gpio.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 ccc_crazy_carrier_car\gpio.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+ccc_crazy_carrier_car\gpio.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
+ccc_crazy_carrier_car\gpio.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
+ccc_crazy_carrier_car\gpio.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+ccc_crazy_carrier_car\gpio.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdio.h
+ccc_crazy_carrier_car\gpio.o: D:\MDK\ARM\ARMCC\Bin\..\include\string.h

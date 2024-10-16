@@ -21,5 +21,6 @@ void test_STM32_led(void)
 {
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5);
     HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
+    
 }
 

@@ -28,4 +28,16 @@ ccc_crazy_carrier_car\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_
 ccc_crazy_carrier_car\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
 ccc_crazy_carrier_car\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 ccc_crazy_carrier_car\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+ccc_crazy_carrier_car\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
+ccc_crazy_carrier_car\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
+ccc_crazy_carrier_car\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+ccc_crazy_carrier_car\main.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdio.h
+ccc_crazy_carrier_car\main.o: D:\MDK\ARM\ARMCC\Bin\..\include\string.h
+ccc_crazy_carrier_car\main.o: ../Core/Inc/tim.h
+ccc_crazy_carrier_car\main.o: ../Core/Inc/usart.h
 ccc_crazy_carrier_car\main.o: ../Core/Inc/gpio.h
+ccc_crazy_carrier_car\main.o: ../motor_control/motor.h
+ccc_crazy_carrier_car\main.o: ../communication/my_usart.h
+ccc_crazy_carrier_car\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_usart.h
+ccc_crazy_carrier_car\main.o: ../motor_control/motor.h
+ccc_crazy_carrier_car\main.o: ../screen/uart_screen.h

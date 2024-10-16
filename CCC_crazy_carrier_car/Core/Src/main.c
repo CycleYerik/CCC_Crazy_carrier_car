@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "tim.h"
+#include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -29,6 +31,9 @@
  * 
  * 
 */
+#include "motor.h"
+#include "uart_screen.h"
+#include "my_usart.h"
 
 
 /* USER CODE END Includes */
@@ -60,7 +65,17 @@
  * 
 */
 
+extern uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128]; // usart2,3接收缓冲区
+extern uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1; // 暂存usart2,3接收到的数据单字节变量
+extern uchar rxflag_u2,rxflag_u3,rxflag_u1; // usart2,3接收标志位变量
+extern float Motor_Cur_Pos_1, Motor_Cur_Pos_2, Motor_Cur_Pos_3, Motor_Cur_Pos_4; // 电机当前位置
+extern float  Motor_Vel_1, Motor_Vel_2, Motor_Vel_3, Motor_Vel_4; // 电机当前速度
+extern float x_velocity, y_velocity; // x、y轴速度
+extern float acceleration; // 加速度
+extern float x_move_position, y_move_position; // x、y
 
+
+float x_error = 0, y_error = 0; // x、y轴误差
 
 /* USER CODE END PV */
 
@@ -77,6 +92,8 @@ void SystemClock_Config(void);
  * 
  * 
  */
+
+
 
 
 
@@ -116,6 +133,11 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
+  MX_USART3_UART_Init();
+  MX_TIM2_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
     /* 各种模块的初始化
@@ -126,30 +148,123 @@ int main(void)
      */
 
 
+ 
+    HAL_UART_Receive_IT(&huart2, &received_rxdata_u2, 1); // 使能串口2接收中断
+    HAL_UART_Receive_IT(&huart3, &received_rxdata_u3, 1); // 使能串口3接收中断
+    HAL_UART_Receive_IT(&huart1, &received_rxdata_u1, 1); // 使能串口1接收中断
+    HAL_TIM_Base_Start_IT(&htim2); // 使能定时器2中断
+    HAL_TIM_Base_Start_IT(&htim3); // 使能定时器3中断
+
     /* 具体的的主程序代码执行区域
      * 
      * 
      */
 
 
+    HAL_Delay(2000); // 等待电机初始化完成
+
+    // 全向和旋转测试
+    // move_all_direction_position(acceleration,30,0,30);
+    // HAL_Delay(2000);
+    // move_all_direction_position(acceleration,30,30,0);
+    // HAL_Delay(2000);
+    // move_all_direction_position(acceleration,30,0,-30);
+    // HAL_Delay(2000);
+    // move_all_direction_position(acceleration,30,-30,0);
+    // HAL_Delay(2000);
+    // spin_left(50, 10, 90); // 左转
+    // HAL_Delay(2000);
+    // spin_right(50, 10, 90); // 右转
+    // HAL_Delay(2000);
+    // spin_left(50, 10, 180); // 左转
+    // HAL_Delay(3000);
+    // spin_right(50, 10, 180); // 右转
+    // HAL_Delay(3000);
+
+
+    
+    
+
+
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
+    while (1)
+    {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
 
-    // 在比赛中整个的代码是一个单次的，所以不会进入循环，这里主要是一些测试代码
+        // 在比赛中整个的代码是一个单次的，所以不会进入循环，这里主要是一些测试代码
 
+        // printf("t2.txt=\"M1: %.2f\"\xff\xff\xff", Motor_Vel_1);
+        // printf("t3.txt=\"M2: %.2f\"\xff\xff\xff", Motor_Vel_2);
+        // printf("t4.txt=\"M3: %.2f\"\xff\xff\xff", Motor_Vel_3);
+        // printf("t5.txt=\"M4: %.2f\"\xff\xff\xff", Motor_Vel_4);
+        // printf("t1.txt=\"x%.2f\"\xff\xff\xff", x_velocity);
+        // printf("t0.txt=\"y%.2f\"\xff\xff\xff", y_velocity);
 
+        // 每次读取电机速度就进行一次速度的调整，所以在主程序中要不断读取，然后修改目标速度，并将PID计算后的速度发送给电机，而其余的控制代码主要是修改目标速度
+        // Emm_V5_Read_Sys_Params(1, S_VEL); 
+        // HAL_Delay(10);
+        // UART_handle_function_1();
+        // Emm_V5_Read_Sys_Params(2, S_VEL);
+        // HAL_Delay(10);
+        // UART_handle_function_1();
+        // Emm_V5_Read_Sys_Params(3, S_VEL);
+        // HAL_Delay(10);
+        // UART_handle_function_1();
+        // Emm_V5_Read_Sys_Params(4, S_VEL);
+        // HAL_Delay(10);
+        // UART_handle_function_1();
+        // // HAL_Delay(20);
+        // move_all_direction_pid(1, x_velocity, y_velocity);
+        // Forward_move(100, 10, 150); // 前进
+        // HAL_Delay(5000);
 
-	HAL_Delay(1000);
+        
+        
+        // move_left(100, 10, 200); // 左走
+        // HAL_Delay(5000);
+        // Backward_move(100, 10, 150); // 后退
+        // HAL_Delay(5000);
+        // move_right(100, 10, 200); // 右走
+        // HAL_Delay(8000);
+        // Forward_move(100, 10, 150); // 前进
+        // HAL_Delay(150 / wheel_circumference / 100.0 / 60.0);
+        // spin_left(30, 10, 90); // 左转
+        // HAL_Delay(4000);
+        // Forward_move(100, 10, 150); // 前进
+        // HAL_Delay(4000);
+        // spin_left(30, 10, 90); // 左转
+        // HAL_Delay(4000);
+        // Forward_move(100, 10, 150); // 前进
+        // HAL_Delay(4000);
 
+        // spin_right(30, 10, 270); // 右转
+        // HAL_Delay(4000);
+        // Forward_move(100, 10, 150); // 前进
+        // HAL_Delay(4000);
+        // spin_left(30, 10, 90); // 左转
+        // HAL_Delay(8000);
+        // HAL_Delay(100);
 
-  }
+        // move_all_direction_position(acceleration,30,0,y_move_position);
+        // HAL_Delay(1000);
+        // move_all_direction_position(acceleration,30,x_move_position,0);
+        // HAL_Delay(1000);
+        // move_all_direction_position(acceleration,30,0,-y_move_position);
+        // HAL_Delay(1000);
+        // move_all_direction_position(acceleration,30,-x_move_position,0);
+        // HAL_Delay(1000);
+        
+
+        // UART_handle_function_3();
+        // HAL_Delay(100);
+
+    }
   /* USER CODE END 3 */
 }
 
@@ -200,10 +315,20 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-
-
-
-
+// void test_lcd()
+// {
+//     delay_init(168);
+//     LED_Init(); // LED初始化
+//     LCD_Init(); // LCD初始化
+//     LCD_Fill(0, 0, LCD_W, LCD_H, WHITE);
+//     LED0 = 0;
+//     LCD_ShowChinese(0, 0, "中景园电子", RED, WHITE, 24, 0);
+//     LCD_ShowString(24, 30, "LCD_W:", RED, WHITE, 16, 0);
+//     LCD_ShowIntNum(72, 30, LCD_W, 3, RED, WHITE, 16);
+//     LCD_ShowString(24, 50, "LCD_H:", RED, WHITE, 16, 0);
+//     LCD_ShowIntNum(72, 50, LCD_H, 3, RED, WHITE, 16);
+//     LCD_ShowPicture(65, 80, 40, 40, gImage_1);
+// }
 
 /* USER CODE END 4 */
 
