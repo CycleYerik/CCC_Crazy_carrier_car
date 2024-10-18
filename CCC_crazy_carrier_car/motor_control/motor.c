@@ -18,12 +18,22 @@ float KP_x = 0.1, KI_x = 0.1, KD_x = 0.1; // x轴PID参数
 float error_x = 0, error_last_x = 0, error_pre_x = 0; // x轴PID误差
 float error_y = 0, error_last_y = 0, error_pre_y = 0; // y轴PID误差
 float x_bias_limit = 1, y_bias_limit = 1; // x、y偏差限制,单位cm,待根据视觉情况调整
-float acceleration = 1; // 加速度
-float x_velocity = 10, y_velocity = 10; // x、y轴速度
 
-float x_move_position = 0.5, y_move_position = 0.2; // x、y轴每次移动距离
-float position_move_velocity = 30; // 单次位置移动速度
+/// 所有运动情况下的加速度
+float acceleration = 1; 
 
+/// @brief x、y轴速度，暂时未用到
+float x_velocity = 10, y_velocity = 10;
+
+/// @brief x、y轴移动距离（树莓派发送的偏差值，单位cm）
+float volatile x_move_position = 0, y_move_position = 0; 
+
+/// @brief 单次位置移动速度（树莓派视觉联调时的移动速度）
+float position_move_velocity = 30; 
+
+float x_move_time=0; // x轴移动时间,ms
+float y_move_time = 0; // y轴移动时间,ms
+float all_move_time = 0; // 视觉联调时总移动时间(根据所需的移动时间取最大值)
 
 /// @brief  用来测试底盘移动
 void test_move()
@@ -33,7 +43,7 @@ void test_move()
 }
 
 
-/// @brief 根据树莓派发送的x、y偏差值进行PID位置控制
+/// @brief （暂时废弃）根据树莓派发送的x、y偏差值进行PID位置控制
 /// @param x_bias 圆心到视野中心位置的x偏差，以视野中心为原点，向右为正
 /// @param y_bias 圆心到视野中心位置的y偏差，以视野中心为原点，向上为正
 /// @return 
@@ -46,21 +56,22 @@ int PID_motor_control(float x_bias, float y_bias)
     }
     else
     {
-        error_x = x_bias;
-        error_y = y_bias;
+        //! 加入位置控制
+        // error_x = x_bias;
+        // error_y = y_bias;
 
-        float P_x = KP_x * error_x;
-        float I_x = KI_x * (error_x + error_last_x);
-        float D_x = KD_x * (error_x - error_last_x);
+        // float P_x = KP_x * error_x;
+        // float I_x = KI_x * (error_x + error_last_x);
+        // float D_x = KD_x * (error_x - error_last_x);
 
-        float P_y = KP_y * error_y;
-        float I_y = KI_y * (error_y + error_last_y);
-        float D_y = KD_y * (error_y - error_last_y);
+        // float P_y = KP_y * error_y;
+        // float I_y = KI_y * (error_y + error_last_y);
+        // float D_y = KD_y * (error_y - error_last_y);
 
-        float output_x = P_x + I_x + D_x;
-        float output_y = P_y + I_y + D_y;
+        // float output_x = P_x + I_x + D_x;
+        // float output_y = P_y + I_y + D_y;
 
-        move_all_direction(2, output_x, output_y);
+        // move_all_direction(2, output_x, output_y);
         
         
 
@@ -68,11 +79,184 @@ int PID_motor_control(float x_bias, float y_bias)
     }
 }
 
+/// @brief 根据移动的距离计算需要的脉冲数
+/// @param distance 
+/// @return 
 uint32_t get_clk(float distance)
 {
     return (uint32_t)(distance / wheel_circumference * pulse_per_circle);
 }
 
+/// @brief （仅在定时器中使用）实现电机位置控制（参考my_timer.c中的用法）
+/// @param acc 
+/// @param velocity 
+/// @param x_move_length 
+/// @param y_move_length 
+/// @param times_count 发送指令的次数
+void move_all_direction_position_tim(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int times_count)
+{
+    if(x_move_length >= 0 && y_move_length >= 0)
+    {
+        float delta_xy = x_move_length - y_move_length;
+        switch(times_count)
+        {
+            case 1:
+                Emm_V5_Pos_Control(1,0,velocity, acc,  get_clk(x_move_length + y_move_length),0,1);
+                break;
+            case 2:
+                Emm_V5_Pos_Control(4,1,velocity, acc, get_clk(x_move_length + y_move_length), 0, 1);
+                break;
+            case 3:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Pos_Control(2,0,velocity, acc, get_clk(delta_xy), 0,1);
+                }
+                else
+                {
+                    Emm_V5_Pos_Control(2,1,velocity, acc, get_clk(-delta_xy), 0,1);
+                }
+                break;
+            case 4:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Pos_Control(3,1,velocity, acc, get_clk(delta_xy), 0,1);
+                }
+                else
+                {
+                    Emm_V5_Pos_Control(3,0,velocity, acc, get_clk(-delta_xy), 0,1);
+                }
+                break;
+            case 5:
+                {
+                    Emm_V5_Synchronous_motion(0);
+                }
+                break;
+        }
+    }
+    else if (x_move_length >= 0 && y_move_length < 0)
+    {
+        float delta_xy = x_move_length + y_move_length;
+        switch(times_count)
+        {
+            case 1:
+                Emm_V5_Pos_Control(2,0,velocity, acc, get_clk(x_move_length - y_move_length), 0,1);
+                break;
+            case 2:
+                Emm_V5_Pos_Control(3,1,velocity, acc, get_clk(x_move_length - y_move_length), 0,1);
+                break;
+            case 3:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Pos_Control(1,0,velocity, acc, get_clk(delta_xy), 0,1);
+                }
+                else
+                {
+                    Emm_V5_Pos_Control(1,1,velocity, acc, get_clk(-delta_xy), 0,1);
+                }
+                break;
+            case 4:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Pos_Control(4,1,velocity, acc, get_clk(delta_xy), 0,1);
+                }
+                else
+                {
+                    Emm_V5_Pos_Control(4,0,velocity, acc, get_clk(-delta_xy), 0,1);
+                }
+                break;
+            case 5:
+                {
+                    Emm_V5_Synchronous_motion(0);
+                }
+                break;
+        }
+    }
+    else if (x_move_length < 0 && y_move_length >= 0)
+    {
+        float delta_xy = y_move_length + x_move_length;
+        switch(times_count)
+        {
+            case 1:
+                Emm_V5_Pos_Control(2,1,velocity, acc, get_clk(y_move_length - x_move_length), 0,1);
+                break;
+            case 2:
+                Emm_V5_Pos_Control(3,0,velocity, acc, get_clk(y_move_length - x_move_length), 0,1);
+                break;
+            case 3:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Pos_Control(1,0,velocity, acc, get_clk(delta_xy), 0,1);
+                }
+                else
+                {
+                    Emm_V5_Pos_Control(1,1,velocity, acc, get_clk(-delta_xy), 0,1);
+                }
+                break;
+            case 4:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Pos_Control(4,1,velocity, acc, get_clk(delta_xy), 0,1);
+                }
+                else
+                {
+                    Emm_V5_Pos_Control(4,0,velocity, acc, get_clk(-delta_xy), 0,1);
+                }
+                break;
+            case 5:
+                {
+                    Emm_V5_Synchronous_motion(0);
+                }
+                break;
+        }
+    }
+    else if (x_move_length < 0 && y_move_length < 0)
+    {
+        float delta_xy = y_move_length - x_move_length;
+        switch(times_count)
+        {
+            case 1:
+                Emm_V5_Pos_Control(1,1,velocity, acc, get_clk(-x_move_length - y_move_length), 0,1);
+                break;
+            case 2:
+                Emm_V5_Pos_Control(4,0,velocity, acc, get_clk(-x_move_length - y_move_length), 0,1);
+                break;
+            case 3:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Pos_Control(2,1,velocity, acc, get_clk(delta_xy), 0,1);
+                }
+                else
+                {
+                    Emm_V5_Pos_Control(2,0,velocity, acc, get_clk(-delta_xy), 0,1);
+                }
+                break;
+            case 4:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Pos_Control(3,0,velocity, acc, get_clk(delta_xy), 0,1);
+                }
+                else
+                {
+                    Emm_V5_Pos_Control(3,1,velocity, acc, get_clk(-delta_xy), 0,1);
+                }
+                break;
+            case 5:
+                {
+                    Emm_V5_Synchronous_motion(0);
+                }   
+                break;
+    
+        }
+    }
+    
+    
+}
+
+/// @brief （带有延时函数）全向位置移动
+/// @param acc 
+/// @param velocity 
+/// @param x_move_length 
+/// @param y_move_length 
 void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length)
 {
     if(x_move_length >= 0 && y_move_length >= 0)
@@ -167,7 +351,7 @@ void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_len
     HAL_Delay(10);
 }
 
-/// @brief 全向移动，自带PID控制,调用PID_vel_Control函数
+/// @brief （未实现）全向速度移动，自带PID控制,调用PID_vel_Control函数
 /// @param acc 
 /// @param x_move_velocity 
 /// @param y_move_velocity 
@@ -312,7 +496,7 @@ void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_veloc
 }
 
 
-/// @brief 全向移动，不含PID,调用Emm_V5_Vel_Control函数
+/// @brief 全向速度移动，不含PID,调用Emm_V5_Vel_Control函数
 /// @param acc 
 /// @param x_move_velocity 
 /// @param y_move_velocity 

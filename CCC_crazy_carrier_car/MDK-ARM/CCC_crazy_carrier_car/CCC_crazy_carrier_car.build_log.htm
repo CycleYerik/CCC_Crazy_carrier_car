@@ -22,37 +22,33 @@ Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
 D:\My_projects\Carrier_car_project\CCC_crazy_carrier_car\MDK-ARM\CCC_crazy_carrier_car.uvprojx
-Project File Date:  10/15/2024
+Project File Date:  10/18/2024
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling my_usart.c...
-../motor_control/motor.h(51): warning:  #1295-D: Deprecated declaration test_move - give arg types
-  void test_move();
-../motor_control/motor.h(52): warning:  #1295-D: Deprecated declaration stop - give arg types
-  void stop();
-..\communication\my_usart.h(20): warning:  #1295-D: Deprecated declaration UART_handle_function_1 - give arg types
+compiling main.c...
+../communication/my_usart.h(21): warning:  #1295-D: Deprecated declaration UART_handle_function_1 - give arg types
   void UART_handle_function_1();
-..\communication\my_usart.h(21): warning:  #1295-D: Deprecated declaration UART_handle_function_2 - give arg types
+../communication/my_usart.h(22): warning:  #1295-D: Deprecated declaration UART_handle_function_2 - give arg types
   void UART_handle_function_2();
-..\communication\my_usart.h(22): warning:  #1295-D: Deprecated declaration UART_handle_function_3 - give arg types
+../communication/my_usart.h(23): warning:  #1295-D: Deprecated declaration UART_handle_function_3 - give arg types
   void UART_handle_function_3();
-..\communication\my_usart.h(23): warning:  #1295-D: Deprecated declaration UART_receive_process_1 - give arg types
+../communication/my_usart.h(24): warning:  #1295-D: Deprecated declaration UART_receive_process_1 - give arg types
   void UART_receive_process_1();
-..\communication\my_usart.h(24): warning:  #1295-D: Deprecated declaration UART_receive_process_2 - give arg types
+../communication/my_usart.h(25): warning:  #1295-D: Deprecated declaration UART_receive_process_2 - give arg types
   void UART_receive_process_2();
-..\communication\my_usart.h(25): warning:  #1295-D: Deprecated declaration UART_receive_process_3 - give arg types
+../communication/my_usart.h(26): warning:  #1295-D: Deprecated declaration UART_receive_process_3 - give arg types
   void UART_receive_process_3();
-..\communication\my_usart.c(409): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-              x_move_position += 0.1;
-..\communication\my_usart.c(414): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-              x_move_position -= 0.1;
-..\communication\my_usart.c: 10 warnings, 0 errors
+../motor_control/motor.h(52): warning:  #1295-D: Deprecated declaration test_move - give arg types
+  void test_move();
+../motor_control/motor.h(53): warning:  #1295-D: Deprecated declaration stop - give arg types
+  void stop();
+../Core/Src/main.c: 8 warnings, 0 errors
 linking...
-Program Size: Code=8656 RO-data=448 RW-data=36 ZI-data=1612  
+Program Size: Code=10980 RO-data=448 RW-data=84 ZI-data=1684  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 10 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 8 Warning(s).
 
 <h2>Software Packages used:</h2>
 

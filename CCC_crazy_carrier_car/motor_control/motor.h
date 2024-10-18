@@ -48,6 +48,7 @@ int PID_motor_control(float x_bias, float y_bias);
 void move_all_direction(uint8_t acc,float x_move_velocity,float y_move_velocity);
 void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_velocity);
 void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length);
+void move_all_direction_position_tim(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int times_count);
 void test_move();
 void stop();
 void Forward_move_velocity(uint16_t vel,uint8_t acc);

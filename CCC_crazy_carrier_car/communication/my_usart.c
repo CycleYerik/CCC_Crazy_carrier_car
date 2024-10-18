@@ -1,15 +1,17 @@
 #include "my_usart.h"
+/// usart1,2,3接收缓冲区
+uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128]; 
+uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1; // 暂存usart1,2,3接收到的数据
+uchar rxflag_u2,rxflag_u3,rxflag_u1; // usart1,2,3接收到的数据的标志位
 
-uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128]; // usart2,3接收缓冲区
-uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1; // 暂存usart2,3接收到的数据
-uchar rxflag_u2,rxflag_u3,rxflag_u1; 
+/// @brief 串口屏速度控制时用到的速度变量
 int velocity = 30;
 extern float acceleration;
 extern float x_velocity, y_velocity;
 extern float x_move_position , y_move_position; // x、y轴每次移动距离
 extern float position_move_velocity ; // 单次位置移动速度
+extern int is_motor_start_move;
 
-int tim2_count = 0;
 int get_motor_real_vel_ok = 0;
 
 __IO bool rxFrameFlag = FALSE;
@@ -18,7 +20,7 @@ __IO uint8_t rxCount = 0;
 extern float pos , Motor_Cur_Pos_1  , Motor_Cur_Pos_2 , Motor_Cur_Pos_3, Motor_Cur_Pos_4;
 extern float vel , Motor_Vel_1 , Motor_Vel_2 , Motor_Vel_3 , Motor_Vel_4 ;
 
-extern float x_error, y_error;
+extern float error_x,error_y;
 
 /**
 	* @brief   USART1中断函数
@@ -58,55 +60,14 @@ extern float x_error, y_error;
 // }
 
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
-{
-    if(htim->Instance == TIM2) // 10ms一次
-    {
-        // tim2_count++; // 用定时器中断实现延时10ms的效果
-        // if(tim2_count == 1)
-        // {
-        //     Emm_V5_Read_Sys_Params(1, S_VEL); 
-        //     UART_handle_function_1();
-        // }
-        // else if(tim2_count == 2)
-        // {
-        //     Emm_V5_Read_Sys_Params(2, S_VEL);
-        //     UART_handle_function_1();
-        // }
-        // else if(tim2_count == 3)
-        // {
-        //     Emm_V5_Read_Sys_Params(3, S_VEL);
-        //     UART_handle_function_1();
-        // }
-        // else if(tim2_count == 4)
-        // {
-        //     Emm_V5_Read_Sys_Params(4, S_VEL);
-        //     UART_handle_function_1();
-        // }
-        // else if (tim2_count >= 5)
-        // {   
-        //     UART_handle_function_1();
-        //     tim2_count = 0;
-        // }
-    }
-    if(htim -> Instance == TIM3) // 1000ms
-    {
-        // UART_handle_function_2();
-        // move_all_direction_pid(acceleration, x_velocity, y_velocity);
-        // move_all_direction(acceleration, x_velocity, y_velocity);
-        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5);
-        // move_all_direction_position(acceleration, position_move_velocity, 0, 5); // 不能直接用，里面有HAL_Delay,阻塞导致失败
-        
-        
-    }
-}
+
 
 void UART_handle_function_1()
 {
     if(rxflag_u1 != 0)
     {
         int temp = rxflag_u1;
-        HAL_Delay(1); // 确保接受完了全部数据
+        // HAL_Delay(1); // 如果是在main中使用可以加入延时，在定时器中断中调用则不能加
         if(temp == rxflag_u1) 
         {
             UART_receive_process_1(); 
@@ -118,7 +79,7 @@ void UART_handle_function_2()
     if(rxflag_u2 != 0)
     {
         int temp = rxflag_u2;
-        HAL_Delay(1); // 确保接受完了全部数据
+        // HAL_Delay(1); // 如果是在main中使用可以加入延时，在定时器中断中调用则不能加
         if(temp == rxflag_u2) 
         {
             UART_receive_process_2(); 
@@ -131,7 +92,7 @@ void UART_handle_function_3()
     if(rxflag_u3 != 0)
     {
         int temp = rxflag_u3;
-        HAL_Delay(1); // 确保接受完了全部数据
+        // HAL_Delay(1); // 如果是在main中使用可以加入延时，在定时器中断中调用则不能加
         if(temp == rxflag_u3) 
         {
             UART_receive_process_3(); 
@@ -305,16 +266,58 @@ void UART_receive_process_3()
 {
     if (rxflag_u3 > 0)
     {
-        // HAL_UART_Transmit(&huart3, (uint8_t*)"hello,summer", strlen("hello,summer"), 50);
+        HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, strlen(rxdata_u3), 50);
         // 将PB0引脚电平翻转
-        HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_5);
+        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
         // printf("t0.txt=\"%s\"\xff\xff\xff", rxdata_u3);
 
         //! 处理思路 接受到数据为x、y的偏差值，采用速度控制进行微调，一旦达到目标位置，树莓派发送到位信号，立刻停止电机
         //! 离散式PID控制
-        x_error = (float)rxdata_u3[0];
-        y_error = (float)rxdata_u3[1];
 
+        //! 还需规定数据包的校验
+        // error_x = (float)rxdata_u3[2];
+        // error_y = (float)rxdata_u3[3];
+        // x_move_position = error_x;
+        // y_move_position = error_y;
+        
+        // 发送的数据为（十六进制）010205 则为右前，x=2，y=5 030508 则为左前，x=-5，y=8 
+        float move_c = 0.1; // 移动系数
+        float move_once = 0.5;
+        if(rxdata_u3[0] == 0x01 )//右前
+        {
+            // x_move_position = move_c * (float)rxdata_u3[1];
+            // y_move_position = move_c * (float)rxdata_u3[2];
+            x_move_position = move_once;
+            y_move_position = move_once;
+
+        }
+        else if(rxdata_u3[0] == 0x02)//左前
+        {
+            // x_move_position = - move_c * (float)rxdata_u3[1] ;
+            // y_move_position =  move_c * (float)rxdata_u3[2];
+            x_move_position = -move_once;
+            y_move_position = move_once;
+        }
+        else if(rxdata_u3[0] == 0x03)//左后
+        {
+            // x_move_position = - move_c * (float)rxdata_u3[1];
+            // y_move_position = - move_c * (float)rxdata_u3[2];
+            x_move_position = -move_once;
+            y_move_position = -move_once;
+        }
+        else if(rxdata_u3[0] == 0x04)//右后
+        {
+            // x_move_position = move_c *  (float)rxdata_u3[1];
+            // y_move_position = - move_c * (float)rxdata_u3[2];
+            x_move_position = move_once;
+            y_move_position = -move_once;
+        }
+        
+        
+        if(is_motor_start_move == 0)
+        {
+            is_motor_start_move = 1;
+        }
         rxflag_u3 = 0;
         memset(rxdata_u3, 0, 50);
     }
@@ -406,12 +409,12 @@ void UART_receive_process_2()
         else if (rxdata_u2[0] == 0x78)
         {
             x_velocity += 10;
-            x_move_position += 0.1;
+            // x_move_position += 0.1;
         }
         else if (rxdata_u2[0] == 0x87)
         {
             x_velocity -= 10;
-            x_move_position -= 0.1;
+            // x_move_position -= 0.1;
         }
 
         // 清空接收缓冲区
@@ -420,12 +423,12 @@ void UART_receive_process_2()
     }
 }
 
+
+
 void UART_send_data_u2(char* data)
 {
     HAL_UART_Transmit(&huart2, (uint8_t*)data, strlen(data), 50);
 }
-
-
 
 
 void usart_SendCmd_u1(__IO uint8_t *cmd, uint8_t len)

@@ -73,7 +73,7 @@ extern float  Motor_Vel_1, Motor_Vel_2, Motor_Vel_3, Motor_Vel_4; // 电机当�
 extern float x_velocity, y_velocity; // x、y轴速度
 extern float acceleration; // 加速度
 extern float x_move_position, y_move_position; // x、y
-
+extern int is_motor_start_move; 
 
 float x_error = 0, y_error = 0; // x、y轴误差
 
@@ -138,6 +138,7 @@ int main(void)
   MX_USART3_UART_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  MX_TIM4_Init();
   /* USER CODE BEGIN 2 */
 
     /* 各种模块的初始化
@@ -154,6 +155,7 @@ int main(void)
     HAL_UART_Receive_IT(&huart1, &received_rxdata_u1, 1); // 使能串口1接收中断
     HAL_TIM_Base_Start_IT(&htim2); // 使能定时器2中断
     HAL_TIM_Base_Start_IT(&htim3); // 使能定时器3中断
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1); // 开启TIM2通道1 PWM输出
 
     /* 具体的的主程序代码执行区域
      * 
@@ -161,7 +163,8 @@ int main(void)
      */
 
 
-    HAL_Delay(2000); // 等待电机初始化完成
+    HAL_Delay(2000); //! 等待电机初始化完成
+    // is_motor_start_move = 1;
 
     // 全向和旋转测试
     // move_all_direction_position(acceleration,30,0,30);
@@ -181,6 +184,16 @@ int main(void)
     // spin_right(50, 10, 180); // 右转
     // HAL_Delay(3000);
 
+    // move_all_direction_position_tim(acceleration,30,3,3,1);
+    // HAL_Delay(10);
+    // move_all_direction_position_tim(acceleration,30,3,3,2);
+    // HAL_Delay(10);
+    // move_all_direction_position_tim(acceleration,30,3,3,3);
+    // HAL_Delay(10);
+    // move_all_direction_position_tim(acceleration,30,3,3,4);
+    // HAL_Delay(10);
+    // move_all_direction_position_tim(acceleration,30,3,3,5);
+    // HAL_Delay(10);
 
     
     
@@ -251,18 +264,22 @@ int main(void)
         // HAL_Delay(8000);
         // HAL_Delay(100);
 
-        // move_all_direction_position(acceleration,30,0,y_move_position);
-        // HAL_Delay(1000);
-        // move_all_direction_position(acceleration,30,x_move_position,0);
-        // HAL_Delay(1000);
-        // move_all_direction_position(acceleration,30,0,-y_move_position);
-        // HAL_Delay(1000);
-        // move_all_direction_position(acceleration,30,-x_move_position,0);
-        // HAL_Delay(1000);
         
 
         // UART_handle_function_3();
         // HAL_Delay(100);
+
+        // if(is_motor_start_move == 0)
+        // {
+        //     is_motor_start_move = 1;
+        // }
+        // HAL_Delay(2000);
+
+        // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 100);
+        // HAL_Delay(1000);
+        // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 50);
+        // HAL_Delay(1000);
+
 
     }
   /* USER CODE END 3 */
@@ -315,20 +332,7 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-// void test_lcd()
-// {
-//     delay_init(168);
-//     LED_Init(); // LED初始化
-//     LCD_Init(); // LCD初始化
-//     LCD_Fill(0, 0, LCD_W, LCD_H, WHITE);
-//     LED0 = 0;
-//     LCD_ShowChinese(0, 0, "中景园电子", RED, WHITE, 24, 0);
-//     LCD_ShowString(24, 30, "LCD_W:", RED, WHITE, 16, 0);
-//     LCD_ShowIntNum(72, 30, LCD_W, 3, RED, WHITE, 16);
-//     LCD_ShowString(24, 50, "LCD_H:", RED, WHITE, 16, 0);
-//     LCD_ShowIntNum(72, 50, LCD_H, 3, RED, WHITE, 16);
-//     LCD_ShowPicture(65, 80, 40, 40, gImage_1);
-// }
+
 
 /* USER CODE END 4 */
 

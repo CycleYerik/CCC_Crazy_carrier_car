@@ -8,6 +8,7 @@
 #include "motor.h"
 #include "uart_screen.h"
 #include "tim.h"
+#include "my_timer.h"
 
 #define FIFO_SIZE 128
 
