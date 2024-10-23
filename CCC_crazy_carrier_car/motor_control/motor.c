@@ -13,10 +13,11 @@ float vel4_error= 0,vel4_error_last = 0,vel4_error_long_last = 0; // 电机4速�
 float KP_vel = 2, KI_vel = 0.1, KD_vel = 0; // 速度控制PID参数
 
 // 位置控制PID
-float KP_y = 0.1, KI_y = 0.1, KD_y = 0.1; // y轴PID参数
-float KP_x = 0.1, KI_x = 0.1, KD_x = 0.1; // x轴PID参数
+float KP_y = 1, KI_y = 0.1, KD_y = 0.1; // y轴PID参数
+float KP_x = 1, KI_x = 0.1, KD_x = 0.1; // x轴PID参数
 float error_x = 0, error_last_x = 0, error_pre_x = 0; // x轴PID误差
 float error_y = 0, error_last_y = 0, error_pre_y = 0; // y轴PID误差
+float error_x_sum = 0, error_y_sum = 0; // x、y轴误差和
 float x_bias_limit = 1, y_bias_limit = 1; // x、y偏差限制,单位cm,待根据视觉情况调整
 
 /// 所有运动情况下的加速度
@@ -40,6 +41,14 @@ void test_move()
 {
     Forward_move(100, 10, 50);
     HAL_Delay(4000);
+}
+
+void position_pid()
+{
+    float output_x_temp  = x_move_position + KP_x * error_x + KI_x * error_x_sum + KD_x * (error_x - error_last_x);
+    float output_y_temp  = y_move_position + KP_y * error_y + KI_y * error_y_sum + KD_y * (error_y - error_last_y);
+    x_move_position = output_x_temp;
+    y_move_position = output_y_temp;
 }
 
 

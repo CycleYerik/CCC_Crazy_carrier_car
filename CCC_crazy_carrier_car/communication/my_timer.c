@@ -16,7 +16,7 @@ int send_motor_message_flag = 0;
 int motor_moving_timecount = 0;
 
 /// @brief 是否计算了电机移动时间（用于在刚开始移动前计算电机移动时间）
-int calculate_motor_move_time = 0; /
+int calculate_motor_move_time = 0; 
 
 /// @brief 定时器3的时间间隔（10ms）
 int tim3_period = 10; 

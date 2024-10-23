@@ -1,8 +1,8 @@
 #include "my_usart.h"
 /// usart1,2,3接收缓冲区
-uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128]; 
-uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1; // 暂存usart1,2,3接收到的数据
-uchar rxflag_u2,rxflag_u3,rxflag_u1; // usart1,2,3接收到的数据的标志位
+uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128],rxdata_u4[50]; // usart1,2,3,4接收缓冲区
+uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1,received_rxdata_u4; // 暂存usart1,2,3接收到的数据
+uchar rxflag_u2,rxflag_u3,rxflag_u1,rxflag_u4; // usart1,2,3接收到的数据的标志位
 
 /// @brief 串口屏速度控制时用到的速度变量
 int velocity = 30;
@@ -20,7 +20,7 @@ __IO uint8_t rxCount = 0;
 extern float pos , Motor_Cur_Pos_1  , Motor_Cur_Pos_2 , Motor_Cur_Pos_3, Motor_Cur_Pos_4;
 extern float vel , Motor_Vel_1 , Motor_Vel_2 , Motor_Vel_3 , Motor_Vel_4 ;
 
-extern float error_x,error_y;
+extern float error_x,error_y,error_x_sum,error_y_sum,error_last_x,error_last_y,error_pre_x,error_pre_y;
 
 /**
 	* @brief   USART1中断函数
@@ -271,47 +271,86 @@ void UART_receive_process_3()
         HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
         // printf("t0.txt=\"%s\"\xff\xff\xff", rxdata_u3);
 
-        //! 处理思路 接受到数据为x、y的偏差值，采用速度控制进行微调，一旦达到目标位置，树莓派发送到位信号，立刻停止电机
-        //! 离散式PID控制
 
-        //! 还需规定数据包的校验
         // error_x = (float)rxdata_u3[2];
         // error_y = (float)rxdata_u3[3];
         // x_move_position = error_x;
         // y_move_position = error_y;
+
+        //! 数据包：01(符号位+) 16(x轴数字位) 02(符号位-)05(y轴数字位) 即该数据包表示 error_x = 16, error_y = -5
+        error_x = (int) rxdata_u3[0];
+        if(rxdata_u3[1] == 0x01)
+        {
+            error_x = error_x;
+        }
+        else if(rxdata_u3[1] == 0x02)
+        {
+            error_x = -error_x;
+        }
+        error_y = (int) rxdata_u3[2];
+        if(rxdata_u3[3] == 0x01)
+        {
+            error_y = error_y;
+        }
+        else if(rxdata_u3[3] == 0x02)
+        {
+            error_y = -error_y;
+        }
+
+        // 位置误差累加
+        error_x_sum += error_x;
+        error_y_sum += error_y;
+
+
+        // 用位置式PID计算出了x_move_position和y_move_position
+        // position_pid(); 
+
+
+        // 不用位置式PID则取消注释
+        x_move_position = error_x;
+        y_move_position = error_y;
+
+
+        // PID 参数更新
+        error_last_x = error_x;
+        error_last_y = error_y;
+        error_pre_x = error_last_x;
+        error_pre_y = error_last_y;
+        
+
         
         // 发送的数据为（十六进制）010205 则为右前，x=2，y=5 030508 则为左前，x=-5，y=8 
         float move_c = 0.1; // 移动系数
         float move_once = 0.5;
-        if(rxdata_u3[0] == 0x01 )//右前
-        {
-            // x_move_position = move_c * (float)rxdata_u3[1];
-            // y_move_position = move_c * (float)rxdata_u3[2];
-            x_move_position = move_once;
-            y_move_position = move_once;
+        // if(rxdata_u3[0] == 0x01 )//右前
+        // {
+        //     // x_move_position = move_c * (float)rxdata_u3[1];
+        //     // y_move_position = move_c * (float)rxdata_u3[2];
+        //     x_move_position = move_once;
+        //     y_move_position = move_once;
 
-        }
-        else if(rxdata_u3[0] == 0x02)//左前
-        {
-            // x_move_position = - move_c * (float)rxdata_u3[1] ;
-            // y_move_position =  move_c * (float)rxdata_u3[2];
-            x_move_position = -move_once;
-            y_move_position = move_once;
-        }
-        else if(rxdata_u3[0] == 0x03)//左后
-        {
-            // x_move_position = - move_c * (float)rxdata_u3[1];
-            // y_move_position = - move_c * (float)rxdata_u3[2];
-            x_move_position = -move_once;
-            y_move_position = -move_once;
-        }
-        else if(rxdata_u3[0] == 0x04)//右后
-        {
-            // x_move_position = move_c *  (float)rxdata_u3[1];
-            // y_move_position = - move_c * (float)rxdata_u3[2];
-            x_move_position = move_once;
-            y_move_position = -move_once;
-        }
+        // }
+        // else if(rxdata_u3[0] == 0x02)//左前
+        // {
+        //     // x_move_position = - move_c * (float)rxdata_u3[1] ;
+        //     // y_move_position =  move_c * (float)rxdata_u3[2];
+        //     x_move_position = -move_once;
+        //     y_move_position = move_once;
+        // }
+        // else if(rxdata_u3[0] == 0x03)//左后
+        // {
+        //     // x_move_position = - move_c * (float)rxdata_u3[1];
+        //     // y_move_position = - move_c * (float)rxdata_u3[2];
+        //     x_move_position = -move_once;
+        //     y_move_position = -move_once;
+        // }
+        // else if(rxdata_u3[0] == 0x04)//右后
+        // {
+        //     // x_move_position = move_c *  (float)rxdata_u3[1];
+        //     // y_move_position = - move_c * (float)rxdata_u3[2];
+        //     x_move_position = move_once;
+        //     y_move_position = -move_once;
+        // }
         
         
         if(is_motor_start_move == 0)

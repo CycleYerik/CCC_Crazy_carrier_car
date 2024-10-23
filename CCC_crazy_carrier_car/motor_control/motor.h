@@ -43,6 +43,7 @@ typedef enum {
 
 extern float x_velocity, y_velocity; // x、y轴速度
 uint32_t get_clk(float distance);
+void position_pid(void);
 void PID_vel_Control(uint8_t addr,uint8_t acc, float target_vel);
 int PID_motor_control(float x_bias, float y_bias);
 void move_all_direction(uint8_t acc,float x_move_velocity,float y_move_velocity);

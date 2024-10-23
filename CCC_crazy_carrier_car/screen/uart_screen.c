@@ -1,16 +1,6 @@
 #include "uart_screen.h"
 
-int fputc(int ch, FILE *f)
-{
-    HAL_UART_Transmit(&huart2, (uint8_t *)&ch, 1, 0xffff);
-    return ch;
-}
-int fgetc(FILE *f)
-{
-    uint8_t ch = 0;
-    HAL_UART_Receive(&huart2, &ch, 1, 0xffff);
-    return ch;
-}
+
 
 
 void itoa(int num,char str[] )

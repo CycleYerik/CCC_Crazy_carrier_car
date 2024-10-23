@@ -42,3 +42,9 @@ ccc_crazy_carrier_car\main.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_
 ccc_crazy_carrier_car\main.o: ../motor_control/motor.h
 ccc_crazy_carrier_car\main.o: ../screen/uart_screen.h
 ccc_crazy_carrier_car\main.o: ../communication/my_timer.h
+ccc_crazy_carrier_car\main.o: ../servo/my_servo.h
+ccc_crazy_carrier_car\main.o: ../servo/SCServo.h
+ccc_crazy_carrier_car\main.o: ../servo/INST.h
+ccc_crazy_carrier_car\main.o: ../servo/SCS.h
+ccc_crazy_carrier_car\main.o: ../servo/SMS_STS.h
+ccc_crazy_carrier_car\main.o: ../servo/uart.h

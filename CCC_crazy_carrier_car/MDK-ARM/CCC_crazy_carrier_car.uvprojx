@@ -337,7 +337,7 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_HAL_DRIVER,STM32F407xx</Define>
+              <Define>USE_HAL_DRIVER,STM32F407xx,USE_USART2_</Define>
               <Undefine></Undefine>
               <IncludePath>../Core/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Drivers/CMSIS/Include;../motor_control;../screen;../usart;../servo;../MPU6050;../sensor;../communication</IncludePath>
             </VariousControls>
@@ -675,6 +675,63 @@
         </Group>
         <Group>
           <GroupName>servo</GroupName>
+          <Files>
+            <File>
+              <FileName>INST.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\servo\INST.h</FilePath>
+            </File>
+            <File>
+              <FileName>SCS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\servo\SCS.c</FilePath>
+            </File>
+            <File>
+              <FileName>SCS.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\servo\SCS.h</FilePath>
+            </File>
+            <File>
+              <FileName>SCSerail.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\servo\SCSerail.c</FilePath>
+            </File>
+            <File>
+              <FileName>SCServo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\servo\SCServo.h</FilePath>
+            </File>
+            <File>
+              <FileName>SMS_STS.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\servo\SMS_STS.c</FilePath>
+            </File>
+            <File>
+              <FileName>SMS_STS.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\servo\SMS_STS.h</FilePath>
+            </File>
+            <File>
+              <FileName>uart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\servo\uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\servo\uart.h</FilePath>
+            </File>
+            <File>
+              <FileName>my_servo.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\servo\my_servo.c</FilePath>
+            </File>
+            <File>
+              <FileName>my_servo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\servo\my_servo.h</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>motor</GroupName>
