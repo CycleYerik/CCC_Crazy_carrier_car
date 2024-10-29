@@ -25,12 +25,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
-/*头文件引用区
- * 
- * 
- * 
- * 
-*/
+/*************************************自己的头文件引用区****************************************/
 #include "motor.h"
 #include "uart_screen.h"
 #include "my_usart.h"
@@ -59,13 +54,8 @@
 
 /* USER CODE BEGIN PV */
 
-/* 全局变量区
- * 
- * 
- * 
- * 
- * 
-*/
+/**************************************各种全局变量区*****************************************/
+
 
 extern uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128],rxdata_u4[50]; // usart2,3接收缓冲区
 extern uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1; // 暂存usart2,3接收到的数据单字节变量
@@ -86,15 +76,9 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
 
-/* 函数声明区
- *  
- * 
- * 
- * 
- * 
- * 
- */
+/************************************函数声明区****************************************/
 
+// printf重定向
 int fputc(int ch, FILE *f)
 {
     HAL_UART_Transmit(&huart5, (uint8_t *)&ch, 1, 0xffff);
@@ -152,14 +136,14 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_UART5_Init();
+  MX_TIM1_Init();
   /* USER CODE BEGIN 2 */
 
-    /* 各种模块的初始化
-     * 
-     * 
-     * 
-     * 
-     */
+    /*********测试*********/
+
+
+    /*****************各种系统相关外设的初始化（串口、定时器等)***********************/
+
 
  
     // HAL_UART_Receive_IT(&huart2, &received_rxdata_u2, 1); // 使能串口2接收中断
@@ -168,51 +152,27 @@ int main(void)
 
     HAL_TIM_Base_Start_IT(&htim2); // 使能定时器2中断
     HAL_TIM_Base_Start_IT(&htim3); // 使能定时器3中断
-    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1); // 开启TIM2通道1 PWM输出
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // 开启TIM2通道1 PWM输出
+	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // 开启TIM2通道2 PWM输出
+    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); // 开启TIM2通道3 PWM输出
 
-    /* 具体的的主程序代码执行区域
-     * 
-     * 
-     */
+    /*********************************实际功能的初始化*************************************/
 
 
-    // my_servo_init(); //
+    my_servo_init(); //精密电机初始化，使用精密电机则必须加入
 
     HAL_Delay(2000); //! 等待电机初始化完成
-    // is_motor_start_move = 1;
 
-    // 全向和旋转测试
-    // move_all_direction_position(acceleration,30,0,30);
-    // HAL_Delay(2000);
-    // move_all_direction_position(acceleration,30,30,0);
-    // HAL_Delay(2000);
-    // move_all_direction_position(acceleration,30,0,-30);
-    // HAL_Delay(2000);
-    // move_all_direction_position(acceleration,30,-30,0);
-    // HAL_Delay(2000);
-    // spin_left(50, 10, 90); // 左转
-    // HAL_Delay(2000);
-    // spin_right(50, 10, 90); // 右转
-    // HAL_Delay(2000);
-    // spin_left(50, 10, 180); // 左转
-    // HAL_Delay(3000);
-    // spin_right(50, 10, 180); // 右转
-    // HAL_Delay(3000);
+    /**************************************以下为主程序流程代码********************************************/
 
-    // move_all_direction_position_tim(acceleration,30,3,3,1);
-    // HAL_Delay(10);
-    // move_all_direction_position_tim(acceleration,30,3,3,2);
-    // HAL_Delay(10);
-    // move_all_direction_position_tim(acceleration,30,3,3,3);
-    // HAL_Delay(10);
-    // move_all_direction_position_tim(acceleration,30,3,3,4);
-    // HAL_Delay(10);
-    // move_all_direction_position_tim(acceleration,30,3,3,5);
-    // HAL_Delay(10);
+    /*-------------------小车离开起点-----------------------*/
 
     
-    
-    
+    /*-----------------------前进到扫码点，扫码并显示在屏幕上------------------------------*/
+
+
+        
+
 
 
   /* USER CODE END 2 */
@@ -225,7 +185,34 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
+        /****************************************以下皆为各种测试******************************************/
+        // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 117);
+        // HAL_Delay(3000);
+        // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 50);
+        // HAL_Delay(3000);
+
         // 在比赛中整个的代码是一个单次的，所以不会进入循环，这里主要是一些测试代码
+
+        // move_all_direction_position(20, 20, 0, 1500); // 位置控制
+        // HAL_Delay(4000);
+
+        // move_all_direction_position(20, 20, 1500, 0); // 位置控制
+        // HAL_Delay(4000);
+
+        // move_all_direction_position(20, 20, 0, -1500); // 位置控制
+        // HAL_Delay(4000);
+
+        // move_all_direction_position(20, 20, -1500, 0); // 位置控制
+        // HAL_Delay(4000);
+
+        // spin_left(100, 10, 90); // 左转
+        // HAL_Delay(3000);
+        // spin_right(100, 10, 90); // 右转
+        // HAL_Delay(3000);
+
+        // HAL_Delay(6000);
+
+
 
         // printf("t2.txt=\"M1: %.2f\"\xff\xff\xff", Motor_Vel_1);
         // printf("t3.txt=\"M2: %.2f\"\xff\xff\xff", Motor_Vel_2);
@@ -292,11 +279,19 @@ int main(void)
         // }
         // HAL_Delay(2000);
 
-        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 250);
-        HAL_Delay(3000);
-        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 50);
-        HAL_Delay(3000);
-        // WritePosEx(1, 4095, 2250, 50);//舵机(ID1),以最高速度V=2250步/秒,加速度A=50(50*100步/秒^2),运行至P1=4095
+        // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 250);
+        // HAL_Delay(3000);
+        // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 50);
+        // HAL_Delay(3000);
+        // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 250);
+        // HAL_Delay(3000);
+
+        // __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 83);
+        // HAL_Delay(3000);
+
+
+
+        // WritePosEx(1, 4095,2250, 50);//舵机(ID1),以最高速度V=2250步/秒,加速度A=50(50*100步/秒^2),运行至P1=4095
         // HAL_Delay(2270);//[(P1-P0)/V]*1000+[V/(A*100)]*1000
 	
         // WritePosEx(1, 0, 2250, 50);//舵机(ID1),以最高速度V=2250步/秒,加速度A=50(50*100步/秒^2),运行至P1=0
@@ -311,10 +306,16 @@ int main(void)
         // feetech_servo_move(1, 1000, 2250, 50);
         // feetech_servo_move(1,0,2250,50);
         // HAL_Delay(3000);
-        printf("t0.txt=\"y%.2f\"\xff\xff\xff", y_velocity);
-        HAL_Delay(1000);
+        // printf("t0.txt=\"y%.2f\"\xff\xff\xff", y_velocity);
+        // HAL_Delay(1000);
 
 
+        state_spin(1);
+        HAL_Delay(2000);
+        state_spin(2);
+        HAL_Delay(2000);
+        state_spin(3);
+        HAL_Delay(2000);
 
 
     }

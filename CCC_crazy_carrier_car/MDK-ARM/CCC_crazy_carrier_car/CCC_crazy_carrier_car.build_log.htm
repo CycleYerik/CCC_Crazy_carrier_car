@@ -22,33 +22,21 @@ Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
 D:\My_projects\Carrier_car_project\CCC_crazy_carrier_car\MDK-ARM\CCC_crazy_carrier_car.uvprojx
-Project File Date:  10/22/2024
+Project File Date:  10/26/2024
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling main.c...
-../communication/my_usart.h(21): warning:  #1295-D: Deprecated declaration UART_handle_function_1 - give arg types
-  void UART_handle_function_1();
-../communication/my_usart.h(22): warning:  #1295-D: Deprecated declaration UART_handle_function_2 - give arg types
-  void UART_handle_function_2();
-../communication/my_usart.h(23): warning:  #1295-D: Deprecated declaration UART_handle_function_3 - give arg types
-  void UART_handle_function_3();
-../communication/my_usart.h(24): warning:  #1295-D: Deprecated declaration UART_receive_process_1 - give arg types
-  void UART_receive_process_1();
-../communication/my_usart.h(25): warning:  #1295-D: Deprecated declaration UART_receive_process_2 - give arg types
-  void UART_receive_process_2();
-../communication/my_usart.h(26): warning:  #1295-D: Deprecated declaration UART_receive_process_3 - give arg types
-  void UART_receive_process_3();
-../motor_control/motor.h(53): warning:  #1295-D: Deprecated declaration test_move - give arg types
-  void test_move();
-../motor_control/motor.h(54): warning:  #1295-D: Deprecated declaration stop - give arg types
-  void stop();
-../Core/Src/main.c: 8 warnings, 0 errors
+compiling my_servo.c...
+..\servo\my_servo.c(71): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      int position = (int)(50 + (200* (float)angle / 270.0));
+..\servo\my_servo.c(84): warning:  #1-D: last line of file ends without a newline
+  }
+..\servo\my_servo.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=14056 RO-data=448 RW-data=248 ZI-data=1760  
+Program Size: Code=11892 RO-data=448 RW-data=240 ZI-data=1904  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 8 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -72,7 +60,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>
