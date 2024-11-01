@@ -51,7 +51,7 @@ void Uart_Init(uint32_t baudRate)
 配置USART2，端口映射(TX)PA2/(RX)PA3
 USART2作为舵机串口
 ------------------*/
-#ifdef USE_USART2_
+
 void Uart_Init(uint32_t baudRate)
 {
 	GPIO_InitTypeDef GPIO_InitStructure;
@@ -80,7 +80,6 @@ void Uart_Init(uint32_t baudRate)
   HAL_UART_Init(&UART_InitStructure);
 }
 
-#endif
 
 void Uart_Send(uint8_t *buf , uint16_t len)
 {

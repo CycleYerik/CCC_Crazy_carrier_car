@@ -1,8 +1,11 @@
 #include "my_usart.h"
 /// usart1,2,3接收缓冲区
-uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128],rxdata_u4[50]; // usart1,2,3,4接收缓冲区
-uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1,received_rxdata_u4; // 暂存usart1,2,3接收到的数据
-uchar rxflag_u2,rxflag_u3,rxflag_u1,rxflag_u4; // usart1,2,3接收到的数据的标志位
+uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128],rxdata_u4[50],rxdata_u5[50]; // usart1,2,3,4接收缓冲区
+uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1,received_rxdata_u4,received_rxdata_u5; // 暂存usart1,2,3接收到的数据
+uchar rxflag_u2,rxflag_u3,rxflag_u1,rxflag_u4,rxflag_u5; // usart1,2,3接收到的数据的标志位
+
+extern float gyro_z;
+
 
 /// @brief 串口屏速度控制时用到的速度变量
 int velocity = 30;
@@ -62,7 +65,7 @@ extern float error_x,error_y,error_x_sum,error_y_sum,error_last_x,error_last_y,e
 
 
 
-void UART_handle_function_1()
+void UART_handle_function_1(void)
 {
     if(rxflag_u1 != 0)
     {
@@ -74,7 +77,7 @@ void UART_handle_function_1()
         }
     }
 }
-void UART_handle_function_2()
+void UART_handle_function_2(void)
 {
     if(rxflag_u2 != 0)
     {
@@ -87,7 +90,7 @@ void UART_handle_function_2()
     }
 }
 
-void UART_handle_function_3()
+void UART_handle_function_3(void)
 {
     if(rxflag_u3 != 0)
     {
@@ -96,6 +99,32 @@ void UART_handle_function_3()
         if(temp == rxflag_u3) 
         {
             UART_receive_process_3(); 
+        }
+    }
+}
+
+void UART_handle_function_4(void)
+{
+    if(rxflag_u4 != 0)
+    {
+        int temp = rxflag_u4;
+        // HAL_Delay(1); // 如果是在main中使用可以加入延时，在定时器中断中调用则不能加
+        if(temp == rxflag_u4) 
+        {
+            UART_receive_process_4(); 
+        }
+    }
+}
+
+void UART_handle_function_5(void)
+{
+    if(rxflag_u5 != 0)
+    {
+        int temp = rxflag_u5;
+        // HAL_Delay(1); // 如果是在main中使用可以加入延时，在定时器中断中调用则不能加
+        if(temp == rxflag_u5) 
+        {
+            // UART_receive_process_5(); 
         }
     }
 }
@@ -116,9 +145,19 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     {
         rxflag_u3 = 0;
     }
+    if(rxflag_u4 >= 50)
+    {
+        rxflag_u4 = 0;
+    }
+    if(rxflag_u5 >= 50)
+    {
+        rxflag_u5 = 0;
+    }
     rxdata_u1[rxflag_u1++] = received_rxdata_u1;
     rxdata_u2[rxflag_u2++] = received_rxdata_u2;
     rxdata_u3[rxflag_u3++] = received_rxdata_u3;
+    rxdata_u4[rxflag_u4++] = received_rxdata_u4;
+    rxdata_u5[rxflag_u5++] = received_rxdata_u5;
     if(huart->Instance == USART2)
     {
         HAL_UART_Receive_IT(huart, &received_rxdata_u2, 1); // 每次处理一个字符
@@ -131,10 +170,18 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     {
         HAL_UART_Receive_IT(huart, &received_rxdata_u1, 1); // 每次处理一个字符
     }
+    else if(huart->Instance == UART4)
+    {
+        HAL_UART_Receive_IT(huart, &received_rxdata_u4, 1); // 每次处理一个字符
+    }
+    else if(huart->Instance == UART5)
+    {
+        HAL_UART_Receive_IT(huart, &received_rxdata_u5, 1); // 每次处理一个字符
+    }
 }
 
 /// @brief 处理接收到的电机数据
-void UART_receive_process_1()
+void UART_receive_process_1(void)
 {
     if (rxflag_u1 > 0)
     {
@@ -262,7 +309,7 @@ void UART_receive_process_1()
 }
 
 /// @brief 处理树莓派数据
-void UART_receive_process_3()
+void UART_receive_process_3(void)
 {
     if (rxflag_u3 > 0)
     {
@@ -322,6 +369,8 @@ void UART_receive_process_3()
         // 发送的数据为（十六进制）010205 则为右前，x=2，y=5 030508 则为左前，x=-5，y=8 
         float move_c = 0.1; // 移动系数
         float move_once = 0.5;
+
+        
         // if(rxdata_u3[0] == 0x01 )//右前
         // {
         //     // x_move_position = move_c * (float)rxdata_u3[1];
@@ -362,8 +411,8 @@ void UART_receive_process_3()
     }
 }
 
-/// @brief 处理串口屏的数据
-void UART_receive_process_2()
+/// @brief 处理精密舵机的数据
+void UART_receive_process_2(void)
 {
     if (rxflag_u2 > 0)
     {
@@ -380,85 +429,98 @@ void UART_receive_process_2()
 
         // 处理接收到的数据
 
-        // 全向
-        if (rxdata_u2[0] == 0x38)
-        {
-            // Forward_move_velocity(velocity, acceleration);
-            move_all_direction(acceleration, x_velocity, y_velocity);
+        // // 全向
+        // if (rxdata_u2[0] == 0x38)
+        // {
+        //     // Forward_move_velocity(velocity, acceleration);
+        //     move_all_direction(acceleration, x_velocity, y_velocity);
 
-        }
-        // 前进
-        else if (rxdata_u2[0] == 0x21)
-        {
-            // Forward_move_velocity(velocity, acceleration);
-            move_all_direction_position(acceleration, position_move_velocity, 0, y_move_position);
+        // }
+        // // 前进
+        // else if (rxdata_u2[0] == 0x21)
+        // {
+        //     // Forward_move_velocity(velocity, acceleration);
+        //     move_all_direction_position(acceleration, position_move_velocity, 0, y_move_position);
             
-        }
-        // 后退
-        else if (rxdata_u2[0] == 0x12)
-        {
-            // Backward_move_velocity(velocity, acceleration);
-            move_all_direction_position(acceleration, position_move_velocity, 0, -y_move_position);
+        // }
+        // // 后退
+        // else if (rxdata_u2[0] == 0x12)
+        // {
+        //     // Backward_move_velocity(velocity, acceleration);
+        //     move_all_direction_position(acceleration, position_move_velocity, 0, -y_move_position);
 
-        }
-        // 停止
-        else if (rxdata_u2[0] == 0x88)
-        {
-            stop();
-        }
+        // }
+        // // 停止
+        // else if (rxdata_u2[0] == 0x88)
+        // {
+        //     stop();
+        // }
 
-        // 左走
-        else if (rxdata_u2[0] == 0x13)
-        {
-            // move_left_velocity(velocity, acceleration);
-            move_all_direction_position(acceleration, position_move_velocity, -x_move_position, 0);
-        }
-        // 右走
-        else if (rxdata_u2[0] == 0x14)
-        {
-            // move_right_velocity(velocity, acceleration);
-            move_all_direction_position(acceleration, position_move_velocity, x_move_position, 0);
-        }
-        // 左旋
-        else if (rxdata_u2[0] == 0x15)
-        {
-            spin_left(velocity, acceleration, 90);
-        }
-        // 右旋
-        else if (rxdata_u2[0] == 0x16)
-        {
-            spin_right(velocity, acceleration, 90);
-        }
-        else if (rxdata_u2[0] == 0x66)
-        {
-            if (velocity < 1000)
-            {
-                velocity += 10;
-            }
-            y_velocity += 10;
-        }
-        else if (rxdata_u2[0] == 0x99)
-        {
-            if (velocity > 10)
-            {
-                velocity -= 10;
-            }
-            y_velocity -= 10;
-        }
-        else if (rxdata_u2[0] == 0x78)
-        {
-            x_velocity += 10;
-            // x_move_position += 0.1;
-        }
-        else if (rxdata_u2[0] == 0x87)
-        {
-            x_velocity -= 10;
-            // x_move_position -= 0.1;
-        }
+        // // 左走
+        // else if (rxdata_u2[0] == 0x13)
+        // {
+        //     // move_left_velocity(velocity, acceleration);
+        //     move_all_direction_position(acceleration, position_move_velocity, -x_move_position, 0);
+        // }
+        // // 右走
+        // else if (rxdata_u2[0] == 0x14)
+        // {
+        //     // move_right_velocity(velocity, acceleration);
+        //     move_all_direction_position(acceleration, position_move_velocity, x_move_position, 0);
+        // }
+        // // 左旋
+        // else if (rxdata_u2[0] == 0x15)
+        // {
+        //     spin_left(velocity, acceleration, 90);
+        // }
+        // // 右旋
+        // else if (rxdata_u2[0] == 0x16)
+        // {
+        //     spin_right(velocity, acceleration, 90);
+        // }
+        // else if (rxdata_u2[0] == 0x66)
+        // {
+        //     if (velocity < 1000)
+        //     {
+        //         velocity += 10;
+        //     }
+        //     y_velocity += 10;
+        // }
+        // else if (rxdata_u2[0] == 0x99)
+        // {
+        //     if (velocity > 10)
+        //     {
+        //         velocity -= 10;
+        //     }
+        //     y_velocity -= 10;
+        // }
+        // else if (rxdata_u2[0] == 0x78)
+        // {
+        //     x_velocity += 10;
+        //     // x_move_position += 0.1;
+        // }
+        // else if (rxdata_u2[0] == 0x87)
+        // {
+        //     x_velocity -= 10;
+        //     // x_move_position -= 0.1;
+        // }
 
         // 清空接收缓冲区
         rxflag_u2 = 0;
         memset(rxdata_u2, 0, 50);
+    }
+}
+
+/// @brief 处理陀螺仪数据
+void UART_receive_process_4(void) 
+{
+    if (rxflag_u4 > 0)
+    {
+        // rxdata_u4[7]<<8 | rxdata_u4[6] )* 180 / 32768
+        gyro_z = (float)((rxdata_u4[7] << 8 | rxdata_u4[6]) * 180 ); // 32768
+        //! 校验位待加入
+        rxflag_u4 = 0;
+        memset(rxdata_u4, 0, 50);
     }
 }
 

@@ -750,6 +750,18 @@
         </Group>
         <Group>
           <GroupName>sensor</GroupName>
+          <Files>
+            <File>
+              <FileName>my_gyroscope.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\sensor\my_gyroscope.c</FilePath>
+            </File>
+            <File>
+              <FileName>my_gyroscope.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\sensor\my_gyroscope.h</FilePath>
+            </File>
+          </Files>
         </Group>
         <Group>
           <GroupName>communication</GroupName>

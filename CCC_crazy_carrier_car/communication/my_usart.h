@@ -9,6 +9,7 @@
 #include "uart_screen.h"
 #include "tim.h"
 #include "my_timer.h"
+#include "my_gyroscope.h"
 
 #define FIFO_SIZE 128
 
@@ -18,12 +19,15 @@ typedef struct {
 	__IO uint8_t ptrRead;
 }FIFO_t;
 
-void UART_handle_function_1();
-void UART_handle_function_2();
-void UART_handle_function_3();
-void UART_receive_process_1();
-void UART_receive_process_2();
-void UART_receive_process_3();
+void UART_handle_function_1(void);
+void UART_handle_function_2(void);
+void UART_handle_function_3(void);
+void UART_handle_function_4(void);
+void UART_handle_function_5(void);
+void UART_receive_process_1(void);
+void UART_receive_process_2(void);
+void UART_receive_process_3(void);
+void UART_receive_process_4(void);
 
 void usart_SendCmd_u1(__IO uint8_t *cmd, uint8_t len);
 void usart_SendByte_u1(uint16_t data);

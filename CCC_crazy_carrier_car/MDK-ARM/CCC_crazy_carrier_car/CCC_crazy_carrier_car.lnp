@@ -29,6 +29,7 @@
 "ccc_crazy_carrier_car\uart.o"
 "ccc_crazy_carrier_car\my_servo.o"
 "ccc_crazy_carrier_car\motor.o"
+"ccc_crazy_carrier_car\my_gyroscope.o"
 "ccc_crazy_carrier_car\my_usart.o"
 "ccc_crazy_carrier_car\my_timer.o"
 --library_type=microlib --strict --scatter "CCC_crazy_carrier_car\CCC_crazy_carrier_car.sct"

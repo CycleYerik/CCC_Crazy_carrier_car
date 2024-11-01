@@ -41,3 +41,4 @@ ccc_crazy_carrier_car\my_usart.o: ../communication/my_usart.h
 ccc_crazy_carrier_car\my_usart.o: ../screen/uart_screen.h
 ccc_crazy_carrier_car\my_usart.o: ../Core/Inc/tim.h
 ccc_crazy_carrier_car\my_usart.o: ..\communication\my_timer.h
+ccc_crazy_carrier_car\my_usart.o: ../sensor/my_gyroscope.h

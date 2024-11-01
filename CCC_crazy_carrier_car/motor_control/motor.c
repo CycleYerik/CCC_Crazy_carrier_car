@@ -21,7 +21,7 @@ float error_x_sum = 0, error_y_sum = 0; // x、y轴误差和
 float x_bias_limit = 1, y_bias_limit = 1; // x、y偏差限制,单位cm,待根据视觉情况调整
 
 /// 所有运动情况下的加速度
-float acceleration = 1; 
+float acceleration = 100; 
 
 /// @brief x、y轴速度，暂时未用到
 float x_velocity = 10, y_velocity = 10;

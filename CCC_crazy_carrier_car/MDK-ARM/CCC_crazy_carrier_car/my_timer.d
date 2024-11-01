@@ -42,3 +42,4 @@ ccc_crazy_carrier_car\my_timer.o: ../motor_control/motor.h
 ccc_crazy_carrier_car\my_timer.o: ../screen/uart_screen.h
 ccc_crazy_carrier_car\my_timer.o: ../Core/Inc/tim.h
 ccc_crazy_carrier_car\my_timer.o: ../communication/my_timer.h
+ccc_crazy_carrier_car\my_timer.o: ../sensor/my_gyroscope.h
