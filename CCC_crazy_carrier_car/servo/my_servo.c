@@ -3,7 +3,24 @@
 
 extern TIM_HandleTypeDef htim1;
 
+// 普通舵机参数范围50-250
+int open_claw_position = 150; 
+int close_claw_position = 90;
+int arm_stretch_position = 140;
+int arm_shrink_position = 225;
+int state_spin_position_1 = 65;
+int state_spin_position_2 = 151;
+int state_spin_position_3 = 235;
 
+// 精密舵机参数范围0-4095
+int put_claw_down_position = 3200;
+int put_claw_up_position = 1100;
+int claw_spin_position_front = 3857;
+int claw_spin_position_state = 1280;
+
+
+/// @brief 抓取并放置
+/// @param  
 void get_and_load(void)
 {
     // 伸长并打开夹爪
@@ -12,7 +29,7 @@ void get_and_load(void)
     HAL_Delay(2000);
 
     // 放下夹爪
-    feetech_servo_move(1,3200,4095,50);
+    put_claw_down();
     HAL_Delay(2000);
 
     // 抓取
@@ -20,11 +37,11 @@ void get_and_load(void)
     HAL_Delay(1000);
 
     // 拉起夹爪
-    feetech_servo_move(1,1100,4095,50);
+    put_claw_up();
     HAL_Delay(2000);
 
     // 旋转
-    feetech_servo_move(2,3857,2000,50);
+    claw_spin_state();
     HAL_Delay(2000);
 
     // 收回
@@ -44,7 +61,7 @@ void get_and_load(void)
     HAL_Delay(2000);
 
     // 旋转
-    feetech_servo_move(2,1280,2000,50);
+    claw_spin_front();
     HAL_Delay(2000);
 
 
@@ -59,46 +76,90 @@ void my_servo_init()
     Uart_Init(115200);
 }
 
+/// @brief 夹爪打开
+/// @param  
 void open_claw(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 150);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, open_claw_position);
 }
 
+/// @brief 夹爪关闭
+/// @param  
 void close_claw(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 90);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, close_claw_position);
 }
 
 
-/// @brief 伸长去抓物料
+/// @brief 机械臂伸长
 /// @param  
 void arm_stretch(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 140);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, arm_stretch_position);
 }
 
-
+/// @brief 机械臂收回
+/// @param  
 void arm_shrink(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, 225);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, arm_shrink_position);
 }
 
+/// @brief 载物盘旋转到对应的位置
+/// @param state_position 
 void state_spin(int state_position)
 {
     if(state_position == 1)
     {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 65);
+        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, state_spin_position_1);
     }
     else if(state_position == 2)
     {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 151);
+        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, state_spin_position_2);
     }
     else if(state_position == 3)
     {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, 235);
+        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, state_spin_position_3);
     }
     
 }
+
+/// @brief 绳驱转盘转动，夹爪下降
+/// @param  
+void put_claw_down(void)
+{
+    feetech_servo_move(1,put_claw_down_position,4095,50);
+}
+
+/// @brief 绳驱转盘转动，夹爪上升
+/// @param  
+void put_claw_up(void)
+{
+    feetech_servo_move(1,put_claw_up_position,4095,50);
+}
+
+/// @brief 夹爪旋转到朝向前方
+/// @param  
+void claw_spin_front(void)
+{
+    feetech_servo_move(2,claw_spin_position_front,2000,50);
+}
+
+/// @brief 夹爪旋转到朝向载物台
+/// @param
+void claw_spin_state(void)
+{
+    feetech_servo_move(2,claw_spin_position_state,2000,50);
+}
+
+/// @brief 中板旋转（待完善）
+/// @param position 
+void whole_arm_spin(int position)
+{
+    // if(position )
+    feetech_servo_move(2,position,2000,50);
+}
+
 
 /// @brief (待完善）精密舵机的移动
 /// @param servo_ID 

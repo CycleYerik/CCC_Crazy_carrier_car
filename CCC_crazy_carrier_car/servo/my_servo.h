@@ -17,6 +17,11 @@ void close_claw(void);
 void arm_stretch(void);
 void arm_shrink(void);
 void state_spin(int state_position);
+void put_claw_down(void);
+void put_claw_up(void);
+void claw_spin_front(void);
+void claw_spin_state(void);
+void whole_arm_spin(int position);
 
 #endif
 
