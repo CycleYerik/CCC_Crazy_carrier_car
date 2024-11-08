@@ -6,7 +6,7 @@
 #include "SCServo.h"
 #include "uart.h"
 
-void get_and_load(void);
+void get_and_load(int position);
 
 
 void my_servo_init(void);

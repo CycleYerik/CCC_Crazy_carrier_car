@@ -2,29 +2,39 @@
 
 
 extern TIM_HandleTypeDef htim1;
+/*-------以下数据如果重新装车需要重新调，务必注意！！！！！！！！！！！！-------*/
+
+/*-------以下数据如果重新装车需要重新调，务必注意！！！！！！！！！！！！-------*/
+
+/*-------以下数据如果重新装车需要重新调，务必注意！！！！！！！！！！！！-------*/
 
 // 普通舵机参数范围50-250
-int open_claw_position = 150; 
-int close_claw_position = 90;
-int arm_stretch_position = 140;
-int arm_shrink_position = 225;
+int open_claw_position = 145; 
+int close_claw_position = 113;
+int arm_stretch_position = 50;
+int arm_shrink_position = 70;  // 155则收回撞到
 int state_spin_position_1 = 65;
 int state_spin_position_2 = 151;
 int state_spin_position_3 = 235;
 
 // 精密舵机参数范围0-4095
-int put_claw_down_position = 3200;
-int put_claw_up_position = 1100;
-int claw_spin_position_front = 3857;
-int claw_spin_position_state = 1280;
+int put_claw_down_position = 2000;  // 3050是从地面抓取
+int put_claw_up_position = 610;
+int claw_spin_position_front = 1930;
+int claw_spin_position_state = 300;
+int right_arm = 2750;
+int left_arm = 1350;
+int middle_arm = 2150;
+
 
 
 /// @brief 抓取并放置
 /// @param  
-void get_and_load(void)
+void get_and_load(int position)
 {
     // 伸长并打开夹爪
     arm_stretch();
+    claw_spin_front();
     open_claw();
     HAL_Delay(2000);
 
@@ -34,37 +44,22 @@ void get_and_load(void)
 
     // 抓取
     close_claw();
-    HAL_Delay(1000);
+    HAL_Delay(800);
 
     // 拉起夹爪
     put_claw_up();
-    HAL_Delay(2000);
-
-    // 旋转
+    HAL_Delay(500);
     claw_spin_state();
-    HAL_Delay(2000);
+    HAL_Delay(1000);
 
     // 收回
     arm_shrink();
-    HAL_Delay(1500);
-
-    // 旋转
-    state_spin(1);
-    HAL_Delay(1500);
+    state_spin(position);
+    HAL_Delay(1000);
 
     // 放下
     open_claw();
-    HAL_Delay(1000);
-
-    // 伸长
-    arm_stretch();
-    HAL_Delay(2000);
-
-    // 旋转
-    claw_spin_front();
-    HAL_Delay(2000);
-
-
+    HAL_Delay(500);
 }
 
 
@@ -157,7 +152,7 @@ void claw_spin_state(void)
 void whole_arm_spin(int position)
 {
     // if(position )
-    feetech_servo_move(2,position,2000,50);
+    feetech_servo_move(3,position,500,50);
 }
 
 
