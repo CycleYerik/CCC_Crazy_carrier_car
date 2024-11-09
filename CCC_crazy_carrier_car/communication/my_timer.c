@@ -42,13 +42,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         {
             UART_handle_function_3(); // 处理串口3接收到的数据
         }
-        if(rxflag_u4 != 0)
-        {
-            UART_handle_function_4(); // 处理串口4接收到的数据
-        }
         
-        if(tim2_count == 10)
+        if(tim2_count == 20)
         {
+            if(rxflag_u4 != 0)
+            {
+            UART_handle_function_4(); // 处理串口4接收到的数据
+            }
             tim2_count = 0;
         }
         // if(is_motor_start_move == 0)

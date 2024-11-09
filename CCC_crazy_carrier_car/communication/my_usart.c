@@ -516,9 +516,24 @@ void UART_receive_process_4(void)
 {
     if (rxflag_u4 > 0)
     {
-        // rxdata_u4[7]<<8 | rxdata_u4[6] )* 180 / 32768
-        gyro_z = (float)((rxdata_u4[7] << 8 | rxdata_u4[6]) * 180 ); // 32768
         //! 校验位待加入
+        
+        //寻找帧头
+        int i = 0;
+        for(i = 0; i < rxflag_u4; i++)
+        {
+            if(rxdata_u4[i] == 0x55 && rxdata_u4[i+1] == 0x53)
+            {
+                break;
+            }
+        }
+        //如果找到帧头
+        if(i < rxflag_u4)
+        {
+            //提取数据
+            uint16_t temp = (uint16_t)((rxdata_u4[i+7] << 8 )| rxdata_u4[i+6]);
+            gyro_z = (float)(temp * 180.0/32768.0); // / 32768.0
+        }
         rxflag_u4 = 0;
         memset(rxdata_u4, 0, 50);
     }

@@ -69,7 +69,7 @@ extern float x_move_position, y_move_position; // x、y
 extern int is_motor_start_move; 
 
 float x_error = 0, y_error = 0; // x、y轴误差
-float gyro_z = 0;
+float gyro_z = 90;
 
 /* USER CODE END PV */
 
@@ -151,8 +151,8 @@ int main(void)
  
     // HAL_UART_Receive_IT(&huart3, &received_rxdata_u3, 1); // 使能串口3接收中断
     // HAL_UART_Receive_IT(&huart1, &received_rxdata_u1, 1); // 使能串口1接收中断
-    // HAL_UART_Receive_IT(&huart4, &received_rxdata_u4, 1); // 使能串口4接收中断
-    // HAL_UART_Receive_IT(&huart5, &received_rxdata_u5, 1); // 使能串口5接收中断
+    HAL_UART_Receive_IT(&huart4, &received_rxdata_u4, 1); // 使能串口4接收中断
+    HAL_UART_Receive_IT(&huart5, &received_rxdata_u5, 1); // 使能串口5接收中断
     // HAL_UART_Receive_IT(&huart2, &received_rxdata_u2, 1); // 使能串口2接收中断
 
 
