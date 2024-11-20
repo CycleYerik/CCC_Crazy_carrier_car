@@ -3,6 +3,9 @@
 int tim3_count = 0;
 int tim2_count = 0;
 
+int is_slight_move = 1; // 是否进行微调,1为进行微调，在到位后开始微调，将此置为1
+int motor_state = 1; // 电机状态，0为默认情况，1为微调情况
+
 /// @brief 电机是否可以开始移动（当已经接受了移动指令后，到电机移动到位前，该标志位为1）
 int is_motor_start_move = 0; 
 
@@ -11,6 +14,7 @@ int is_motor_moving = 0;
 
 /// @brief 电机发送指令到了第几步
 int send_motor_message_flag = 0; 
+int send_motor_message_flag_stop = 0;
 
 /// @brief 电机移动时间计数（乘上定时器的时间间隔即为电机移动时间）
 int motor_moving_timecount = 0;
@@ -30,24 +34,23 @@ extern uint8_t rxdata_u3[50];
 extern uint8_t received_rxdata_u3;
 extern uint8_t rxflag_u3,rxflag_u4;
 
-
 /// @brief 中断回调函数，所有的定时器中断都在这里处理
-/// @param htim 
+/// @param htim
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-    if(htim->Instance == TIM2) // 10ms一次 用来进行电机控制
+    if (htim->Instance == TIM2) // 10ms一次 用来进行电机控制
     {
         tim2_count++;
-        if(rxflag_u3 != 0)
+        if (rxflag_u3 != 0)
         {
             UART_handle_function_3(); // 处理串口3接收到的数据
         }
-        
-        if(tim2_count == 20)
+
+        if (tim2_count == 20)
         {
-            if(rxflag_u4 != 0)
+            if (rxflag_u4 != 0)
             {
-            UART_handle_function_4(); // 处理串口4接收到的数据
+                UART_handle_function_4(); // 处理串口4接收到的数据
             }
             tim2_count = 0;
         }
@@ -55,82 +58,83 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         // {
         //     is_motor_start_move = 1;
         // }
-
     }
-    if(htim -> Instance == TIM3) // 10ms
+    if (htim->Instance == TIM3) // 10ms
     {
         // tim3_count++;
-
-        if(is_motor_start_move == 1 )// 电机可以移动了
+        if(is_slight_move == 1 && motor_state == 1) // 电机在微调
         {
-            HAL_GPIO_WritePin(GPIOC,GPIO_PIN_5,GPIO_PIN_SET); // 板载LED闪烁
-            if(calculate_motor_move_time == 0) // 开始移动后计算电机移动时间（只计算一次），随后在这段时间结束前不再接受新的移动指令
+            if (is_motor_start_move == 1) // 电机可以移动了
             {
-                calculate_motor_move_time = 1;
-                x_move_time = x_move_position / (float)wheel_circumference / (position_move_velocity /60.0) *1000; // x轴移动时间,ms
-                y_move_time = y_move_position / (float)wheel_circumference / (position_move_velocity /60.0) *1000; // y轴移动时间,ms
-                all_move_time = x_move_time > y_move_time ? x_move_time : y_move_time; // 两轴移动时间取最大值
-            }
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET); // 板载LED闪烁
+                if (calculate_motor_move_time == 0)                 // 开始移动后计算电机移动时间（只计算一次），随后在这段时间结束前不再接受新的移动指令
+                {
+                    calculate_motor_move_time = 1;
+                    // x_move_time = x_move_position / (float)wheel_circumference / (position_move_velocity /60.0) *1000; // x轴移动时间,ms
+                    // y_move_time = y_move_position / (float)wheel_circumference / (position_move_velocity /60.0) *1000; // y轴移动时间,ms
+                    // all_move_time = x_move_time > y_move_time ? x_move_time : y_move_time; // 两轴移动时间取最大值
+                    all_move_time = 100;
+                }
 
-
-            if(send_motor_message_flag <6) // 进行电机移动指令的计数
-            {
-                send_motor_message_flag++; // 定时器中断10ms一次，所以每10ms发送一次电机移动指令，以下相当于HAL_Delay(10)的作用
+                if (send_motor_message_flag < 6) // 进行电机移动指令的计数
+                {
+                    send_motor_message_flag++; // 定时器中断10ms一次，所以每10ms发送一次电机移动指令，以下相当于HAL_Delay(10)的作用
+                }
+                if (send_motor_message_flag == 1)
+                {
+                    // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,1);
+                    move_all_direction_tim(acceleration, x_move_position, y_move_position, 1);
+                }
+                if (send_motor_message_flag == 2)
+                {
+                    // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,2);
+                    move_all_direction_tim(acceleration, x_move_position, y_move_position, 2);
+                }
+                if (send_motor_message_flag == 3)
+                {
+                    // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,3);
+                    move_all_direction_tim(acceleration, x_move_position, y_move_position, 3);
+                }
+                if (send_motor_message_flag == 4)
+                {
+                    // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,4);
+                    move_all_direction_tim(acceleration, x_move_position, y_move_position, 4);
+                }
+                if (send_motor_message_flag == 5)
+                {
+                    // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,5);
+                    move_all_direction_tim(acceleration, x_move_position, y_move_position, 5);
+                }
+                if (send_motor_message_flag == 6)
+                {
+                    // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,6);
+                    is_motor_moving = 1;
+                }
             }
-            if(send_motor_message_flag == 1)
+            else
             {
-                move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,1);
-                // move_all_direction_position_tim(acceleration,position_move_velocity,5,2,1);
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_RESET);
             }
-            if(send_motor_message_flag == 2)
+            if (is_motor_moving == 1)
             {
-                move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,2);
-                // move_all_direction_position_tim(acceleration,position_move_velocity,5,2,2);
+                motor_moving_timecount++; // 电机移动时间计数,达到指定时间后则下一条电机移动的指令可以发送
+                // if(motor_moving_timecount * tim3_period >= all_move_time) // 电机移动时间到达
+                if (1) // 电机移动时间到达motor_moving_timecount * tim3_period >= all_move_time
+                {
+                    motor_moving_timecount = 0;
+                    is_motor_start_move = 0;
+                    calculate_motor_move_time = 0;
+                    is_motor_moving = 0;
+                    send_motor_message_flag = 0;
+                }
             }
-            if(send_motor_message_flag == 3)
-            {
-                move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,3);
-                // move_all_direction_position_tim(acceleration,position_move_velocity,5,2,3);
-            }
-            if(send_motor_message_flag == 4)
-            {
-                move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,4);
-                // move_all_direction_position_tim(acceleration,position_move_velocity,5,2,4);
-            }
-            if(send_motor_message_flag == 5)
-            {
-                move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,5);
-                // move_all_direction_position_tim(acceleration,position_move_velocity,5,2,5);
-            }
-            if(send_motor_message_flag == 6)
-            {
-                // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,6);
-                is_motor_moving = 1;
-            }  
         }
-        else
-        {
-            HAL_GPIO_WritePin(GPIOC,GPIO_PIN_5,GPIO_PIN_RESET);
-        }
-        if(is_motor_moving == 1)
-        {
-            motor_moving_timecount++; // 电机移动时间计数,达到指定时间后则下一条电机移动的指令可以发送
-            // if(motor_moving_timecount * tim3_period >= all_move_time) // 电机移动时间到达
-            if(motor_moving_timecount * tim3_period >= all_move_time) // 电机移动时间到达
-            {
-                motor_moving_timecount = 0;
-                is_motor_start_move = 0;
-                calculate_motor_move_time = 0;
-                is_motor_moving = 0;
-                send_motor_message_flag = 0;
-            }
-        }
+        
 
         // if(tim3_count > 100)
         // {
         //     tim3_count = 0;
         //     HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_5);
         // }
-        
     }
 }

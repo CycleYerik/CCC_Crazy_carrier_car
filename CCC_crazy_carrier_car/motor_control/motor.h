@@ -50,8 +50,10 @@ void move_all_direction(uint8_t acc,float x_move_velocity,float y_move_velocity)
 void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_velocity);
 void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length);
 void move_all_direction_position_tim(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int times_count);
+void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count);
 void test_move();
 void stop();
+void stop_tim(int times_count);
 void Forward_move_velocity(uint16_t vel,uint8_t acc);
 void Forward_move( uint16_t vel,uint8_t acc, uint32_t distance);
 void Backward_move_velocity(uint16_t vel,uint8_t acc);

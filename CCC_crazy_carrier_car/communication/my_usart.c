@@ -14,6 +14,7 @@ extern float x_velocity, y_velocity;
 extern float x_move_position , y_move_position; // x、y轴每次移动距离
 extern float position_move_velocity ; // 单次位置移动速度
 extern int is_motor_start_move;
+extern int is_slight_move,motor_state;
 
 int get_motor_real_vel_ok = 0;
 
@@ -24,6 +25,10 @@ extern float pos , Motor_Cur_Pos_1  , Motor_Cur_Pos_2 , Motor_Cur_Pos_3, Motor_C
 extern float vel , Motor_Vel_1 , Motor_Vel_2 , Motor_Vel_3 , Motor_Vel_4 ;
 
 extern float error_x,error_y,error_x_sum,error_y_sum,error_last_x,error_last_y,error_pre_x,error_pre_y;
+
+
+volatile int test_slight_move = 1;
+
 
 /**
 	* @brief   USART1中断函数
@@ -157,7 +162,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     rxdata_u2[rxflag_u2++] = received_rxdata_u2;
     rxdata_u3[rxflag_u3++] = received_rxdata_u3;
     rxdata_u4[rxflag_u4++] = received_rxdata_u4;
-    rxdata_u5[rxflag_u5++] = received_rxdata_u5;
+    rxdata_u5[rxflag_u5++] = received_rxdata_u5;  //! 顺序？
     if(huart->Instance == USART2)
     {
         HAL_UART_Receive_IT(huart, &received_rxdata_u2, 1); // 每次处理一个字符
@@ -324,29 +329,82 @@ void UART_receive_process_3(void)
         // x_move_position = error_x;
         // y_move_position = error_y;
 
-        //! 数据包：01(符号位+) 16(x轴数字位) 02(符号位-)05(y轴数字位) 即该数据包表示 error_x = 16, error_y = -5
-        error_x = (int) rxdata_u3[0];
-        if(rxdata_u3[1] == 0x01)
+        is_motor_start_move = 1;
+
+        //! 数据包：0x16 0x16 0x16 0x16 为开始移动
+        // if(rxdata_u3[0] == 0x01 )
+        // {
+        //     motor_state = 1;
+        //     is_slight_move = 1;
+        // }
+
+        // motor_state = 1;
+        // is_slight_move = 1;
+
+        if(is_slight_move == 1)  
         {
-            error_x = error_x;
-        }
-        else if(rxdata_u3[1] == 0x02)
-        {
-            error_x = -error_x;
-        }
-        error_y = (int) rxdata_u3[2];
-        if(rxdata_u3[3] == 0x01)
-        {
-            error_y = error_y;
-        }
-        else if(rxdata_u3[3] == 0x02)
-        {
-            error_y = -error_y;
+            if(rxdata_u3[0] == 0x03  ) //x正y正
+            {
+                x_move_position = 0;
+                y_move_position = 1;
+                HAL_UART_Transmit(&huart3, (uint8_t*)"right front", strlen("right front"), 50);
+            }
+            else if(rxdata_u3[0] == 0x02 ) //x负y正
+            {
+                x_move_position = -1;
+                y_move_position = 1;
+            }
+            else if(rxdata_u3[0] == 0x04) //x负y负
+            {
+                x_move_position = -1;
+                y_move_position = -1;
+            }
+            else if(rxdata_u3[0] == 0x01 ) //x正y负
+            {
+                x_move_position = 1;
+                y_move_position = -1;
+            }
         }
 
-        // 位置误差累加
-        error_x_sum += error_x;
-        error_y_sum += error_y;
+        if(rxdata_u3[0] == 0x17 ) // 停止移动
+        {
+            // is_slight_move = 0;
+            HAL_UART_Transmit(&huart3, (uint8_t*)"stop", strlen("stop"), 50);
+            x_move_position = 0;
+            y_move_position = 0;
+        }
+
+        if(rxdata_u3[0] == 0x18 )  //结束微调
+        {
+            motor_state = 0;
+            is_slight_move = 0;
+            test_slight_move = 0;
+
+
+        }
+
+        // error_x = (int) rxdata_u3[0];
+        // if(rxdata_u3[1] == 0x01)
+        // {
+        //     error_x = error_x;
+        // }
+        // else if(rxdata_u3[1] == 0x02)
+        // {
+        //     error_x = -error_x;
+        // }
+        // error_y = (int) rxdata_u3[2];
+        // if(rxdata_u3[3] == 0x01)
+        // {
+        //     error_y = error_y;
+        // }
+        // else if(rxdata_u3[3] == 0x02)
+        // {
+        //     error_y = -error_y;
+        // }
+
+        // // 位置误差累加
+        // error_x_sum += error_x;
+        // error_y_sum += error_y;
 
 
         // 用位置式PID计算出了x_move_position和y_move_position
@@ -354,21 +412,21 @@ void UART_receive_process_3(void)
 
 
         // 不用位置式PID则取消注释
-        x_move_position = error_x;
-        y_move_position = error_y;
+        // x_move_position = error_x;
+        // y_move_position = error_y;
 
 
-        // PID 参数更新
-        error_last_x = error_x;
-        error_last_y = error_y;
-        error_pre_x = error_last_x;
-        error_pre_y = error_last_y;
+        // // PID 参数更新
+        // error_last_x = error_x;
+        // error_last_y = error_y;
+        // error_pre_x = error_last_x;
+        // error_pre_y = error_last_y;
         
 
         
         // 发送的数据为（十六进制）010205 则为右前，x=2，y=5 030508 则为左前，x=-5，y=8 
-        float move_c = 0.1; // 移动系数
-        float move_once = 0.5;
+        // float move_c = 0.1; // 移动系数
+        // float move_once = 0.5;
 
         
         // if(rxdata_u3[0] == 0x01 )//右前
@@ -402,10 +460,10 @@ void UART_receive_process_3(void)
         // }
         
         
-        if(is_motor_start_move == 0)
-        {
-            is_motor_start_move = 1;
-        }
+    
+
+        
+
         rxflag_u3 = 0;
         memset(rxdata_u3, 0, 50);
     }

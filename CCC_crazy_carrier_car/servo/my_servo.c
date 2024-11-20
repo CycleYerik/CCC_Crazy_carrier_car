@@ -1,7 +1,7 @@
 #include "my_servo.h"
 
 
-extern TIM_HandleTypeDef htim1;
+extern TIM_HandleTypeDef htim4;
 /*-------以下数据如果重新装车需要重新调，务必注意！！！！！！！！！！！！-------*/
 
 /*-------以下数据如果重新装车需要重新调，务必注意！！！！！！！！！！！！-------*/
@@ -9,31 +9,38 @@ extern TIM_HandleTypeDef htim1;
 /*-------以下数据如果重新装车需要重新调，务必注意！！！！！！！！！！！！-------*/
 
 // 普通舵机参数范围50-250
-int open_claw_position = 145; 
-int close_claw_position = 113;
-int arm_stretch_position = 50;
-int arm_shrink_position = 70;  // 155则收回撞到
-int state_spin_position_1 = 65;
-int state_spin_position_2 = 151;
-int state_spin_position_3 = 235;
+int open_claw_position = 90; 
+int close_claw_position = 74;
+int arm_stretch_position = 25;
+int arm_shrink_position = 30;  // 155则收回撞到
+int arm_shrink_all_position = 70;
+int state_spin_position_1 = 25;  //84 
+int state_spin_position_2 = 68;
+int state_spin_position_3 = 111;
+
 
 // 精密舵机参数范围0-4095
-int put_claw_down_position = 2000;  // 3050是从地面抓取
-int put_claw_up_position = 610;
+int put_claw_down_state_position = 1750;
+int put_claw_down_position = 2450;  // 3050是从地面抓取
+int put_claw_down_ground_position = 3600;
+int put_claw_up_position = 1280;
 int claw_spin_position_front = 1930;
-int claw_spin_position_state = 300;
+int claw_spin_position_state = 232; //300
 int right_arm = 2750;
 int left_arm = 1350;
 int middle_arm = 2150;
 
 
 
-/// @brief 抓取并放置
+/// @brief 抓取并放置在载物盘上
 /// @param  
 void get_and_load(int position)
 {
     // 伸长并打开夹爪
+    state_spin(position);
     arm_stretch();
+    arm_shrink();
+    put_claw_up();
     claw_spin_front();
     open_claw();
     HAL_Delay(2000);
@@ -53,16 +60,52 @@ void get_and_load(int position)
     HAL_Delay(1000);
 
     // 收回
-    arm_shrink();
-    state_spin(position);
-    HAL_Delay(1000);
+    // arm_shrink();
+    // HAL_Delay(1000);
 
     // 放下
     open_claw();
     HAL_Delay(500);
+
+    put_claw_up();
+    HAL_Delay(500);
+    claw_spin_front();
+    arm_shrink_all();
 }
 
+/// @brief 从载物盘上取物料
+/// @param position 载物盘编号1-3
+void get_from_state(int position)
+{
+    state_spin(position);
+    arm_shrink();
+    open_claw();
+    put_claw_up();
+    HAL_Delay(1000);
+    claw_spin_state();
+    HAL_Delay(1000);
+    put_claw_down_state();
+    HAL_Delay(800);
+    close_claw();
+    put_claw_up();
+    HAL_Delay(400);
+    claw_spin_front();
+    arm_stretch();
 
+}
+
+/// @brief 将物料放在地上，和get_from_state前后联合使用
+/// @param  
+void put_from_state(void)
+{
+    put_claw_down_ground();
+    HAL_Delay(1500);
+    open_claw();
+    HAL_Delay(800);
+    put_claw_up();
+    HAL_Delay(800);
+    arm_shrink_all();  
+}
 
 
 /// @brief 精密舵机串口初始化
@@ -75,14 +118,15 @@ void my_servo_init()
 /// @param  
 void open_claw(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, open_claw_position);
+
+	__HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, open_claw_position);
 }
 
 /// @brief 夹爪关闭
 /// @param  
 void close_claw(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, close_claw_position);
+    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, close_claw_position);
 }
 
 
@@ -90,14 +134,19 @@ void close_claw(void)
 /// @param  
 void arm_stretch(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, arm_stretch_position);
+    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_stretch_position);
 }
 
-/// @brief 机械臂收回
+/// @brief 机械臂收回到放物料
 /// @param  
 void arm_shrink(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, arm_shrink_position);
+    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_position);
+}
+
+void arm_shrink_all(void)
+{
+    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_all_position);
 }
 
 /// @brief 载物盘旋转到对应的位置
@@ -106,20 +155,32 @@ void state_spin(int state_position)
 {
     if(state_position == 1)
     {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, state_spin_position_1);
+        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, state_spin_position_1);
     }
     else if(state_position == 2)
     {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, state_spin_position_2);
+        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, state_spin_position_2);
     }
     else if(state_position == 3)
     {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, state_spin_position_3);
+        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, state_spin_position_3);
     }
     
 }
 
-/// @brief 绳驱转盘转动，夹爪下降
+void put_claw_down_ground(void)
+{
+    feetech_servo_move(1,put_claw_down_ground_position,4095,50);
+}
+
+/// @brief 夹爪下降到车的载物盘高度
+/// @param  
+void put_claw_down_state(void)
+{
+    feetech_servo_move(1,put_claw_down_state_position,4095,50);
+}
+
+/// @brief 绳驱转盘转动，夹爪下降,抓取转盘上的物品
 /// @param  
 void put_claw_down(void)
 {
@@ -181,14 +242,18 @@ void servo_move(int servo_ID, int angle)
     int position = (int)(50 + (200* (float)angle / 270.0));
     if(servo_ID == 1)
     {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, position);
+        // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, position);
     }
     else if(servo_ID == 2)
     {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, position);
+        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, position);
     }
     else if(servo_ID == 3)
     {
-        __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, position);
+        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, position);
+    }
+    else if(servo_ID == 4)
+    {
+        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, position);
     }
 }

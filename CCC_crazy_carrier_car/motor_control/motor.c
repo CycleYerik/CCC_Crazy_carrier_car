@@ -261,6 +261,185 @@ void move_all_direction_position_tim(uint8_t acc,uint16_t velocity, float x_move
     
 }
 
+void stop_tim(int times_count)
+{
+    switch(times_count)
+    {
+        case 1:
+            Emm_V5_Stop_Now(1,1);
+            break;
+        case 2:
+            Emm_V5_Stop_Now(2,1);
+            break;
+        case 3:
+            Emm_V5_Stop_Now(3,1);
+            break;
+        case 4:
+            Emm_V5_Stop_Now(4,1);
+            break;
+    }
+}
+
+void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count)
+{
+    if(x_vel >= 0 && y_vel >= 0)
+    {
+        float delta_xy = x_vel - y_vel;
+        switch(times_count)
+        {
+            case 1:
+                Emm_V5_Vel_Control(1,0,x_vel + y_vel, acc, 1);
+                break;
+            case 2:
+                Emm_V5_Vel_Control(4,1,x_vel + y_vel, acc,  1);
+                break;
+            case 3:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Vel_Control(2,0,delta_xy, acc,1);
+                }
+                else
+                {
+                    Emm_V5_Vel_Control(2,1,-delta_xy, acc,1);
+                }
+                break;
+            case 4:
+                if(delta_xy >= 0)
+                {
+
+					Emm_V5_Vel_Control(3,1,delta_xy, acc,1);
+                }
+                else
+                {
+                    Emm_V5_Vel_Control(3,0,-delta_xy, acc, 1);
+                }
+                break;
+            case 5:
+                {
+                    Emm_V5_Synchronous_motion(0);
+                }
+                break;
+        }
+    }
+    else if (x_vel >= 0 && y_vel < 0)
+    {
+        float delta_xy = x_vel + y_vel;
+        switch(times_count)
+        {
+            case 1:
+                Emm_V5_Vel_Control(2,0,x_vel - y_vel, acc, 1);
+                break;
+            case 2:
+                Emm_V5_Vel_Control(3,1,x_vel - y_vel, acc, 1);
+                break;
+            case 3:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Vel_Control(1,0,delta_xy, acc, 1);
+                }
+                else
+                {
+                    Emm_V5_Vel_Control(1,1,-delta_xy, acc, 1);
+                }
+                break;
+            case 4:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Vel_Control(4,1,delta_xy, acc,1);
+                }
+                else
+                {
+                    Emm_V5_Vel_Control(4,0,delta_xy, acc, 1);
+                }
+                break;
+            case 5:
+                {
+                    Emm_V5_Synchronous_motion(0);
+                }
+                break;
+        }
+    }
+    else if (x_vel < 0 && y_vel >= 0)
+    {
+        float delta_xy = y_vel + x_vel;
+        switch(times_count)
+        {
+            case 1:
+                Emm_V5_Vel_Control(2,1,y_vel- x_vel, acc, 1);
+                break;
+            case 2:
+                Emm_V5_Vel_Control(3,0,y_vel- x_vel, acc, 1);
+                break;
+            case 3:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Vel_Control(1,0,delta_xy, acc,1);
+                }
+                else
+                {
+                    Emm_V5_Vel_Control(1,1,-delta_xy, acc, 1);
+                }
+                break;
+            case 4:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Vel_Control(4,1,delta_xy, acc,1);
+                }
+                else
+                {
+                    Emm_V5_Vel_Control(4,0,-delta_xy, acc, 1);
+                }
+                break;
+            case 5:
+                {
+                    Emm_V5_Synchronous_motion(0);
+                }
+                break;
+        }
+    }
+    else if (x_vel< 0 && y_vel < 0)
+    {
+        float delta_xy = y_vel - x_vel;
+        switch(times_count)
+        {
+            case 1:
+                Emm_V5_Vel_Control(1,1,-x_vel - y_vel, acc,1);
+                break;
+            case 2:
+                Emm_V5_Vel_Control(4,0,-x_vel - y_vel, acc, 1);
+                break;
+            case 3:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Vel_Control(2,1,delta_xy, acc, 1);
+                }
+                else
+                {
+                    Emm_V5_Vel_Control(2,0,-delta_xy, acc, 1);
+                }
+                break;
+            case 4:
+                if(delta_xy >= 0)
+                {
+                    Emm_V5_Vel_Control(3,0,delta_xy, acc, 1);
+                }
+                else
+                {
+                    Emm_V5_Vel_Control(3,1,-delta_xy, acc, 1);
+                }
+                break;
+            case 5:
+                {
+                    Emm_V5_Synchronous_motion(0);
+                }   
+                break;
+    
+        }
+    }
+}
+
+
+
 /// @brief （带有延时函数）全向位置移动
 /// @param acc 
 /// @param velocity 

@@ -67,9 +67,14 @@ extern float x_velocity, y_velocity; // x、y轴速度
 extern float acceleration; // 加速度
 extern float x_move_position, y_move_position; // x、y
 extern int is_motor_start_move; 
+extern int is_slight_move,motor_state;
 
 float x_error = 0, y_error = 0; // x、y轴误差
 float gyro_z = 90;
+
+
+extern volatile int test_slight_move; // 用于判断微调是否完成
+
 
 /* USER CODE END PV */
 
@@ -138,7 +143,6 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_UART5_Init();
-  MX_TIM1_Init();
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
 
@@ -149,19 +153,20 @@ int main(void)
     
 
  
-    // HAL_UART_Receive_IT(&huart3, &received_rxdata_u3, 1); // 使能串口3接收中断
+    HAL_UART_Receive_IT(&huart3, &received_rxdata_u3, 1); // 使能串口3接收中断
     // HAL_UART_Receive_IT(&huart1, &received_rxdata_u1, 1); // 使能串口1接收中断
-    HAL_UART_Receive_IT(&huart4, &received_rxdata_u4, 1); // 使能串口4接收中断
-    HAL_UART_Receive_IT(&huart5, &received_rxdata_u5, 1); // 使能串口5接收中断
+    // HAL_UART_Receive_IT(&huart4, &received_rxdata_u4, 1); // 使能串口4接收中断
+    // HAL_UART_Receive_IT(&huart5, &received_rxdata_u5, 1); // 使能串口5接收中断
     // HAL_UART_Receive_IT(&huart2, &received_rxdata_u2, 1); // 使能串口2接收中断
 
 
 
     HAL_TIM_Base_Start_IT(&htim2); // 使能定时器2中断
     HAL_TIM_Base_Start_IT(&htim3); // 使能定时器3中断
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1); // 开启TIM2通道1 PWM输出
-	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2); // 开启TIM2通道2 PWM输出
-    HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3); // 开启TIM2通道3 PWM输出
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1); // 开启TIM1通道1 PWM输出
+	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2); // 开启TIM1通道2 PWM输出
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 开启TIM1通道3 PWM输出
+    HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // 开启TIM1通道4 PWM输出  
     
     
 
@@ -176,6 +181,7 @@ int main(void)
 
     /*-------------------小车离开起点-----------------------*/
 
+    // is_slight_move = 1; // 使能轻微移动
 
 
 
@@ -184,6 +190,20 @@ int main(void)
 
 
     /*-------------------------测试-----------------------------------*/
+
+    get_and_load(1);
+    open_claw();
+    get_and_load(1);
+    HAL_Delay(2000);
+    get_from_state(1);
+    put_from_state();
+    HAL_Delay(2000);
+
+
+    // claw_spin_state();
+
+ 
+    
 
 
 
@@ -196,10 +216,47 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    // move_all_direction_tim(acceleration, 0.5, 0.5, 1); // 向前移动0.5m
+    // HAL_Delay(20); // 等待2s
+    // move_all_direction_tim(acceleration, 0.5, 0.5, 2); // 向前移动0.5m
+    // HAL_Delay(20); // 等待2s
+    // move_all_direction_tim(acceleration, 0.5, 0.5, 3); // 向前移动0.5m
+    // HAL_Delay(20); // 等待2s
+    // move_all_direction_tim(acceleration, 0.5, 0.5, 4); // 向前移动0.5m
+    // HAL_Delay(20); // 等待2s
+    // move_all_direction_tim(acceleration, 0.5, 0.5, 5); // 向前移动0.5m
+    // HAL_Delay(20); // 等待2s
 
          
 
         /****************************************以下皆为各种测试******************************************/
+    //state_spin(1);
+    //HAL_Delay(1000);
+    //state_spin(2);
+    //HAL_Delay(1000);
+    //state_spin(3);
+    //HAL_Delay(1000);
+    // open_claw();
+    // HAL_Delay(2000);
+    // close_claw();
+    // HAL_Delay(2000);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2,230 );
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 230);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, 230);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 230);
+    // HAL_Delay(2000);
+
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 125);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 125);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, 125);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 125);
+    // HAL_Delay(2000);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 25);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 25);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, 25);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 25);
+    // HAL_Delay(2000);
+
 
 
     }

@@ -17,32 +17,26 @@ Library Manager: ArmAr.exe V5.06 update 7 (build 960)
 Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
 CPU DLL:         SARMCM3.DLL V5.36.0.0
 Dialog DLL:      DCM.DLL V1.17.3.0
-Target DLL:      CMSIS_AGDI.dll V1.33.0.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.9.0
 Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
 D:\My_projects\Carrier_car_project\CCC_crazy_carrier_car\MDK-ARM\CCC_crazy_carrier_car.uvprojx
-Project File Date:  11/09/2024
+Project File Date:  11/19/2024
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling my_usart.c...
-../motor_control/motor.h(53): warning:  #1295-D: Deprecated declaration test_move - give arg types
+compiling main.c...
+../motor_control/motor.h(54): warning:  #1295-D: Deprecated declaration test_move - give arg types
   void test_move();
-../motor_control/motor.h(54): warning:  #1295-D: Deprecated declaration stop - give arg types
+../motor_control/motor.h(55): warning:  #1295-D: Deprecated declaration stop - give arg types
   void stop();
-..\communication\my_usart.c(316): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
-          HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, strlen(rxdata_u3), 50);
-..\communication\my_usart.c(370): warning:  #177-D: variable "move_c"  was declared but never referenced
-          float move_c = 0.1; // 移动系数
-..\communication\my_usart.c(371): warning:  #177-D: variable "move_once"  was declared but never referenced
-          float move_once = 0.5;
-..\communication\my_usart.c: 5 warnings, 0 errors
+../Core/Src/main.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=15088 RO-data=448 RW-data=248 ZI-data=2072  
+Program Size: Code=12540 RO-data=448 RW-data=316 ZI-data=2132  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 5 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 
