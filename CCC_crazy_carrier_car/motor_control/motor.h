@@ -7,7 +7,9 @@
 #define pi 3.1415926
 #define wheel_circumference 31.4 //轮子周长
 #define pulse_per_circle 3200 //每圈脉冲数
-#define spin_radius 22.2 //自转半径，数据不准确
+#define spin_radius 22 //自转半径，数据不准确
+
+// 0.523 cm/s 对应速度为1
 
 /**
  * @brief 
@@ -43,6 +45,7 @@ typedef enum {
 
 extern float x_velocity, y_velocity; // x、y轴速度
 uint32_t get_clk(float distance);
+uint32_t get_distance_time(float distance, float velocity);
 void position_pid(void);
 void PID_vel_Control(uint8_t addr,uint8_t acc, float target_vel);
 int PID_motor_control(float x_bias, float y_bias);

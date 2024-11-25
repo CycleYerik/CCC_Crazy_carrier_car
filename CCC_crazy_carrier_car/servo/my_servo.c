@@ -8,24 +8,24 @@ extern TIM_HandleTypeDef htim4;
 
 /*-------以下数据如果重新装车需要重新调，务必注意！！！！！！！！！！！！-------*/
 
-// 普通舵机参数范围50-250
-int open_claw_position = 90; 
+// 普通舵机参数范围25-125
+int open_claw_position = 88; 
 int close_claw_position = 74;
 int arm_stretch_position = 25;
-int arm_shrink_position = 30;  // 155则收回撞到
+int arm_shrink_position = 25;  // 155则收回撞到
 int arm_shrink_all_position = 70;
-int state_spin_position_1 = 25;  //84 
-int state_spin_position_2 = 68;
-int state_spin_position_3 = 111;
+int state_spin_position_1 = 25;  //120度对应44.44
+int state_spin_position_2 = 69;
+int state_spin_position_3 = 114; //
 
 
 // 精密舵机参数范围0-4095
 int put_claw_down_state_position = 1750;
 int put_claw_down_position = 2450;  // 3050是从地面抓取
-int put_claw_down_ground_position = 3600;
-int put_claw_up_position = 1280;
+int put_claw_down_ground_position = 3900;
+int put_claw_up_position = 1100;
 int claw_spin_position_front = 1930;
-int claw_spin_position_state = 232; //300
+int claw_spin_position_state = 260; //300
 int right_arm = 2750;
 int left_arm = 1350;
 int middle_arm = 2150;
@@ -38,16 +38,16 @@ void get_and_load(int position)
 {
     // 伸长并打开夹爪
     state_spin(position);
-    arm_stretch();
+    // arm_stretch();
     arm_shrink();
     put_claw_up();
-    claw_spin_front();
-    open_claw();
-    HAL_Delay(2000);
+    // claw_spin_front();
+    // open_claw();
+    HAL_Delay(500);
 
     // 放下夹爪
     put_claw_down();
-    HAL_Delay(2000);
+    HAL_Delay(1000);
 
     // 抓取
     close_claw();
@@ -57,7 +57,8 @@ void get_and_load(int position)
     put_claw_up();
     HAL_Delay(500);
     claw_spin_state();
-    HAL_Delay(1000);
+    HAL_Delay(1200);
+    HAL_Delay(1500);
 
     // 收回
     // arm_shrink();
@@ -68,9 +69,9 @@ void get_and_load(int position)
     HAL_Delay(500);
 
     put_claw_up();
-    HAL_Delay(500);
+    HAL_Delay(300);
     claw_spin_front();
-    arm_shrink_all();
+    // arm_shrink_all();
 }
 
 /// @brief 从载物盘上取物料
@@ -90,7 +91,7 @@ void get_from_state(int position)
     put_claw_up();
     HAL_Delay(400);
     claw_spin_front();
-    arm_stretch();
+    // arm_stretch();
 
 }
 
@@ -104,7 +105,7 @@ void put_from_state(void)
     HAL_Delay(800);
     put_claw_up();
     HAL_Delay(800);
-    arm_shrink_all();  
+    // arm_shrink_all();  
 }
 
 

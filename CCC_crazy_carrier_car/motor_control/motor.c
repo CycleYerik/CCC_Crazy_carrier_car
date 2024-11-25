@@ -21,7 +21,7 @@ float error_x_sum = 0, error_y_sum = 0; // x、y轴误差和
 float x_bias_limit = 1, y_bias_limit = 1; // x、y偏差限制,单位cm,待根据视觉情况调整
 
 /// 所有运动情况下的加速度
-float acceleration = 100; 
+float acceleration = 50; 
 
 /// @brief x、y轴速度，暂时未用到
 float x_velocity = 10, y_velocity = 10;
@@ -95,6 +95,13 @@ uint32_t get_clk(float distance)
 {
     return (uint32_t)(distance / wheel_circumference * pulse_per_circle);
 }
+
+/// @brief 根据移动的距离和速度计算需要的时间（ms）
+uint32_t get_distance_time(float distance, float velocity)
+{
+    return (uint32_t)(distance /wheel_circumference/ velocity * 60* 1000);
+}
+// 速度/60 *周长 = 每秒的距离
 
 /// @brief （仅在定时器中使用）实现电机位置控制（参考my_timer.c中的用法）
 /// @param acc 
@@ -536,7 +543,9 @@ void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_len
         }
     }
     Emm_V5_Synchronous_motion(0);
-    HAL_Delay(10);
+    // uint32_t timex = get_distance_time(abs(x_move_length), velocity);
+    // uint32_t timey = get_distance_time(abs(y_move_length), velocity);
+    // HAL_Delay(timex > timey ? timex : timey);
 }
 
 /// @brief （未实现）全向速度移动，自带PID控制,调用PID_vel_Control函数

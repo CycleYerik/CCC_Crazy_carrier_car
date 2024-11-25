@@ -3,7 +3,7 @@
 int tim3_count = 0;
 int tim2_count = 0;
 
-int is_slight_move = 1; // 是否进行微调,1为进行微调，在到位后开始微调，将此置为1
+int is_slight_move = 0; //! 是否进行微调,1为进行微调，在到位后开始微调，将此置为1
 int motor_state = 1; // 电机状态，0为默认情况，1为微调情况
 
 /// @brief 电机是否可以开始移动（当已经接受了移动指令后，到电机移动到位前，该标志位为1）

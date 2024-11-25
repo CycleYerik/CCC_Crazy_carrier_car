@@ -72,6 +72,8 @@ extern int is_slight_move,motor_state;
 float x_error = 0, y_error = 0; // x、y轴误差
 float gyro_z = 90;
 
+int is_start_get_plate = 0; // 开始从转盘抓
+int get_plate = 0; // 1 2 3 
 
 extern volatile int test_slight_move; // 用于判断微调是否完成
 
@@ -86,17 +88,7 @@ void SystemClock_Config(void);
 /************************************函数声明区****************************************/
 
 // printf重定向，用于串口屏的显示
-int fputc(int ch, FILE *f)
-{
-    HAL_UART_Transmit(&huart5, (uint8_t *)&ch, 1, 0xffff);
-    return ch;
-}
-int fgetc(FILE *f)
-{
-    uint8_t ch = 0;
-    HAL_UART_Receive(&huart5, &ch, 1, 0xffff);
-    return ch;
-}
+
 
 
 
@@ -168,7 +160,6 @@ int main(void)
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 开启TIM1通道3 PWM输出
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // 开启TIM1通道4 PWM输出  
     
-    
 
     /*********************************实际功能的初始化*************************************/
 
@@ -181,8 +172,10 @@ int main(void)
 
     /*-------------------小车离开起点-----------------------*/
 
-    // is_slight_move = 1; // 使能轻微移动
+    is_slight_move = 1; //! 使能轻微移动
 
+
+    // spin_right(80,acceleration, 90);
 
 
     
@@ -191,19 +184,48 @@ int main(void)
 
     /*-------------------------测试-----------------------------------*/
 
-    get_and_load(1);
-    open_claw();
-    get_and_load(1);
-    HAL_Delay(2000);
-    get_from_state(1);
-    put_from_state();
-    HAL_Delay(2000);
+
+
+
+
+// get_and_load(1);
+    // HAL_Delay(1000);
+    // get_and_load(2);
+    // HAL_Delay(2000);
+    // get_and_load(3);
+    // HAL_Delay(2000);
+
+// arm_stretch();
+
+
+    // get_from_state(1);
+    // put_from_state();
+    // HAL_Delay(1000);
+    // get_from_state(2);
+    // put_from_state();
+    // HAL_Delay(1000);
+    // get_from_state(3);
+    // put_from_state();
+
+
 
 
     // claw_spin_state();
 
  
-    
+    int test_move_stop = 0;
+    arm_shrink();
+    put_claw_up();
+    claw_spin_front();
+    // claw_spin_state();
+    // state_spin(1);
+    // HAL_Delay(2000);
+    // state_spin(2);
+    // HAL_Delay(2000);
+    // state_spin(3);
+    // HAL_Delay(2000);
+
+
 
 
 
@@ -256,6 +278,37 @@ int main(void)
     // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, 25);
     // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 25);
     // HAL_Delay(2000);
+
+
+
+    if(is_slight_move == 0 && test_move_stop == 0)
+    {
+        stop();
+        get_from_state(1);
+        put_from_state();
+        test_move_stop = 1;
+        // 关闭timer3中断
+        HAL_TIM_Base_Stop_IT(&htim3);
+    }
+    // if(is_start_get_plate == 1)
+    // {
+    //     if(get_plate == 1)
+    //     {
+    //         get_and_load(1);
+    //     }
+    //     else if(get_plate == 2)
+    //     {
+    //         get_and_load(2);
+    //     }
+    //     else if (get_plate == 3)
+    //     {
+    //         get_and_load(3);
+    //     }
+    //     is_start_get_plate = 0;
+    //     get_plate = 0;
+
+    // }
+    HAL_Delay(10);
 
 
 
