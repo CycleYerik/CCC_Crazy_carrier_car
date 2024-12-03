@@ -12,9 +12,10 @@ int velocity = 30;
 extern float acceleration;
 extern float x_velocity, y_velocity;
 extern float x_move_position , y_move_position; // x、y轴每次移动距离
+extern float volatile spin_which_direction;
 extern float position_move_velocity ; // 单次位置移动速度
 extern int is_motor_start_move;
-extern int is_slight_move,motor_state;
+extern int is_slight_move,motor_state,is_slight_spin;
 
 int get_motor_real_vel_ok = 0;
 
@@ -26,9 +27,13 @@ extern float vel , Motor_Vel_1 , Motor_Vel_2 , Motor_Vel_3 , Motor_Vel_4 ;
 
 extern float error_x,error_y,error_x_sum,error_y_sum,error_last_x,error_last_y,error_pre_x,error_pre_y;
 
-extern int get_plate,is_start_get_plate;
+extern int volatile get_plate,is_start_get_plate;
+extern int is_get_qrcode_target;
+extern int target_colour[6];
 
 volatile int test_slight_move = 1;
+
+
 
 int fputc(int ch, FILE *f)
 {
@@ -330,58 +335,69 @@ void UART_receive_process_3(void)
 {
     if (rxflag_u3 > 0)
     {
-        // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, strlen(rxdata_u3), 50);
-        // 将PB0引脚电平翻转
-        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
-        // printf("t0.txt=\"%s\"\xff\xff\xff", rxdata_u3);
+        // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
 
 
-        // error_x = (float)rxdata_u3[2];
-        // error_y = (float)rxdata_u3[3];
-        // x_move_position = error_x;
-        // y_move_position = error_y;
 
-        is_motor_start_move = 1; 
+        is_motor_start_move = 1;
 
-        //! 抓取
-        if(is_slight_move == 0)
+
+        // 得到任务
+        if(is_get_qrcode_target == 0) //! 此处还可以加入更复杂的校验位，避免误操作
         {
+            for (int i = 0; i < 6; i++)
+            {
+                target_colour[i] = (int)rxdata_u3[i];
+            }
+            is_get_qrcode_target = 1;
+        }
+        
+
+        // 在从转盘抓取
+        if (is_start_get_plate == 1) 
+        {
+            if (rxdata_u3[0] == 0x01) //! 此处可以加入更复杂的校验位
+            {
+                get_plate = 1;
+            }
+            if (rxdata_u3[0] == 0x02) // 绿
+            {
+                get_plate = 2;
+            }
+            if (rxdata_u3[0] == 0x03) // 蓝
+            {
+                get_plate = 3;
+            }
+        }
+
+
+
+        // 进行直线微调
+        if(is_slight_spin == 1)
+        {
+            spin_which_direction = (int)rxdata_u3[0];
             
         }
-        // if(rxdata_u3[0] == 0x01) // 红
-        // {
-        //     is_start_get_plate = 1;
-        //     get_plate = 1;
-        // }
-        // if(rxdata_u3[0] == 0x02) // 绿
-        // {
-        //     is_start_get_plate = 1;
-        //     get_plate = 2;
-        // }
-        // if(rxdata_u3[0] == 0x03) // 蓝
-        // {
-        //     is_start_get_plate = 1;
-        //     get_plate = 3;
-        // }
 
+        // 直线微调停止
+        if( rxdata_u3[0] == 0x27 && rxdata_u3[1] == 0x27 && rxdata_u3[2] == 0x27)
+        {
+            spin_which_direction = 0;
+        }
 
-        //! 数据包：0x16 0x16 0x16 0x16 为开始移动
-        // if(rxdata_u3[0] == 0x01 )
+        // 直线微调结束
+        if( rxdata_u3[0] == 0x28 && rxdata_u3[1] == 0x28 && rxdata_u3[2] == 0x28)
+        {
+            is_slight_spin = 0;
+        }
+
+        // if(rxdata_u3[0] == 0x99 && rxdata_u3[1] == 0x99 && rxdata_u3[2] == 0x99 && rxdata_u3[3] == 0x99)
         // {
-        //     motor_state = 1;
         //     is_slight_move = 1;
         // }
 
-        // motor_state = 1;
-        // is_slight_move = 1;
-        // x_move_position = 0;
-        // y_move_position = 0;
-        // if(rxdata_u3[1] != 0x00 || rxdata_u3[3] != 0x00)
-        // {
-        //     printf("t0.txt=\"%d,%d,%d,%d\"\xff\xff\xff", rxdata_u3[0],rxdata_u3[1],rxdata_u3[2],rxdata_u3[3]);
-        // }
         
-
+        // 进行位置微调
         if(is_slight_move == 1)  
         {
             //将原始的偏差数据转换为实际的移动方向
@@ -410,8 +426,8 @@ void UART_receive_process_3(void)
                 y_move_position = - (float) rxdata_u3[3];
                 // y_move_position = -10;
             }
-            x_move_position *= 0.08;
-            y_move_position *= 0.08;
+            x_move_position *= 0.1;
+            y_move_position *= 0.1;
             if(x_move_position > 5)
             {
                 x_move_position = 5;
@@ -428,39 +444,31 @@ void UART_receive_process_3(void)
             {
                 y_move_position = -5;
             }
+            if(x_move_position < 0.5 && x_move_position >0)
+            {
+                x_move_position = 0.5;
+            }
+            if(y_move_position < 0.5 && y_move_position >0)
+            {
+                y_move_position = 0.5;
+            }
+            if(x_move_position > -0.5 && x_move_position <0)
+            {
+                x_move_position = -0.5;
+            }
+            if(y_move_position > -0.5 && y_move_position <0)
+            {
+                y_move_position = -0.5;
+            }
 
-            uint8_t temp_move [20];
-            sprintf(temp_move,"%.2f,%.2f\n",x_move_position,y_move_position);
-            HAL_UART_Transmit(&huart3, (uint8_t*)temp_move, strlen(temp_move), 50);
-            
-            // 将移动方向的数据用HAL_UART_Transmit发送
-            // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, strlen(rxdata_u3), 50);
+
             
             
-            // if(rxdata_u3[0] == 0x03  ) //x正y正
-            // {
-            //     x_move_position = 1;
-            //     y_move_position = 1;
-            //     // HAL_UART_Transmit(&huart3, (uint8_t*)"right front", strlen("right front"), 50);
-            // }
-            // else if(rxdata_u3[0] == 0x04 ) //x负y正
-            // {
-            //     x_move_position = -1;
-            //     y_move_position = 1;
-            // }
-            // else if(rxdata_u3[0] == 0x02) //x负y负
-            // {
-            //     x_move_position = -1;
-            //     y_move_position = -1;
-            // }
-            // else if(rxdata_u3[0] == 0x01 ) //x正y负
-            // {
-            //     x_move_position = 1;
-            //     y_move_position = -1;
-            // }
         }
 
-        if(rxdata_u3[0] == 0x17 ) // 停止移动
+
+
+        if( rxdata_u3[0] == 0x17 && rxdata_u3[1] == 0x17 && rxdata_u3[2] == 0x17) // !停止移动
         {
             // is_slight_move = 0;
             HAL_UART_Transmit(&huart3, (uint8_t*)"stop", strlen("stop"), 50);
@@ -471,9 +479,9 @@ void UART_receive_process_3(void)
  
         }
 
-        if(rxdata_u3[0] == 0x18 )  //结束微调
+        if(rxdata_u3[0] == 0x18 && rxdata_u3[1] == 0x18 && rxdata_u3[2] == 0x18)  //结束微调
         {
-            motor_state = 0;
+            // motor_state = 0;
             is_slight_move = 0;
             test_slight_move = 0;
             x_move_position = 0;
@@ -481,86 +489,7 @@ void UART_receive_process_3(void)
 
         }
 
-        // error_x = (int) rxdata_u3[0];
-        // if(rxdata_u3[1] == 0x01)
-        // {
-        //     error_x = error_x;
-        // }
-        // else if(rxdata_u3[1] == 0x02)
-        // {
-        //     error_x = -error_x;
-        // }
-        // error_y = (int) rxdata_u3[2];
-        // if(rxdata_u3[3] == 0x01)
-        // {
-        //     error_y = error_y;
-        // }
-        // else if(rxdata_u3[3] == 0x02)
-        // {
-        //     error_y = -error_y;
-        // }
 
-        // // 位置误差累加
-        // error_x_sum += error_x;
-        // error_y_sum += error_y;
-
-
-        // 用位置式PID计算出了x_move_position和y_move_position
-        // position_pid(); 
-
-
-        // 不用位置式PID则取消注释
-        // x_move_position = error_x;
-        // y_move_position = error_y;
-
-
-        // // PID 参数更新
-        // error_last_x = error_x;
-        // error_last_y = error_y;
-        // error_pre_x = error_last_x;
-        // error_pre_y = error_last_y;
-        
-
-        
-        // 发送的数据为（十六进制）010205 则为右前，x=2，y=5 030508 则为左前，x=-5，y=8 
-        // float move_c = 0.1; // 移动系数
-        // float move_once = 0.5;
-
-        
-        // if(rxdata_u3[0] == 0x01 )//右前
-        // {
-        //     // x_move_position = move_c * (float)rxdata_u3[1];
-        //     // y_move_position = move_c * (float)rxdata_u3[2];
-        //     x_move_position = move_once;
-        //     y_move_position = move_once;
-
-        // }
-        // else if(rxdata_u3[0] == 0x02)//左前
-        // {
-        //     // x_move_position = - move_c * (float)rxdata_u3[1] ;
-        //     // y_move_position =  move_c * (float)rxdata_u3[2];
-        //     x_move_position = -move_once;
-        //     y_move_position = move_once;
-        // }
-        // else if(rxdata_u3[0] == 0x03)//左后
-        // {
-        //     // x_move_position = - move_c * (float)rxdata_u3[1];
-        //     // y_move_position = - move_c * (float)rxdata_u3[2];
-        //     x_move_position = -move_once;
-        //     y_move_position = -move_once;
-        // }
-        // else if(rxdata_u3[0] == 0x04)//右后
-        // {
-        //     // x_move_position = move_c *  (float)rxdata_u3[1];
-        //     // y_move_position = - move_c * (float)rxdata_u3[2];
-        //     x_move_position = move_once;
-        //     y_move_position = -move_once;
-        // }
-        
-        
-    
-
-        
 
         rxflag_u3 = 0;
         memset(rxdata_u3, 0, 50);
@@ -690,6 +619,7 @@ void UART_receive_process_4(void)
             uint16_t temp = (uint16_t)((rxdata_u4[i+7] << 8 )| rxdata_u4[i+6]);
             gyro_z = (float)(temp * 180.0/32768.0); // / 32768.0
         }
+        printf("t0.txt=\"%.3f\"\xff\xff\xff", gyro_z);
         rxflag_u4 = 0;
         memset(rxdata_u4, 0, 50);
     }

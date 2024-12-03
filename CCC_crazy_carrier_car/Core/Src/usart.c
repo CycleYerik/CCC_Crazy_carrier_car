@@ -146,6 +146,10 @@ void MX_USART2_UART_Init(void)
 }
 /* USART3 init function */
 
+
+
+
+
 void MX_USART3_UART_Init(void)
 {
 

@@ -5,9 +5,10 @@
 
 
 #define pi 3.1415926
-#define wheel_circumference 31.4 //轮子周长
+#define wheel_circumference 31.2 //轮子周长
 #define pulse_per_circle 3200 //每圈脉冲数
 #define spin_radius 22 //自转半径，数据不准确
+#define speed_ratio 0.47 //速度比例系数，0.47 cm/s 对应速度为1
 
 // 0.523 cm/s 对应速度为1
 
@@ -45,7 +46,7 @@ typedef enum {
 
 extern float x_velocity, y_velocity; // x、y轴速度
 uint32_t get_clk(float distance);
-uint32_t get_distance_time(float distance, float velocity);
+int get_distance_time(float distance, float velocity);
 void position_pid(void);
 void PID_vel_Control(uint8_t addr,uint8_t acc, float target_vel);
 int PID_motor_control(float x_bias, float y_bias);
@@ -54,8 +55,9 @@ void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_veloc
 void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length);
 void move_all_direction_position_tim(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int times_count);
 void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count);
-void test_move();
-void stop();
+void spin_all_direction_tim(uint8_t acc, int spin_direction, int times_count);
+void test_move(void);
+void stop(void);
 void stop_tim(int times_count);
 void Forward_move_velocity(uint16_t vel,uint8_t acc);
 void Forward_move( uint16_t vel,uint8_t acc, uint32_t distance);

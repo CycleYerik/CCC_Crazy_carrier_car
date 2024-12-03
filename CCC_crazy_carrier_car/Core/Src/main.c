@@ -67,13 +67,19 @@ extern float x_velocity, y_velocity; // x、y轴速度
 extern float acceleration; // 加速度
 extern float x_move_position, y_move_position; // x、y
 extern int is_motor_start_move; 
-extern int is_slight_move,motor_state;
+extern int is_slight_move,motor_state,is_slight_spin;
 
 float x_error = 0, y_error = 0; // x、y轴误差
 float gyro_z = 90;
 
-int is_start_get_plate = 0; // 开始从转盘抓
-int get_plate = 0; // 1 2 3 
+int open_loop_move_velocity = 100;
+
+int target_colour[6] = {0}; // 目标颜色
+
+int is_get_qrcode_target = 0;
+int volatile is_start_get_plate = 0; // 开始从转盘抓
+int volatile get_plate = 0; // 1 2 3 
+int get_plate_count = 0;
 
 extern volatile int test_slight_move; // 用于判断微调是否完成
 
@@ -147,8 +153,8 @@ int main(void)
  
     HAL_UART_Receive_IT(&huart3, &received_rxdata_u3, 1); // 使能串口3接收中断
     // HAL_UART_Receive_IT(&huart1, &received_rxdata_u1, 1); // 使能串口1接收中断
-    // HAL_UART_Receive_IT(&huart4, &received_rxdata_u4, 1); // 使能串口4接收中断
-    // HAL_UART_Receive_IT(&huart5, &received_rxdata_u5, 1); // 使能串口5接收中断
+    HAL_UART_Receive_IT(&huart4, &received_rxdata_u4, 1); // 使能串口4接收中断
+    HAL_UART_Receive_IT(&huart5, &received_rxdata_u5, 1); // 使能串口5接收中断
     // HAL_UART_Receive_IT(&huart2, &received_rxdata_u2, 1); // 使能串口2接收中断
 
 
@@ -159,75 +165,241 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2); // 开启TIM1通道2 PWM输出
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 开启TIM1通道3 PWM输出
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // 开启TIM1通道4 PWM输出  
-    
-
-    /*********************************实际功能的初始化*************************************/
-
     my_servo_init(); //精密电机初始化，使用精密电机则必须加入
-    
 
-    HAL_Delay(4000); //! 等待电机初始化完成
+
+    /*******************************实际功能的初始化******************************************/
+
+
+    // 机械臂初始位置设定
+    // whole_arm_spin(3890); //! 待修改，目前不正
+    arm_shrink();
+    put_claw_up_top();
+    claw_spin_front();
+    open_claw();
+    HAL_Delay(4000); // 等待电机初始化完成
+
+     /*********************************测试区域*************************************/
+
+
+
+
+    while(1)
+    {
+        spin_right(open_loop_move_velocity,acceleration, 90);
+        HAL_Delay(4000);
+        spin_left(open_loop_move_velocity,acceleration, 90);
+        HAL_Delay(4000);
+    }
+    move_all_direction_position(acceleration, open_loop_move_velocity, -15, 0);
+    HAL_Delay(1200);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 145);
+    HAL_Delay(3500);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
+
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
+
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,45); // 右移40cm
+    HAL_Delay(2000);
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
+
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 168);
+    HAL_Delay(4000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
+
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,82); // 右移40cm
+    HAL_Delay(2500);
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2000);
+
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 75);
+    HAL_Delay(2500);
+    spin_left(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
+
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 85);
+    HAL_Delay(3000);
+
+    move_all_direction_position(acceleration, open_loop_move_velocity, 32, 0);
+    HAL_Delay(3000);
+
+    // 回到了转盘
+
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0,45); // 右移40cm
+    // HAL_Delay(2000);
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 168);
+    // HAL_Delay(4000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
+
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0,75); // 右移40cm
+    // HAL_Delay(2500);
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2000);
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 75);
+    // HAL_Delay(2500);
+    // spin_left(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 93);
+    // HAL_Delay(2500);
+
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0,182); // 回到起点
+    // HAL_Delay(4000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, -20, 0);
+
+    while(1)
+    {
+        HAL_Delay(10);
+    }
+    //! 调试到此为止，不会进入下面的主程序流程代码
 
     /**************************************以下为主程序流程代码********************************************/
 
-    /*-------------------小车离开起点-----------------------*/
+    /*-------------------小车离开起点并前往转盘-----------------------*/
 
-    is_slight_move = 1; //! 使能轻微移动
+    // is_slight_move = 1; //! 使能轻微移动
+
+    move_all_direction_position(acceleration, 60, -23, 0);
+    HAL_Delay(1200);
+    move_all_direction_position(acceleration, 60, 0, 145);
+    HAL_Delay(5200);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
+
+    //! 显示在串口屏上，目前未加入
+
+    spin_right(60,acceleration, 90);
+    HAL_Delay(3000);
+
+    is_start_get_plate = 1; // 开始从转盘抓取
+
+    //! 发给树莓派，
+
+    while(get_plate_count < 3) 
+    {
+        if(get_plate == 1)  //! 此处会不会一次识别发送了好几个，导致重复抓取同一个位置？
+        {
+            get_and_load(1);
+            get_plate_count++;
+            get_plate = 0;
+        }
+        else if(get_plate == 2)
+        {
+            get_and_load(2);
+            get_plate_count++;
+            get_plate = 0;
+        }
+        else if (get_plate == 3)
+        {
+            get_and_load(3);
+            get_plate_count++;
+            get_plate = 0;
+        }
+        HAL_Delay(10);
+    }
+    get_plate_count = 0;
+    is_start_get_plate = 0;
+
+    /*------------------前往粗加工区------------------------*/
+
+    spin_right(60,acceleration, 90);
+    HAL_Delay(3000);
+    move_all_direction_position(acceleration, 60, 30,0); //!!!!!!待测量
+    HAL_Delay(3000);//!!!!!!待测量
+    move_all_direction_position(acceleration, 60, 0, 200); //!!!!!!待测量
+    HAL_Delay(8000);//!!!!!!待测量
+    move_all_direction_position(acceleration, 60, -30, 0); //!!!!!!待测量
+    HAL_Delay(3000);//!!!!!!待测量
+
+    //! 此处还要加入根据所识别到的顺序，移动到对应的位置
+
+    put_claw_up(); // 放低，识别色环
 
 
-    // spin_right(80,acceleration, 90);
+    /*------------------识别色环移动并放置------------------------*/
+
+    // 先校正车身位置
+    is_slight_spin = 1; // 使能轻微移动
+
+    //! 发给树莓派，开始校正直线
+
+    while(is_slight_spin != 0)
+    {
+        HAL_Delay(10);
+    }
+    HAL_Delay(1000);
+    is_slight_move = 1;
+
+    while(is_slight_move != 0)
+    {
+        HAL_Delay(10);
+    }
+    HAL_Delay(1000);
+    stop();
+    get_from_state(target_colour[0]); // 从转盘取色环
+    put_from_state();
+
+    
+
+    //move_all_direction_position(acceleration, 60, 0, -200); //!!!!!!待测量
+    //HAL_Delay(3000);//!!!!!!待测量
+
+
+    is_slight_move = 1;
+    while(is_slight_move != 0)
+    {
+        HAL_Delay(10);
+    }
+    HAL_Delay(1000);
+    stop();
+    get_from_state(target_colour[1]); // 从转盘取色环
+    put_from_state();
+
+    //move_all_direction_position(acceleration, 60, 0, -200); //!!!!!!待测量
+    //HAL_Delay(3000);//!!!!!!待测量
+
+
+    is_slight_move = 1;
+    while(is_slight_move != 0)
+    {
+        HAL_Delay(10);
+    }
+    HAL_Delay(1000);
+    stop();
+    get_from_state(target_colour[2]); // 从转盘取色环
+    put_from_state();
+
+
+
+
+
+
+
 
 
     
-    /*-----------------------前进到扫码点，扫码并显示在屏幕上------------------------------*/
 
-
-    /*-------------------------测试-----------------------------------*/
-
-
-
-
-
-// get_and_load(1);
-    // HAL_Delay(1000);
-    // get_and_load(2);
-    // HAL_Delay(2000);
-    // get_and_load(3);
-    // HAL_Delay(2000);
-
-// arm_stretch();
-
-
-    // get_from_state(1);
-    // put_from_state();
-    // HAL_Delay(1000);
-    // get_from_state(2);
-    // put_from_state();
-    // HAL_Delay(1000);
-    // get_from_state(3);
-    // put_from_state();
-
-
-
-
-    // claw_spin_state();
 
  
     int test_move_stop = 0;
-    arm_shrink();
-    put_claw_up();
-    claw_spin_front();
-    // claw_spin_state();
-    // state_spin(1);
-    // HAL_Delay(2000);
-    // state_spin(2);
-    // HAL_Delay(2000);
-    // state_spin(3);
-    // HAL_Delay(2000);
-
-
-
-
 
   /* USER CODE END 2 */
 
@@ -238,58 +410,18 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    // move_all_direction_tim(acceleration, 0.5, 0.5, 1); // 向前移动0.5m
-    // HAL_Delay(20); // 等待2s
-    // move_all_direction_tim(acceleration, 0.5, 0.5, 2); // 向前移动0.5m
-    // HAL_Delay(20); // 等待2s
-    // move_all_direction_tim(acceleration, 0.5, 0.5, 3); // 向前移动0.5m
-    // HAL_Delay(20); // 等待2s
-    // move_all_direction_tim(acceleration, 0.5, 0.5, 4); // 向前移动0.5m
-    // HAL_Delay(20); // 等待2s
-    // move_all_direction_tim(acceleration, 0.5, 0.5, 5); // 向前移动0.5m
-    // HAL_Delay(20); // 等待2s
-
-         
-
-        /****************************************以下皆为各种测试******************************************/
-    //state_spin(1);
-    //HAL_Delay(1000);
-    //state_spin(2);
-    //HAL_Delay(1000);
-    //state_spin(3);
-    //HAL_Delay(1000);
-    // open_claw();
-    // HAL_Delay(2000);
-    // close_claw();
-    // HAL_Delay(2000);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2,230 );
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 230);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, 230);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 230);
-    // HAL_Delay(2000);
-
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 125);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 125);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, 125);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 125);
-    // HAL_Delay(2000);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 25);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, 25);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, 25);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, 25);
-    // HAL_Delay(2000);
 
 
+    // //! 
+    // if(is_slight_move == 0 && test_move_stop == 0)
+    // {
+    //     stop();
+    //     get_from_state(1);
+    //     put_from_state();
+    //     test_move_stop = 1;
+    // }
 
-    if(is_slight_move == 0 && test_move_stop == 0)
-    {
-        stop();
-        get_from_state(1);
-        put_from_state();
-        test_move_stop = 1;
-        // 关闭timer3中断
-        HAL_TIM_Base_Stop_IT(&htim3);
-    }
+
     // if(is_start_get_plate == 1)
     // {
     //     if(get_plate == 1)

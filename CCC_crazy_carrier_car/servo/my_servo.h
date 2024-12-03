@@ -25,6 +25,7 @@ void put_claw_down_ground(void);
 void put_claw_down_state(void);
 void put_claw_down(void);
 void put_claw_up(void);
+void put_claw_up_top(void);
 void claw_spin_front(void);
 void claw_spin_state(void);
 void whole_arm_spin(int position);

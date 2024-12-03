@@ -10,9 +10,9 @@ extern TIM_HandleTypeDef htim4;
 
 // 普通舵机参数范围25-125
 int open_claw_position = 88; 
-int close_claw_position = 74;
-int arm_stretch_position = 25;
-int arm_shrink_position = 25;  // 155则收回撞到
+int close_claw_position = 75;
+int arm_stretch_position = 32;
+int arm_shrink_position = 33;  
 int arm_shrink_all_position = 70;
 int state_spin_position_1 = 25;  //120度对应44.44
 int state_spin_position_2 = 69;
@@ -20,30 +20,25 @@ int state_spin_position_3 = 114; //
 
 
 // 精密舵机参数范围0-4095
-int put_claw_down_state_position = 1750;
-int put_claw_down_position = 2450;  // 3050是从地面抓取
-int put_claw_down_ground_position = 3900;
-int put_claw_up_position = 1100;
-int claw_spin_position_front = 1930;
-int claw_spin_position_state = 260; //300
-int right_arm = 2750;
-int left_arm = 1350;
-int middle_arm = 2150;
+int put_claw_down_state_position = 800;
+int put_claw_down_position = 1400;  // 从转盘上取物料
+int put_claw_down_ground_position = 2950;
+int put_claw_up_top_position = 270;
+int put_claw_up_position =1500;
+int claw_spin_position_front = 1910;
+int claw_spin_position_state = 270; //300
+int right_arm = 3980;
+int left_arm = 3980;
+int middle_arm = 3980; //目前为止不对
 
 
 
-/// @brief 抓取并放置在载物盘上
+/// @brief 抓取并放置在载物盘上,开始时夹爪应提前到位，结束时夹爪在最高位，朝前
 /// @param  
 void get_and_load(int position)
 {
     // 伸长并打开夹爪
     state_spin(position);
-    // arm_stretch();
-    arm_shrink();
-    put_claw_up();
-    // claw_spin_front();
-    // open_claw();
-    HAL_Delay(500);
 
     // 放下夹爪
     put_claw_down();
@@ -54,23 +49,19 @@ void get_and_load(int position)
     HAL_Delay(800);
 
     // 拉起夹爪
-    put_claw_up();
+    put_claw_up_top();
     HAL_Delay(500);
     claw_spin_state();
     HAL_Delay(1200);
-    HAL_Delay(1500);
-
-    // 收回
-    // arm_shrink();
-    // HAL_Delay(1000);
 
     // 放下
     open_claw();
-    HAL_Delay(500);
+    HAL_Delay(800);
 
-    put_claw_up();
+    put_claw_up_top();
     HAL_Delay(300);
     claw_spin_front();
+    HAL_Delay(1000);
     // arm_shrink_all();
 }
 
@@ -79,16 +70,16 @@ void get_and_load(int position)
 void get_from_state(int position)
 {
     state_spin(position);
-    arm_shrink();
+    // arm_shrink();
     open_claw();
-    put_claw_up();
+    put_claw_up_top();
     HAL_Delay(1000);
     claw_spin_state();
     HAL_Delay(1000);
     put_claw_down_state();
     HAL_Delay(800);
     close_claw();
-    put_claw_up();
+    put_claw_up_top();
     HAL_Delay(400);
     claw_spin_front();
     // arm_stretch();
@@ -100,11 +91,12 @@ void get_from_state(int position)
 void put_from_state(void)
 {
     put_claw_down_ground();
-    HAL_Delay(1500);
+    HAL_Delay(2000);
     open_claw();
-    HAL_Delay(800);
-    put_claw_up();
-    HAL_Delay(800);
+    HAL_Delay(1000);
+    put_claw_up_top();
+    HAL_Delay(800); 
+    //!
     // arm_shrink_all();  
 }
 
@@ -137,6 +129,7 @@ void arm_stretch(void)
 {
     __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_stretch_position);
 }
+
 
 /// @brief 机械臂收回到放物料
 /// @param  
@@ -193,6 +186,11 @@ void put_claw_down(void)
 void put_claw_up(void)
 {
     feetech_servo_move(1,put_claw_up_position,4095,50);
+}
+
+void put_claw_up_top(void)
+{
+    feetech_servo_move(1,put_claw_up_top_position,4095,50);
 }
 
 /// @brief 夹爪旋转到朝向前方

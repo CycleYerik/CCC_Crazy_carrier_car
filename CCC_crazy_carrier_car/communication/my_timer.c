@@ -3,14 +3,17 @@
 int tim3_count = 0;
 int tim2_count = 0;
 
+int is_slight_spin = 0; //! 是否进行微调旋转,1为进行微调，在到位后开始微调，将此置为1
 int is_slight_move = 0; //! 是否进行微调,1为进行微调，在到位后开始微调，将此置为1
-int motor_state = 1; // 电机状态，0为默认情况，1为微调情况
+int motor_state = 0; // 电机状态，0为默认情况，1为微调情况
 
 /// @brief 电机是否可以开始移动（当已经接受了移动指令后，到电机移动到位前，该标志位为1）
 int is_motor_start_move = 0; 
 
 /// @brief 电机正在移动时为1，用来在定时器中计算电机移动时间
 int is_motor_moving = 0; 
+
+extern int spin_which_direction;
 
 /// @brief 电机发送指令到了第几步
 int send_motor_message_flag = 0; 
@@ -62,6 +65,42 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (htim->Instance == TIM3) // 10ms
     {
         // tim3_count++;
+        if(is_slight_spin == 1)
+        {
+            if (is_motor_start_move == 1)
+            {
+                if(send_motor_message_flag < 6)
+                {
+                    send_motor_message_flag++;
+                }
+                if(send_motor_message_flag == 1)
+                {
+                    spin_all_direction_tim(acceleration,spin_which_direction,1);
+                }
+                if(send_motor_message_flag == 2)
+                {
+                    spin_all_direction_tim(acceleration,spin_which_direction,2);
+                }
+                if(send_motor_message_flag == 3)
+                {
+                    spin_all_direction_tim(acceleration,spin_which_direction,3);
+                }
+                if(send_motor_message_flag == 4)
+                {
+                    spin_all_direction_tim(acceleration,spin_which_direction,4);
+                }
+                if(send_motor_message_flag == 5)
+                {
+                    spin_all_direction_tim(acceleration,spin_which_direction,5);
+                    is_motor_moving = 1;
+                }
+            }
+            if(is_motor_moving == 1)
+            {
+                is_motor_start_move = 0;
+                is_motor_moving = 0;
+            }
+        }
         if(is_slight_move == 1 && motor_state == 1) // 电机在微调
         {
             if (is_motor_start_move == 1) // 电机可以移动了

@@ -2,6 +2,7 @@
 // 轮子直径10cm，轮子周长31.4cm
 
 
+
 // 速度控制PID
 float pos = 0.0f, Motor_Cur_Pos_1 = 0.0f, Motor_Cur_Pos_2 = 0.0f, Motor_Cur_Pos_3 = 0.0f, Motor_Cur_Pos_4 = 0.0f; // 电机当前实际位置
 float Motor_target_vel_1 = 10, Motor_target_vel_2 = 10, Motor_target_vel_3 = 10, Motor_target_vel_4 = 10; // 电机目标速度(默认为10r/min)
@@ -29,15 +30,21 @@ float x_velocity = 10, y_velocity = 10;
 /// @brief x、y轴移动距离（树莓派发送的偏差值，单位cm）
 float volatile x_move_position = 0, y_move_position = 0; 
 
+/// @brief 旋转方向（0为不旋转，1为逆时针旋转，2为顺时针旋转）
+float volatile spin_which_direction = 0; 
+
 /// @brief 单次位置移动速度（树莓派视觉联调时的移动速度）
 float position_move_velocity = 30; 
+
+/// @brief 旋转速度（树莓派视觉联调时的旋转速度）
+float spin_move_velocity = 5; 
 
 float x_move_time=0; // x轴移动时间,ms
 float y_move_time = 0; // y轴移动时间,ms
 float all_move_time = 0; // 视觉联调时总移动时间(根据所需的移动时间取最大值)
 
 /// @brief  用来测试底盘移动
-void test_move()
+void test_move(void)
 {
     Forward_move(100, 10, 50);
     HAL_Delay(4000);
@@ -97,9 +104,9 @@ uint32_t get_clk(float distance)
 }
 
 /// @brief 根据移动的距离和速度计算需要的时间（ms）
-uint32_t get_distance_time(float distance, float velocity)
+int get_distance_time(float distance, float velocity)
 {
-    return (uint32_t)(distance /wheel_circumference/ velocity * 60* 1000);
+    return (int)(1000* distance /(float)(speed_ratio * velocity ));
 }
 // 速度/60 *周长 = 每秒的距离
 
@@ -287,6 +294,74 @@ void stop_tim(int times_count)
     }
 }
 
+void spin_all_direction_tim(uint8_t acc, int spin_direction, int times_count)
+{
+    if(spin_direction == 1) // 左转
+    {
+        switch(times_count)
+        {
+            case 1:
+                Emm_V5_Vel_Control(1,1,spin_move_velocity, acceleration, 1);
+                break;
+            case 2:
+                Emm_V5_Vel_Control(2,1,spin_move_velocity, acceleration, 1);
+                break;
+            case 3:
+                Emm_V5_Vel_Control(3,1,spin_move_velocity, acceleration, 1);
+                break;
+            case 4:
+                Emm_V5_Vel_Control(4,1,spin_move_velocity, acceleration, 1);
+                break;
+            case 5:
+                {
+                    Emm_V5_Synchronous_motion(0);
+                }
+                break;
+        }
+    }
+    else if(spin_direction == 2)
+    {
+        switch(times_count)
+        {
+            case 1:
+                Emm_V5_Vel_Control(1,0,spin_move_velocity, acceleration, 1);
+                break;
+            case 2:
+                Emm_V5_Vel_Control(2,0,spin_move_velocity, acceleration, 1);
+                break;
+            case 3:
+                Emm_V5_Vel_Control(3,0,spin_move_velocity, acceleration, 1);
+                break;
+            case 4:
+                Emm_V5_Vel_Control(4,0,spin_move_velocity, acceleration, 1);
+                break;
+            case 5:
+                {
+                    Emm_V5_Synchronous_motion(0);
+                }
+                break;
+        }
+    }
+    else if(spin_direction == 0)
+    {
+        switch(times_count)
+        {
+            case 1:
+                Emm_V5_Stop_Now(1,1);
+                break;
+            case 2:
+                Emm_V5_Stop_Now(2,1);
+                break;
+            case 3:
+                Emm_V5_Stop_Now(3,1);
+                break;
+            case 4:
+                Emm_V5_Stop_Now(4,1);
+                break;
+        }
+    }
+}
+
 void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count)
 {
     if(x_vel >= 0 && y_vel >= 0)
@@ -447,7 +522,7 @@ void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count
 
 
 
-/// @brief （带有延时函数）全向位置移动
+/// @brief 全向位置移动,速度1对应0.47cm/s
 /// @param acc 
 /// @param velocity 
 /// @param x_move_length 
@@ -543,9 +618,11 @@ void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_len
         }
     }
     Emm_V5_Synchronous_motion(0);
-    // uint32_t timex = get_distance_time(abs(x_move_length), velocity);
+    HAL_Delay(10);
+    // uint32_t timex =  get_distance_time(abs(x_move_length), velocity);
     // uint32_t timey = get_distance_time(abs(y_move_length), velocity);
     // HAL_Delay(timex > timey ? timex : timey);
+
 }
 
 /// @brief （未实现）全向速度移动，自带PID控制,调用PID_vel_Control函数
@@ -1149,7 +1226,7 @@ void spin_right(uint16_t vel,uint8_t acc, uint32_t angle)
 
 
 /// @brief 整车立即停车
-void stop()
+void stop(void)
 {
     Emm_V5_Stop_Now((uint8_t)1, (bool)0);
     HAL_Delay(10);
