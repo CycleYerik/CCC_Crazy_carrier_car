@@ -37,7 +37,7 @@ float volatile spin_which_direction = 0;
 float position_move_velocity = 30; 
 
 /// @brief 旋转速度（树莓派视觉联调时的旋转速度）
-float spin_move_velocity = 5; 
+float spin_move_velocity = 3; 
 
 float x_move_time=0; // x轴移动时间,ms
 float y_move_time = 0; // y轴移动时间,ms

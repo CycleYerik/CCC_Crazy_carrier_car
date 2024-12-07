@@ -35,17 +35,7 @@ volatile int test_slight_move = 1;
 
 
 
-int fputc(int ch, FILE *f)
-{
-    HAL_UART_Transmit(&huart5, (uint8_t *)&ch, 1, 0xffff);
-    return ch;
-}
-int fgetc(FILE *f)
-{
-    uint8_t ch = 0;
-    HAL_UART_Receive(&huart5, &ch, 1, 0xffff);
-    return ch;
-}
+
 
 /**
 	* @brief   USART1中断函数
@@ -619,7 +609,7 @@ void UART_receive_process_4(void)
             uint16_t temp = (uint16_t)((rxdata_u4[i+7] << 8 )| rxdata_u4[i+6]);
             gyro_z = (float)(temp * 180.0/32768.0); // / 32768.0
         }
-        printf("t0.txt=\"%.3f\"\xff\xff\xff", gyro_z);
+        // printf("t0.txt=\"%.3f\"\xff\xff\xff", gyro_z);
         rxflag_u4 = 0;
         memset(rxdata_u4, 0, 50);
     }

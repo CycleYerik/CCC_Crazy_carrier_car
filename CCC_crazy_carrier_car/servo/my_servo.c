@@ -8,28 +8,30 @@ extern TIM_HandleTypeDef htim4;
 
 /*-------以下数据如果重新装车需要重新调，务必注意！！！！！！！！！！！！-------*/
 
-// 普通舵机参数范围25-125
-int open_claw_position = 88; 
-int close_claw_position = 75;
-int arm_stretch_position = 32;
-int arm_shrink_position = 33;  
-int arm_shrink_all_position = 70;
+// 夹爪PD13  载物盘PD14 机械臂PD12
+
+// 普通舵机参数范围25-125  270
+int open_claw_position = 118; 
+int close_claw_position = 107;
+int arm_stretch_position = 39;
+int arm_shrink_position = 75;   
+int arm_shrink_all_position = 75;
 int state_spin_position_1 = 25;  //120度对应44.44
 int state_spin_position_2 = 69;
 int state_spin_position_3 = 114; //
 
 
 // 精密舵机参数范围0-4095
-int put_claw_down_state_position = 800;
-int put_claw_down_position = 1400;  // 从转盘上取物料
-int put_claw_down_ground_position = 2950;
-int put_claw_up_top_position = 270;
-int put_claw_up_position =1500;
-int claw_spin_position_front = 1910;
-int claw_spin_position_state = 270; //300
-int right_arm = 3980;
-int left_arm = 3980;
-int middle_arm = 3980; //目前为止不对
+int put_claw_down_state_position = 1200 ; //从车的载物盘上
+int put_claw_down_position = 1950;  // 从转盘上取物料
+int put_claw_down_ground_position = 3500; // 放在地上
+int put_claw_up_top_position = 750; // 最高点
+int put_claw_up_position =1000; //  
+int claw_spin_position_front = 1918; // 2号精密舵机回到前方
+int claw_spin_position_state = 221; // 2号精密舵机回到载物盘
+int right_arm = 2935;
+int left_arm = 2935;
+int middle_arm = 2935; //目前为止不对
 
 
 
@@ -207,12 +209,15 @@ void claw_spin_state(void)
     feetech_servo_move(2,claw_spin_position_state,2000,50);
 }
 
-/// @brief 中板旋转（待完善）
+/// @brief 中板旋转,1为中间位置
 /// @param position 
-void whole_arm_spin(int position)
+void whole_arm_spin(int status)
 {
-    // if(position )
-    feetech_servo_move(3,position,500,50);
+    if(status == 1)
+    {
+        feetech_servo_move(3,middle_arm,2000,50);
+    }
+    
 }
 
 

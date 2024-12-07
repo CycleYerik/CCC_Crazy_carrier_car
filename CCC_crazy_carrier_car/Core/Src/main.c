@@ -96,6 +96,17 @@ void SystemClock_Config(void);
 // printf重定向，用于串口屏的显示
 
 
+int fputc(int ch, FILE *f)
+{
+    HAL_UART_Transmit(&huart5, (uint8_t *)&ch, 1, 0xffff);
+    return ch;
+}
+int fgetc(FILE *f)
+{
+    uint8_t ch = 0;
+    HAL_UART_Receive(&huart5, &ch, 1, 0xffff);
+    return ch;
+}
 
 
 /* USER CODE END PFP */
@@ -144,8 +155,6 @@ int main(void)
   MX_UART4_Init();
   /* USER CODE BEGIN 2 */
 
-    /*********测试*********/
-
 
     /*****************各种系统相关外设的初始化（串口、定时器等)***********************/
     
@@ -170,64 +179,87 @@ int main(void)
 
     /*******************************实际功能的初始化******************************************/
 
-
+    HAL_Delay(1000); // 等待电机初始化完成，本该是4000ms
     // 机械臂初始位置设定
-    // whole_arm_spin(3890); //! 待修改，目前不正
-    arm_shrink();
+    whole_arm_spin(1);
+    arm_stretch();
     put_claw_up_top();
     claw_spin_front();
     open_claw();
-    HAL_Delay(4000); // 等待电机初始化完成
 
-     /*********************************测试区域*************************************/
+    /*********************************测试区域开始*************************************/
+
+    // state_spin(1); // 载物盘旋转到1号位置
+    // arm_stretch();
+    // get_and_load(1);
+    // get_and_load(2);
+    // get_and_load(3);
+
+    // get_from_state(1);
+    // put_from_state();
+    // get_from_state(2);
+    // put_from_state();
+    // get_from_state(3);
+    // put_from_state();
 
 
 
 
-    while(1)
-    {
-        spin_right(open_loop_move_velocity,acceleration, 90);
-        HAL_Delay(4000);
-        spin_left(open_loop_move_velocity,acceleration, 90);
-        HAL_Delay(4000);
-    }
-    move_all_direction_position(acceleration, open_loop_move_velocity, -15, 0);
-    HAL_Delay(1200);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 145);
-    HAL_Delay(3500);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
-    spin_right(open_loop_move_velocity,acceleration, 90);
-    HAL_Delay(2200);
+    // while(1)
+    // {
+    //     HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50);
+    //     HAL_Delay(100);
+    // }
 
-    spin_right(open_loop_move_velocity,acceleration, 90);
-    HAL_Delay(2200);
 
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0,45); // 右移40cm
-    HAL_Delay(2000);
-    spin_right(open_loop_move_velocity,acceleration, 90);
-    HAL_Delay(2200);
 
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 168);
-    HAL_Delay(4000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
+    // while(1)
+    // {
+    //     spin_right(open_loop_move_velocity,acceleration, 90);
+    //     HAL_Delay(4000);
+    //     spin_left(open_loop_move_velocity,acceleration, 90);
+    //     HAL_Delay(4000);
+    // }
 
-    spin_right(open_loop_move_velocity,acceleration, 90);
-    HAL_Delay(2200);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0,82); // 右移40cm
-    HAL_Delay(2500);
-    spin_right(open_loop_move_velocity,acceleration, 90);
-    HAL_Delay(2000);
+    
 
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 75);
-    HAL_Delay(2500);
-    spin_left(open_loop_move_velocity,acceleration, 90);
-    HAL_Delay(2200);
+    //实际开始移动
+    // move_all_direction_position(acceleration, open_loop_move_velocity, -15, 0);
+    // HAL_Delay(1200);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 145);
+    // HAL_Delay(3500);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
 
-    spin_right(open_loop_move_velocity,acceleration, 90);
-    HAL_Delay(2200);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 85);
-    HAL_Delay(3000);
+    // //从转盘前往粗加工区
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0,45); 
+    // HAL_Delay(2000);
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 168);
+    // HAL_Delay(4000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
 
-    move_all_direction_position(acceleration, open_loop_move_velocity, 32, 0);
-    HAL_Delay(3000);
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0,82); // 右移40cm
+    // HAL_Delay(2500);
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2000);
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 75);
+    // HAL_Delay(2500);
+    // spin_left(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+
+    // spin_right(open_loop_move_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 85);
+    // HAL_Delay(3000);
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 32, 0);
+    // HAL_Delay(3000);
 
     // 回到了转盘
 
@@ -267,35 +299,50 @@ int main(void)
 
     // move_all_direction_position(acceleration, open_loop_move_velocity, -20, 0);
 
-    while(1)
-    {
-        HAL_Delay(10);
-    }
+    // while(1)
+    // {
+    //     HAL_Delay(10);
+    // }
+    /*********************************测试区域结束*************************************/
     //! 调试到此为止，不会进入下面的主程序流程代码
+
+
+
 
     /**************************************以下为主程序流程代码********************************************/
 
     /*-------------------小车离开起点并前往转盘-----------------------*/
 
     // is_slight_move = 1; //! 使能轻微移动
+    printf("t0.txt=\"start\"\xff\xff\xff"); // 开始
+    HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50); // 开始识别二维码
 
-    move_all_direction_position(acceleration, 60, -23, 0);
+    move_all_direction_position(acceleration, open_loop_move_velocity, -15, 0);
     HAL_Delay(1200);
-    move_all_direction_position(acceleration, 60, 0, 145);
-    HAL_Delay(5200);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 145);
+    HAL_Delay(8000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)  3500
 
-    //! 显示在串口屏上，目前未加入
+    // 将target_colour转为字符串显示在串口屏上
+    char target_colour_str[6] = {0};
+    for(int i = 0; i < 6; i++)
+    {
+        target_colour_str[i] = target_colour[i] + '0';
+    }
+    printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); // 将目标颜色显示在串口屏上
+    HAL_Delay(2000);
 
-    spin_right(60,acceleration, 90);
-    HAL_Delay(3000);
+
+
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
 
     is_start_get_plate = 1; // 开始从转盘抓取
 
-    //! 发给树莓派，
+    HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); // 开始识别颜色并抓取
 
     while(get_plate_count < 3) 
     {
-        if(get_plate == 1)  //! 此处会不会一次识别发送了好几个，导致重复抓取同一个位置？
+        if(get_plate == 1)  //此处会不会一次识别发送了好几个，导致重复抓取同一个位置？
         {
             get_and_load(1);
             get_plate_count++;
@@ -318,16 +365,22 @@ int main(void)
     get_plate_count = 0;
     is_start_get_plate = 0;
 
+    while(1) //!!!!!!!!!!!!!!!!!!!!!!!! 停止
+    {
+        HAL_Delay(10);
+    }        //!!!!!!!!!!!!!!!!!!!!!!!! 停止
+
     /*------------------前往粗加工区------------------------*/
 
-    spin_right(60,acceleration, 90);
-    HAL_Delay(3000);
-    move_all_direction_position(acceleration, 60, 30,0); //!!!!!!待测量
-    HAL_Delay(3000);//!!!!!!待测量
-    move_all_direction_position(acceleration, 60, 0, 200); //!!!!!!待测量
-    HAL_Delay(8000);//!!!!!!待测量
-    move_all_direction_position(acceleration, 60, -30, 0); //!!!!!!待测量
-    HAL_Delay(3000);//!!!!!!待测量
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,45); 
+    HAL_Delay(2000);
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 168);
+    HAL_Delay(4000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
+
 
     //! 此处还要加入根据所识别到的顺序，移动到对应的位置
 
