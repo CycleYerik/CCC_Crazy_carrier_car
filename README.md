@@ -117,7 +117,9 @@ Collaborators:[CY](https://github.com/CycleYerik)
 - 重新设计了PCB板
 - 引入了z轴陀螺仪
 
-
+2024.12.5
+- 完成了比赛流程的可行性验证，实现了所有要求的功能，但性能指标还有没达到的
+- 
 
 
 

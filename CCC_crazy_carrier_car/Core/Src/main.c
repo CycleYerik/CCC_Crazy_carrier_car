@@ -26,6 +26,7 @@
 /* USER CODE BEGIN Includes */
 
 /*************************************自己的头文件引用区****************************************/
+#include <stdlib.h>
 #include "motor.h"
 #include "uart_screen.h"
 #include "my_usart.h"
@@ -61,8 +62,8 @@
 extern uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128],rxdata_u4[50],rxdata_u5[50]; // usart2,3接收缓冲区
 extern uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1,received_rxdata_u5,received_rxdata_u4; // 暂存usart2,3接收到的数据单字节变量
 extern uchar rxflag_u2,rxflag_u3,rxflag_u1,rxflag_u4,rxflag_u5; // usart2,3接收标志位变量
-extern float Motor_Cur_Pos_1, Motor_Cur_Pos_2, Motor_Cur_Pos_3, Motor_Cur_Pos_4; // 电机当前位置
-extern float  Motor_Vel_1, Motor_Vel_2, Motor_Vel_3, Motor_Vel_4; // 电机当前速度
+// extern float Motor_Cur_Pos_1, Motor_Cur_Pos_2, Motor_Cur_Pos_3, Motor_Cur_Pos_4; // 电机当前位置
+// extern float  Motor_Vel_1, Motor_Vel_2, Motor_Vel_3, Motor_Vel_4; // 电机当前速度
 extern float x_velocity, y_velocity; // x、y轴速度
 extern float acceleration; // 加速度
 extern float x_move_position, y_move_position; // x、y
@@ -72,9 +73,9 @@ extern int is_slight_move,motor_state,is_slight_spin;
 float x_error = 0, y_error = 0; // x、y轴误差
 float gyro_z = 90;
 
-int open_loop_move_velocity = 100;
+int open_loop_move_velocity = 80;
 
-int target_colour[6] = {0}; // 目标颜色
+volatile int target_colour[6] = {0}; // 目标颜色
 
 int is_get_qrcode_target = 0;
 int volatile is_start_get_plate = 0; // 开始从转盘抓
@@ -82,6 +83,7 @@ int volatile get_plate = 0; // 1 2 3
 int get_plate_count = 0;
 
 extern volatile int test_slight_move; // 用于判断微调是否完成
+extern int spin_which_direction;
 
 
 /* USER CODE END PV */
@@ -179,11 +181,11 @@ int main(void)
 
     /*******************************实际功能的初始化******************************************/
 
-    HAL_Delay(1000); // 等待电机初始化完成，本该是4000ms
+    HAL_Delay(4000); // 等待电机初始化完成，本该是4000ms
     // 机械臂初始位置设定
     whole_arm_spin(1);
     arm_stretch();
-    put_claw_up_top();
+    put_claw_up();
     claw_spin_front();
     open_claw();
 
@@ -317,20 +319,25 @@ int main(void)
     printf("t0.txt=\"start\"\xff\xff\xff"); // 开始
     HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50); // 开始识别二维码
 
-    move_all_direction_position(acceleration, open_loop_move_velocity, -15, 0);
-    HAL_Delay(1200);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 145);
-    HAL_Delay(8000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)  3500
+    move_all_direction_position(acceleration, open_loop_move_velocity, -23 , 0);
+    HAL_Delay(1500);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 55);
+    HAL_Delay(3500);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)  3500
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 90);
+    HAL_Delay(3000);
 
     // 将target_colour转为字符串显示在串口屏上
-    char target_colour_str[6] = {0};
-    for(int i = 0; i < 6; i++)
-    {
-        target_colour_str[i] = target_colour[i] + '0';
-    }
+    char* target_colour_str = (char*)malloc(6);
+    sprintf(target_colour_str, "%d %d %d %d %d %d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]);
     printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); // 将目标颜色显示在串口屏上
-    HAL_Delay(2000);
+    free(target_colour_str);
+    
+		HAL_Delay(2000);
 
+    // while(1) //!!!!!!!!!!!!!!!!!!!!!!!! 停止
+    // {
+    //     HAL_Delay(10);
+    // }        //!!!!!!!!!!!!!!!!!!!!!!!! 停止
 
 
     spin_right(open_loop_move_velocity,acceleration, 90);
@@ -365,55 +372,69 @@ int main(void)
     get_plate_count = 0;
     is_start_get_plate = 0;
 
-    while(1) //!!!!!!!!!!!!!!!!!!!!!!!! 停止
-    {
-        HAL_Delay(10);
-    }        //!!!!!!!!!!!!!!!!!!!!!!!! 停止
+    // while(1) //!!!!!!!!!!!!!!!!!!!!!!!! 停止
+    // {
+    //     HAL_Delay(10);
+    // }        //!!!!!!!!!!!!!!!!!!!!!!!! 停止
 
     /*------------------前往粗加工区------------------------*/
 
-    spin_right(open_loop_move_velocity,acceleration, 90);
+    spin_right(open_loop_move_velocity,acceleration, 88);
     HAL_Delay(2200);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,45); 
     HAL_Delay(2000);
-    spin_right(open_loop_move_velocity,acceleration, 90);
+    spin_right(open_loop_move_velocity,acceleration, 88);
     HAL_Delay(2200);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 168);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 160);
     HAL_Delay(4000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
 
+    // 左蓝中绿右红， 1红2绿3蓝
 
     //! 此处还要加入根据所识别到的顺序，移动到对应的位置
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 15,0);
+    // HAL_Delay(2000);
+    
 
-    put_claw_up(); // 放低，识别色环
+    //put_claw_up(); // 放低，识别色环
 
 
     /*------------------识别色环移动并放置------------------------*/
 
     // 先校正车身位置
+    HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50);
+    HAL_Delay(2000);
+
     is_slight_spin = 1; // 使能轻微移动
 
-    //! 发给树莓派，开始校正直线
+    // //! 发给树莓派，开始校正直线
 
     while(is_slight_spin != 0)
     {
-        HAL_Delay(10);
+        HAL_Delay(500);
+        printf("t0.txt=\"%d\"\xff\xff\xff",spin_which_direction); //
     }
+    printf("t0.txt=\"end_of_line\"\xff\xff\xff"); //
     HAL_Delay(1000);
     is_slight_move = 1;
+    motor_state = 1;
 
     while(is_slight_move != 0)
     {
         HAL_Delay(10);
     }
-    HAL_Delay(1000);
+    // HAL_Delay(1000);
+    printf("t0.txt=\"1\"\xff\xff\xff"); //
     stop();
-    get_from_state(target_colour[0]); // 从转盘取色环
+    // get_from_state(target_colour[0]); // 从转盘取色环
+    get_from_state(2); // 从转盘取色环
+
+
     put_from_state();
 
     
 
-    //move_all_direction_position(acceleration, 60, 0, -200); //!!!!!!待测量
-    //HAL_Delay(3000);//!!!!!!待测量
+    move_all_direction_position(acceleration, open_loop_move_velocity, -15,0);
+    HAL_Delay(2000);
 
 
     is_slight_move = 1;
@@ -421,13 +442,15 @@ int main(void)
     {
         HAL_Delay(10);
     }
-    HAL_Delay(1000);
+    // HAL_Delay(1000);
     stop();
-    get_from_state(target_colour[1]); // 从转盘取色环
+    // get_from_state(target_colour[1]); // 从转盘取色环
+    get_from_state(3);
     put_from_state();
+    printf("t0.txt=\"end_of_circle2\"\xff\xff\xff"); //
 
-    //move_all_direction_position(acceleration, 60, 0, -200); //!!!!!!待测量
-    //HAL_Delay(3000);//!!!!!!待测量
+    move_all_direction_position(acceleration, open_loop_move_velocity, 30,0);
+    HAL_Delay(2000);
 
 
     is_slight_move = 1;
@@ -435,11 +458,15 @@ int main(void)
     {
         HAL_Delay(10);
     }
-    HAL_Delay(1000);
+    // HAL_Delay(1000);/
     stop();
-    get_from_state(target_colour[2]); // 从转盘取色环
+    // get_from_state(target_colour[2]); // 从转盘取色环
+    get_from_state(1);
     put_from_state();
+    printf("t0.txt=\"end_of_circle3\"\xff\xff\xff"); //
 
+
+    
 
 
 
@@ -451,8 +478,6 @@ int main(void)
     
 
 
- 
-    int test_move_stop = 0;
 
   /* USER CODE END 2 */
 
@@ -464,35 +489,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-
-    // //! 
-    // if(is_slight_move == 0 && test_move_stop == 0)
-    // {
-    //     stop();
-    //     get_from_state(1);
-    //     put_from_state();
-    //     test_move_stop = 1;
-    // }
-
-
-    // if(is_start_get_plate == 1)
-    // {
-    //     if(get_plate == 1)
-    //     {
-    //         get_and_load(1);
-    //     }
-    //     else if(get_plate == 2)
-    //     {
-    //         get_and_load(2);
-    //     }
-    //     else if (get_plate == 3)
-    //     {
-    //         get_and_load(3);
-    //     }
-    //     is_start_get_plate = 0;
-    //     get_plate = 0;
-
-    // }
+    HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50);
     HAL_Delay(10);
 
 
@@ -547,6 +544,8 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+// void move_follow_
 
 
 

@@ -13,7 +13,7 @@ int is_motor_start_move = 0;
 /// @brief 电机正在移动时为1，用来在定时器中计算电机移动时间
 int is_motor_moving = 0; 
 
-extern int spin_which_direction;
+extern float volatile spin_which_direction;
 
 /// @brief 电机发送指令到了第几步
 int send_motor_message_flag = 0; 
@@ -99,6 +99,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             {
                 is_motor_start_move = 0;
                 is_motor_moving = 0;
+                send_motor_message_flag = 0;
             }
         }
         if(is_slight_move == 1 && motor_state == 1) // 电机在微调

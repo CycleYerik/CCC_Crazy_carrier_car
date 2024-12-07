@@ -93,8 +93,8 @@
       <flags>2</flags>
       <showCmd>3</showCmd>
       <MinPosition>
-        <xPos>-32000</xPos>
-        <yPos>-32000</yPos>
+        <xPos>-1</xPos>
+        <yPos>-1</yPos>
       </MinPosition>
       <MaxPosition>
         <xPos>-1</xPos>
@@ -1865,9 +1865,9 @@
       <ActiveTab>0</ActiveTab>
       <Doc>
         <Name>../Core/Src/main.c</Name>
-        <ColumnNumber>0</ColumnNumber>
-        <TopLine>312</TopLine>
-        <CurrentLine>337</CurrentLine>
+        <ColumnNumber>67</ColumnNumber>
+        <TopLine>372</TopLine>
+        <CurrentLine>388</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>
@@ -1892,9 +1892,9 @@
       </Doc>
       <Doc>
         <Name>../Core/Src/stm32f4xx_it.c</Name>
-        <ColumnNumber>0</ColumnNumber>
-        <TopLine>210</TopLine>
-        <CurrentLine>211</CurrentLine>
+        <ColumnNumber>22</ColumnNumber>
+        <TopLine>143</TopLine>
+        <CurrentLine>152</CurrentLine>
         <Folding>1</Folding>
         <ContractedFolders></ContractedFolders>
         <PaneID>0</PaneID>

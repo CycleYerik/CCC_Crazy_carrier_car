@@ -37,7 +37,7 @@ float volatile spin_which_direction = 0;
 float position_move_velocity = 30; 
 
 /// @brief 旋转速度（树莓派视觉联调时的旋转速度）
-float spin_move_velocity = 3; 
+float spin_move_velocity = 8; 
 
 float x_move_time=0; // x轴移动时间,ms
 float y_move_time = 0; // y轴移动时间,ms
@@ -294,23 +294,23 @@ void stop_tim(int times_count)
     }
 }
 
-void spin_all_direction_tim(uint8_t acc, int spin_direction, int times_count)
+void spin_all_direction_tim(uint8_t acc, float spin_direction, int times_count)
 {
-    if(spin_direction == 1) // 左转
+    if(spin_direction >0) // 左转
     {
         switch(times_count)
         {
             case 1:
-                Emm_V5_Vel_Control(1,1,spin_move_velocity, acceleration, 1);
+                Emm_V5_Vel_Control(1,1,spin_direction*0.5, acceleration, 1);
                 break;
             case 2:
-                Emm_V5_Vel_Control(2,1,spin_move_velocity, acceleration, 1);
+                Emm_V5_Vel_Control(2,1,spin_direction*0.5, acceleration, 1);
                 break;
             case 3:
-                Emm_V5_Vel_Control(3,1,spin_move_velocity, acceleration, 1);
+                Emm_V5_Vel_Control(3,1,spin_direction*0.5, acceleration, 1);
                 break;
             case 4:
-                Emm_V5_Vel_Control(4,1,spin_move_velocity, acceleration, 1);
+                Emm_V5_Vel_Control(4,1,spin_direction*0.5, acceleration, 1);
                 break;
             case 5:
                 {
@@ -319,21 +319,21 @@ void spin_all_direction_tim(uint8_t acc, int spin_direction, int times_count)
                 break;
         }
     }
-    else if(spin_direction == 2)
+    else if(spin_direction < 0)
     {
         switch(times_count)
         {
             case 1:
-                Emm_V5_Vel_Control(1,0,spin_move_velocity, acceleration, 1);
+                Emm_V5_Vel_Control(1,0,-spin_direction*0.5, acceleration, 1);
                 break;
             case 2:
-                Emm_V5_Vel_Control(2,0,spin_move_velocity, acceleration, 1);
+                Emm_V5_Vel_Control(2,0,-spin_direction*0.5, acceleration, 1);
                 break;
             case 3:
-                Emm_V5_Vel_Control(3,0,spin_move_velocity, acceleration, 1);
+                Emm_V5_Vel_Control(3,0,-spin_direction*0.5, acceleration, 1);
                 break;
             case 4:
-                Emm_V5_Vel_Control(4,0,spin_move_velocity, acceleration, 1);
+                Emm_V5_Vel_Control(4,0,-spin_direction*0.5, acceleration, 1);
                 break;
             case 5:
                 {

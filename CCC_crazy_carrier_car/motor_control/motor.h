@@ -55,7 +55,7 @@ void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_veloc
 void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length);
 void move_all_direction_position_tim(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int times_count);
 void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count);
-void spin_all_direction_tim(uint8_t acc, int spin_direction, int times_count);
+void spin_all_direction_tim(uint8_t acc, float spin_direction, int times_count);
 void test_move(void);
 void stop(void);
 void stop_tim(int times_count);

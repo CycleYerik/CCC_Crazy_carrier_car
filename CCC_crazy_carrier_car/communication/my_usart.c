@@ -29,7 +29,7 @@ extern float error_x,error_y,error_x_sum,error_y_sum,error_last_x,error_last_y,e
 
 extern int volatile get_plate,is_start_get_plate;
 extern int is_get_qrcode_target;
-extern int target_colour[6];
+extern volatile int target_colour[6];
 
 volatile int test_slight_move = 1;
 
@@ -365,18 +365,38 @@ void UART_receive_process_3(void)
         // 进行直线微调
         if(is_slight_spin == 1)
         {
-            spin_which_direction = (int)rxdata_u3[0];
+            if(rxdata_u3[0] == 0x01)
+            {
+                if((float)rxdata_u3[1] > 10)
+                {
+                    spin_which_direction = 10;
+                }
+                else{
+                    spin_which_direction = (float)rxdata_u3[1];
+                }
+                
+            }
+            else if(rxdata_u3[0] == 0x02)
+            {
+                if((float)rxdata_u3[1] >10)
+                {
+                    spin_which_direction = -10;
+                }
+                else{
+                    spin_which_direction = - (float)rxdata_u3[1];
+                }
+            }
             
         }
 
         // 直线微调停止
-        if( rxdata_u3[0] == 0x27 && rxdata_u3[1] == 0x27 && rxdata_u3[2] == 0x27)
+        if( rxdata_u3[0] == 0x27 )
         {
             spin_which_direction = 0;
         }
 
         // 直线微调结束
-        if( rxdata_u3[0] == 0x28 && rxdata_u3[1] == 0x28 && rxdata_u3[2] == 0x28)
+        if( rxdata_u3[0] == 0x28 )
         {
             is_slight_spin = 0;
         }
@@ -458,10 +478,10 @@ void UART_receive_process_3(void)
 
 
 
-        if( rxdata_u3[0] == 0x17 && rxdata_u3[1] == 0x17 && rxdata_u3[2] == 0x17) // !停止移动
+        if( rxdata_u3[0] == 0x17 ) // !停止移动
         {
             // is_slight_move = 0;
-            HAL_UART_Transmit(&huart3, (uint8_t*)"stop", strlen("stop"), 50);
+            // HAL_UART_Transmit(&huart3, (uint8_t*)"stop", strlen("stop"), 50);
             x_move_position = 0;
             y_move_position = 0;
 
@@ -469,7 +489,7 @@ void UART_receive_process_3(void)
  
         }
 
-        if(rxdata_u3[0] == 0x18 && rxdata_u3[1] == 0x18 && rxdata_u3[2] == 0x18)  //结束微调
+        if(rxdata_u3[0] == 0x18 )  //结束微调
         {
             // motor_state = 0;
             is_slight_move = 0;
