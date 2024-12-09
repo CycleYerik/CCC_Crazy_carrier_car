@@ -6,6 +6,7 @@
 #include "SCServo.h"
 #include "uart.h"
 
+void get_and_load_ground(int position);
 void get_and_load(int position);
 
 

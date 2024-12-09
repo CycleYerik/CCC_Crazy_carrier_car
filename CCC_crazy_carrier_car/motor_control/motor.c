@@ -1,36 +1,33 @@
 #include "motor.h"
-// 轮子直径10cm，轮子周长31.4cm
 
 
 
-// 速度控制PID
-float pos = 0.0f, Motor_Cur_Pos_1 = 0.0f, Motor_Cur_Pos_2 = 0.0f, Motor_Cur_Pos_3 = 0.0f, Motor_Cur_Pos_4 = 0.0f; // 电机当前实际位置
-float Motor_target_vel_1 = 10, Motor_target_vel_2 = 10, Motor_target_vel_3 = 10, Motor_target_vel_4 = 10; // 电机目标速度(默认为10r/min)
-float vel = 0.0f, Motor_Vel_1 = 0.0f, Motor_Vel_2 = 0.0f, Motor_Vel_3 = 0.0f, Motor_Vel_4 = 0.0f; // 电机实际速度
-float vel1_error= 0,vel1_error_last = 0,vel1_error_long_last = 0; // 电机1速度误差
-float vel2_error= 0,vel2_error_last = 0,vel2_error_long_last = 0; // 电机2速度误差
-float vel3_error= 0,vel3_error_last = 0,vel3_error_long_last = 0; // 电机3速度误差
-float vel4_error= 0,vel4_error_last = 0,vel4_error_long_last = 0; // 电机4速度误差
-float KP_vel = 2, KI_vel = 0.1, KD_vel = 0; // 速度控制PID参数
-
-// 位置控制PID
-float KP_y = 1, KI_y = 0.1, KD_y = 0.1; // y轴PID参数
-float KP_x = 1, KI_x = 0.1, KD_x = 0.1; // x轴PID参数
-float error_x = 0, error_last_x = 0, error_pre_x = 0; // x轴PID误差
-float error_y = 0, error_last_y = 0, error_pre_y = 0; // y轴PID误差
-float error_x_sum = 0, error_y_sum = 0; // x、y轴误差和
-float x_bias_limit = 1, y_bias_limit = 1; // x、y偏差限制,单位cm,待根据视觉情况调整
+// 以下数据暂时都不用
+// // 速度控制PID
+// float pos = 0.0f, Motor_Cur_Pos_1 = 0.0f, Motor_Cur_Pos_2 = 0.0f, Motor_Cur_Pos_3 = 0.0f, Motor_Cur_Pos_4 = 0.0f; // 电机当前实际位置
+// float Motor_target_vel_1 = 10, Motor_target_vel_2 = 10, Motor_target_vel_3 = 10, Motor_target_vel_4 = 10; // 电机目标速度(默认为10r/min)
+// float vel = 0.0f, Motor_Vel_1 = 0.0f, Motor_Vel_2 = 0.0f, Motor_Vel_3 = 0.0f, Motor_Vel_4 = 0.0f; // 电机实际速度
+// float vel1_error= 0,vel1_error_last = 0,vel1_error_long_last = 0; // 电机1速度误差
+// float vel2_error= 0,vel2_error_last = 0,vel2_error_long_last = 0; // 电机2速度误差
+// float vel3_error= 0,vel3_error_last = 0,vel3_error_long_last = 0; // 电机3速度误差
+// float vel4_error= 0,vel4_error_last = 0,vel4_error_long_last = 0; // 电机4速度误差
+// float KP_vel = 2, KI_vel = 0.1, KD_vel = 0; // 速度控制PID参数
+// // 位置控制PID
+// float KP_y = 1, KI_y = 0.1, KD_y = 0.1; // y轴PID参数
+// float KP_x = 1, KI_x = 0.1, KD_x = 0.1; // x轴PID参数
+// float error_x = 0, error_last_x = 0, error_pre_x = 0; // x轴PID误差
+// float error_y = 0, error_last_y = 0, error_pre_y = 0; // y轴PID误差
+// float error_x_sum = 0, error_y_sum = 0; // x、y轴误差和
+// float x_bias_limit = 1, y_bias_limit = 1; // x、y偏差限制,单位cm,待根据视觉情况调整
 
 /// 所有运动情况下的加速度
 float acceleration = 50; 
 
-/// @brief x、y轴速度，暂时未用到
-float x_velocity = 10, y_velocity = 10;
 
-/// @brief x、y轴移动距离（树莓派发送的偏差值，单位cm）
+/// @brief x、y轴移动速度（根据树莓派发送的偏差值进行调整）
 float volatile x_move_position = 0, y_move_position = 0; 
 
-/// @brief 旋转方向（0为不旋转，1为逆时针旋转，2为顺时针旋转）
+/// @brief 顺逆时针旋转速度（0为不旋转）
 float volatile spin_which_direction = 0; 
 
 /// @brief 单次位置移动速度（树莓派视觉联调时的移动速度）
@@ -39,61 +36,50 @@ float position_move_velocity = 30;
 /// @brief 旋转速度（树莓派视觉联调时的旋转速度）
 float spin_move_velocity = 8; 
 
+
+// 暂时不用
 float x_move_time=0; // x轴移动时间,ms
 float y_move_time = 0; // y轴移动时间,ms
 float all_move_time = 0; // 视觉联调时总移动时间(根据所需的移动时间取最大值)
 
-/// @brief  用来测试底盘移动
-void test_move(void)
-{
-    Forward_move(100, 10, 50);
-    HAL_Delay(4000);
-}
-
-void position_pid()
-{
-    float output_x_temp  = x_move_position + KP_x * error_x + KI_x * error_x_sum + KD_x * (error_x - error_last_x);
-    float output_y_temp  = y_move_position + KP_y * error_y + KI_y * error_y_sum + KD_y * (error_y - error_last_y);
-    x_move_position = output_x_temp;
-    y_move_position = output_y_temp;
-}
 
 
-/// @brief （暂时废弃）根据树莓派发送的x、y偏差值进行PID位置控制
-/// @param x_bias 圆心到视野中心位置的x偏差，以视野中心为原点，向右为正
-/// @param y_bias 圆心到视野中心位置的y偏差，以视野中心为原点，向上为正
-/// @return 
-int PID_motor_control(float x_bias, float y_bias)
-{
-    if(x_bias < x_bias_limit && y_bias < y_bias_limit)
-    {
-        stop();
-        return 1;
-    }
-    else
-    {
-        //! 加入位置控制
-        // error_x = x_bias;
-        // error_y = y_bias;
 
-        // float P_x = KP_x * error_x;
-        // float I_x = KI_x * (error_x + error_last_x);
-        // float D_x = KD_x * (error_x - error_last_x);
+// /// @brief （废弃）根据树莓派发送的x、y偏差值进行PID位置控制
+// /// @param x_bias 圆心到视野中心位置的x偏差，以视野中心为原点，向右为正
+// /// @param y_bias 圆心到视野中心位置的y偏差，以视野中心为原点，向上为正
+// /// @return 
+// int PID_motor_control(float x_bias, float y_bias)
+// {
+//     if(x_bias < x_bias_limit && y_bias < y_bias_limit)
+//     {
+//         stop();
+//         return 1;
+//     }
+//     else
+//     {
+//         //! 加入位置控制
+//         // error_x = x_bias;
+//         // error_y = y_bias;
 
-        // float P_y = KP_y * error_y;
-        // float I_y = KI_y * (error_y + error_last_y);
-        // float D_y = KD_y * (error_y - error_last_y);
+//         // float P_x = KP_x * error_x;
+//         // float I_x = KI_x * (error_x + error_last_x);
+//         // float D_x = KD_x * (error_x - error_last_x);
 
-        // float output_x = P_x + I_x + D_x;
-        // float output_y = P_y + I_y + D_y;
+//         // float P_y = KP_y * error_y;
+//         // float I_y = KI_y * (error_y + error_last_y);
+//         // float D_y = KD_y * (error_y - error_last_y);
 
-        // move_all_direction(2, output_x, output_y);
+//         // float output_x = P_x + I_x + D_x;
+//         // float output_y = P_y + I_y + D_y;
+
+//         // move_all_direction(2, output_x, output_y);
         
         
 
-        return 0;
-    }
-}
+//         return 0;
+//     }
+// }
 
 /// @brief 根据移动的距离计算需要的脉冲数
 /// @param distance 
@@ -522,7 +508,7 @@ void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count
 
 
 
-/// @brief 全向位置移动,速度1对应0.47cm/s
+/// @brief 全向位置移动,需自己给Delay延时，速度1对应0.47cm/s，delaytime(ms) = length /(0.47cm/s * velocity) *1000 
 /// @param acc 
 /// @param velocity 
 /// @param x_move_length 
@@ -625,149 +611,149 @@ void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_len
 
 }
 
-/// @brief （未实现）全向速度移动，自带PID控制,调用PID_vel_Control函数
-/// @param acc 
-/// @param x_move_velocity 
-/// @param y_move_velocity 
-void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_velocity)
-{
+// /// @brief （未实现）全向速度移动，自带PID控制,调用PID_vel_Control函数
+// /// @param acc 
+// /// @param x_move_velocity 
+// /// @param y_move_velocity 
+// void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_velocity)
+// {
     
     
-    if(x_move_velocity >= 0 && y_move_velocity >= 0)
-    {
-        float delta_vx_vy = x_move_velocity - y_move_velocity;
-        // Emm_V5_Vel_Control(2, 1, (uint8_t)(x_move_velocity + y_move_velocity ), acc, 1);
-        // HAL_Delay(10);
-        // Emm_V5_Vel_Control(3, 0, (uint8_t)(x_move_velocity + y_move_velocity ), acc, 1);
-        // HAL_Delay(10);
+//     if(x_move_velocity >= 0 && y_move_velocity >= 0)
+//     {
+//         float delta_vx_vy = x_move_velocity - y_move_velocity;
+//         // Emm_V5_Vel_Control(2, 1, (uint8_t)(x_move_velocity + y_move_velocity ), acc, 1);
+//         // HAL_Delay(10);
+//         // Emm_V5_Vel_Control(3, 0, (uint8_t)(x_move_velocity + y_move_velocity ), acc, 1);
+//         // HAL_Delay(10);
 
-        PID_vel_Control(2,acc,-(x_move_velocity + y_move_velocity));
-        PID_vel_Control(3,acc,(x_move_velocity + y_move_velocity));
+//         PID_vel_Control(2,acc,-(x_move_velocity + y_move_velocity));
+//         PID_vel_Control(3,acc,(x_move_velocity + y_move_velocity));
 
-        if(delta_vx_vy > 0)
-        {
-            // Emm_V5_Vel_Control(1, 1, (uint8_t)delta_vx_vy, acc, 1);
-            // HAL_Delay(10);
-            // Emm_V5_Vel_Control(4, 0, (uint8_t)delta_vx_vy, acc, 1);
-            // HAL_Delay(10);
-            PID_vel_Control(1,acc,-delta_vx_vy);
-            PID_vel_Control(4,acc,delta_vx_vy);
+//         if(delta_vx_vy > 0)
+//         {
+//             // Emm_V5_Vel_Control(1, 1, (uint8_t)delta_vx_vy, acc, 1);
+//             // HAL_Delay(10);
+//             // Emm_V5_Vel_Control(4, 0, (uint8_t)delta_vx_vy, acc, 1);
+//             // HAL_Delay(10);
+//             PID_vel_Control(1,acc,-delta_vx_vy);
+//             PID_vel_Control(4,acc,delta_vx_vy);
 
-        }
-        else
-        {
-            // Emm_V5_Vel_Control(1, 0, (uint8_t)(-delta_vx_vy), acc, 1);
-            // HAL_Delay(10);
-            // Emm_V5_Vel_Control(4, 1, (uint8_t)(-delta_vx_vy), acc, 1);
-            // HAL_Delay(10);
-            PID_vel_Control(1,acc,delta_vx_vy);
-            PID_vel_Control(4,acc,-delta_vx_vy);
-        }
-    }
-    else if (x_move_velocity > 0 && y_move_velocity < 0)
-    {
-        float delta_vx_vy = x_move_velocity + y_move_velocity;
-        // Emm_V5_Vel_Control(1, 1, (uint8_t)(x_move_velocity - y_move_velocity ), acc, 1);
-        // HAL_Delay(10);
-        // Emm_V5_Vel_Control(4, 0, (uint8_t)(x_move_velocity - y_move_velocity ), acc, 1);
-        // HAL_Delay(10);
+//         }
+//         else
+//         {
+//             // Emm_V5_Vel_Control(1, 0, (uint8_t)(-delta_vx_vy), acc, 1);
+//             // HAL_Delay(10);
+//             // Emm_V5_Vel_Control(4, 1, (uint8_t)(-delta_vx_vy), acc, 1);
+//             // HAL_Delay(10);
+//             PID_vel_Control(1,acc,delta_vx_vy);
+//             PID_vel_Control(4,acc,-delta_vx_vy);
+//         }
+//     }
+//     else if (x_move_velocity > 0 && y_move_velocity < 0)
+//     {
+//         float delta_vx_vy = x_move_velocity + y_move_velocity;
+//         // Emm_V5_Vel_Control(1, 1, (uint8_t)(x_move_velocity - y_move_velocity ), acc, 1);
+//         // HAL_Delay(10);
+//         // Emm_V5_Vel_Control(4, 0, (uint8_t)(x_move_velocity - y_move_velocity ), acc, 1);
+//         // HAL_Delay(10);
 
-        PID_vel_Control(1,acc,-(x_move_velocity - y_move_velocity));
+//         PID_vel_Control(1,acc,-(x_move_velocity - y_move_velocity));
 
-        PID_vel_Control(4,acc,(x_move_velocity - y_move_velocity));
+//         PID_vel_Control(4,acc,(x_move_velocity - y_move_velocity));
         
 
-        if(delta_vx_vy > 0)
-        {
-            // Emm_V5_Vel_Control(2, 1, (uint8_t)delta_vx_vy, acc, 1);
-            // HAL_Delay(10);
-            // Emm_V5_Vel_Control(3, 0, (uint8_t)delta_vx_vy, acc, 1);
-            // HAL_Delay(10);
+//         if(delta_vx_vy > 0)
+//         {
+//             // Emm_V5_Vel_Control(2, 1, (uint8_t)delta_vx_vy, acc, 1);
+//             // HAL_Delay(10);
+//             // Emm_V5_Vel_Control(3, 0, (uint8_t)delta_vx_vy, acc, 1);
+//             // HAL_Delay(10);
 
-            PID_vel_Control(2,acc,-delta_vx_vy);
-            PID_vel_Control(3,acc,delta_vx_vy);
-        }
-        else
-        {
-            // Emm_V5_Vel_Control(2, 0, (uint8_t)(-delta_vx_vy), acc, 1);
-            // HAL_Delay(10);
-            // Emm_V5_Vel_Control(3, 1, (uint8_t)(-delta_vx_vy), acc, 1);
-            // HAL_Delay(10);
+//             PID_vel_Control(2,acc,-delta_vx_vy);
+//             PID_vel_Control(3,acc,delta_vx_vy);
+//         }
+//         else
+//         {
+//             // Emm_V5_Vel_Control(2, 0, (uint8_t)(-delta_vx_vy), acc, 1);
+//             // HAL_Delay(10);
+//             // Emm_V5_Vel_Control(3, 1, (uint8_t)(-delta_vx_vy), acc, 1);
+//             // HAL_Delay(10);
 
-            PID_vel_Control(2,acc,-delta_vx_vy);
-            PID_vel_Control(3,acc,delta_vx_vy);
+//             PID_vel_Control(2,acc,-delta_vx_vy);
+//             PID_vel_Control(3,acc,delta_vx_vy);
 
-        }
-    }
-    else if (x_move_velocity < 0 && y_move_velocity > 0)
-    {
-        float delta_vx_vy = y_move_velocity + x_move_velocity;
-        // Emm_V5_Vel_Control(1, 0, (uint8_t)(y_move_velocity - x_move_velocity ), acc, 1);
-        // HAL_Delay(10);
-        // Emm_V5_Vel_Control(4, 1, (uint8_t)(y_move_velocity - x_move_velocity ), acc, 1);
-        // HAL_Delay(10);
+//         }
+//     }
+//     else if (x_move_velocity < 0 && y_move_velocity > 0)
+//     {
+//         float delta_vx_vy = y_move_velocity + x_move_velocity;
+//         // Emm_V5_Vel_Control(1, 0, (uint8_t)(y_move_velocity - x_move_velocity ), acc, 1);
+//         // HAL_Delay(10);
+//         // Emm_V5_Vel_Control(4, 1, (uint8_t)(y_move_velocity - x_move_velocity ), acc, 1);
+//         // HAL_Delay(10);
 
-        PID_vel_Control(1,acc,(y_move_velocity - x_move_velocity));
-        PID_vel_Control(4,acc,-(y_move_velocity - x_move_velocity));
+//         PID_vel_Control(1,acc,(y_move_velocity - x_move_velocity));
+//         PID_vel_Control(4,acc,-(y_move_velocity - x_move_velocity));
 
-        if(delta_vx_vy > 0)
-        {
-            // Emm_V5_Vel_Control(2, 1, (uint8_t)delta_vx_vy, acc, 1);
-            // HAL_Delay(10);
-            // Emm_V5_Vel_Control(3, 0, (uint8_t)delta_vx_vy, acc, 1);
-            // HAL_Delay(10);
+//         if(delta_vx_vy > 0)
+//         {
+//             // Emm_V5_Vel_Control(2, 1, (uint8_t)delta_vx_vy, acc, 1);
+//             // HAL_Delay(10);
+//             // Emm_V5_Vel_Control(3, 0, (uint8_t)delta_vx_vy, acc, 1);
+//             // HAL_Delay(10);
 
-            PID_vel_Control(2,acc,-delta_vx_vy);
-            PID_vel_Control(3,acc,delta_vx_vy);
-        }
-        else
-        {
-            // Emm_V5_Vel_Control(2, 0, (uint8_t)(-delta_vx_vy), acc, 1);
-            // HAL_Delay(10);
-            // Emm_V5_Vel_Control(3, 1, (uint8_t)(-delta_vx_vy), acc, 1);
-            // HAL_Delay(10);
+//             PID_vel_Control(2,acc,-delta_vx_vy);
+//             PID_vel_Control(3,acc,delta_vx_vy);
+//         }
+//         else
+//         {
+//             // Emm_V5_Vel_Control(2, 0, (uint8_t)(-delta_vx_vy), acc, 1);
+//             // HAL_Delay(10);
+//             // Emm_V5_Vel_Control(3, 1, (uint8_t)(-delta_vx_vy), acc, 1);
+//             // HAL_Delay(10);
 
-            PID_vel_Control(2,acc,-delta_vx_vy);
-            PID_vel_Control(3,acc,delta_vx_vy);
-        }
-    }
-    else if (x_move_velocity < 0 && y_move_velocity < 0)
-    {
-        float delta_vx_vy = y_move_velocity - x_move_velocity;
-        // Emm_V5_Vel_Control(2, 0, (uint8_t)(-x_move_velocity - y_move_velocity ), acc, 1);
-        // HAL_Delay(10);
-        // Emm_V5_Vel_Control(3, 1, (uint8_t)(-x_move_velocity - y_move_velocity ), acc, 1);
-        // HAL_Delay(10);
+//             PID_vel_Control(2,acc,-delta_vx_vy);
+//             PID_vel_Control(3,acc,delta_vx_vy);
+//         }
+//     }
+//     else if (x_move_velocity < 0 && y_move_velocity < 0)
+//     {
+//         float delta_vx_vy = y_move_velocity - x_move_velocity;
+//         // Emm_V5_Vel_Control(2, 0, (uint8_t)(-x_move_velocity - y_move_velocity ), acc, 1);
+//         // HAL_Delay(10);
+//         // Emm_V5_Vel_Control(3, 1, (uint8_t)(-x_move_velocity - y_move_velocity ), acc, 1);
+//         // HAL_Delay(10);
 
-        PID_vel_Control(2,acc,-(x_move_velocity + y_move_velocity));
-        PID_vel_Control(3,acc,(x_move_velocity + y_move_velocity));
+//         PID_vel_Control(2,acc,-(x_move_velocity + y_move_velocity));
+//         PID_vel_Control(3,acc,(x_move_velocity + y_move_velocity));
 
 
-        if(delta_vx_vy > 0)
-        {
-            // Emm_V5_Vel_Control(1, 0, (uint8_t)delta_vx_vy, acc, 1);
-            // HAL_Delay(10);
-            // Emm_V5_Vel_Control(4, 1, (uint8_t)delta_vx_vy, acc, 1);
-            // HAL_Delay(10);
+//         if(delta_vx_vy > 0)
+//         {
+//             // Emm_V5_Vel_Control(1, 0, (uint8_t)delta_vx_vy, acc, 1);
+//             // HAL_Delay(10);
+//             // Emm_V5_Vel_Control(4, 1, (uint8_t)delta_vx_vy, acc, 1);
+//             // HAL_Delay(10);
 
-            PID_vel_Control(1,acc,delta_vx_vy);
-            PID_vel_Control(4,acc,-delta_vx_vy);
-        }
-        else
-        {
-            // Emm_V5_Vel_Control(1, 1, (uint8_t)(-delta_vx_vy), acc, 1);
-            // HAL_Delay(10);
-            // Emm_V5_Vel_Control(4, 0, (uint8_t)(-delta_vx_vy), acc, 1);
-            // HAL_Delay(10);
+//             PID_vel_Control(1,acc,delta_vx_vy);
+//             PID_vel_Control(4,acc,-delta_vx_vy);
+//         }
+//         else
+//         {
+//             // Emm_V5_Vel_Control(1, 1, (uint8_t)(-delta_vx_vy), acc, 1);
+//             // HAL_Delay(10);
+//             // Emm_V5_Vel_Control(4, 0, (uint8_t)(-delta_vx_vy), acc, 1);
+//             // HAL_Delay(10);
 
-            PID_vel_Control(1,acc,delta_vx_vy);
-            PID_vel_Control(4,acc,-delta_vx_vy);
-        }
-    }
-    Emm_V5_Synchronous_motion(0);
-    HAL_Delay(10);
+//             PID_vel_Control(1,acc,delta_vx_vy);
+//             PID_vel_Control(4,acc,-delta_vx_vy);
+//         }
+//     }
+//     Emm_V5_Synchronous_motion(0);
+//     HAL_Delay(10);
 
-}
+// }
 
 
 /// @brief 全向速度移动，不含PID,调用Emm_V5_Vel_Control函数
@@ -914,97 +900,97 @@ void move_all_direction(uint8_t acc,float x_move_velocity,float y_move_velocity)
 }
 
 
-/// @brief 加入PID的速度控制，自带延时，在该函数中调用Emm_V5_Vel_Control函数
-/// @param addr 电机地址
-/// @param acc 加速度
-/// @param target_vel 该电机目标速度
-void PID_vel_Control(uint8_t addr,uint8_t acc, float target_vel)
-{
-    if(addr == 1)
-    {
-        // 用PID控制速度
-        Motor_target_vel_1 = target_vel;
+// /// @brief 加入PID的速度控制，自带延时，在该函数中调用Emm_V5_Vel_Control函数
+// /// @param addr 电机地址
+// /// @param acc 加速度
+// /// @param target_vel 该电机目标速度
+// void PID_vel_Control(uint8_t addr,uint8_t acc, float target_vel)
+// {
+//     if(addr == 1)
+//     {
+//         // 用PID控制速度
+//         Motor_target_vel_1 = target_vel;
 
 
-        vel1_error = target_vel - Motor_Vel_1;
-        vel1_error_last = vel1_error;
-        vel1_error_long_last = vel1_error_last;
-        float P = KP_vel * (vel1_error);
-        float I = KI_vel * (vel1_error+ vel1_error_last+ vel1_error_long_last);
-        float D = KD_vel * (vel1_error - 2 * vel1_error_last + vel1_error_long_last);
-        float output =Motor_target_vel_1+ P + I + D; 
+//         vel1_error = target_vel - Motor_Vel_1;
+//         vel1_error_last = vel1_error;
+//         vel1_error_long_last = vel1_error_last;
+//         float P = KP_vel * (vel1_error);
+//         float I = KI_vel * (vel1_error+ vel1_error_last+ vel1_error_long_last);
+//         float D = KD_vel * (vel1_error - 2 * vel1_error_last + vel1_error_long_last);
+//         float output =Motor_target_vel_1+ P + I + D; 
         
-        if(output >= 0)
-        {
-            Emm_V5_Vel_Control(addr, 0, (uint8_t)output, acc, 1); // 电机1正转(顺时针)
-        }
-        else
-        {
-            Emm_V5_Vel_Control(addr, 1, (uint8_t)(-output), acc, 1); // 电机1反转(逆时针)
-        }
-    }
-    else if(addr == 2)
-    {
-        // 用PID控制速度
-        Motor_target_vel_2 = target_vel;
-        vel2_error = target_vel - Motor_Vel_2;
-        vel2_error_last = vel2_error;
-        vel2_error_long_last = vel2_error_last;
-        float P = KP_vel * (vel2_error );
-        float I = KI_vel * (vel2_error+ vel2_error_last+ vel2_error_long_last);
-        float D = KD_vel * (vel2_error - 2 * vel2_error_last + vel2_error_long_last);
-        float output = Motor_target_vel_2 +P + I + D;
-        if(output >= 0)
-        {
-            Emm_V5_Vel_Control(addr, 0, (uint8_t)output, acc, 1); // 电机2正转(顺时针)
-        }
-        else
-        {
-            Emm_V5_Vel_Control(addr, 1, (uint8_t)(-output), acc, 1); // 电机2反转(逆时针)
-        }
-    }
-    else if(addr == 3)
-    {
-        // 用PID控制速度
-        Motor_target_vel_3 = target_vel;
-        vel3_error = target_vel - Motor_Vel_3;
-        vel3_error_last = vel3_error;
-        vel3_error_long_last = vel3_error_last;
-        float P = KP_vel * (vel3_error );
-        float I = KI_vel * (vel3_error+ vel3_error_last+ vel3_error_long_last);
-        float D = KD_vel * (vel3_error - 2 * vel3_error_last + vel3_error_long_last);
-        float output = Motor_target_vel_3 + P + I + D;
-        if(output >= 0)
-        {
-            Emm_V5_Vel_Control(addr, 0, (uint8_t)output, acc, 1); // 电机3正转(顺时针)
-        }
-        else
-        {
-            Emm_V5_Vel_Control(addr, 1, (uint8_t)(-output), acc, 1); // 电机3反转(逆时针)
-        }
-    }
-    else if(addr == 4)
-    {
-        // 用PID控制速度
-        Motor_target_vel_4 = target_vel;
-        vel4_error = target_vel - Motor_Vel_4;
-        vel4_error_last = vel4_error;
-        vel4_error_long_last = vel4_error_last;
-        float P = KP_vel * (vel4_error);
-        float I = KI_vel * (vel4_error+ vel4_error_last+ vel4_error_long_last);
-        float D = KD_vel * (vel4_error - 2 * vel4_error_last + vel4_error_long_last);
-        float output = Motor_target_vel_4 + P + I + D;
-        if(output >= 0)
-        {
-            Emm_V5_Vel_Control(addr, 0, (uint8_t)output, acc, 1); // 电机4正转(顺时针)
-        }
-        else
-        {
-            Emm_V5_Vel_Control(addr, 1, (uint8_t)(-output), acc, 1); // 电机4反转（逆时针）
-        }
-    }
-    HAL_Delay(10);
-}
+//         if(output >= 0)
+//         {
+//             Emm_V5_Vel_Control(addr, 0, (uint8_t)output, acc, 1); // 电机1正转(顺时针)
+//         }
+//         else
+//         {
+//             Emm_V5_Vel_Control(addr, 1, (uint8_t)(-output), acc, 1); // 电机1反转(逆时针)
+//         }
+//     }
+//     else if(addr == 2)
+//     {
+//         // 用PID控制速度
+//         Motor_target_vel_2 = target_vel;
+//         vel2_error = target_vel - Motor_Vel_2;
+//         vel2_error_last = vel2_error;
+//         vel2_error_long_last = vel2_error_last;
+//         float P = KP_vel * (vel2_error );
+//         float I = KI_vel * (vel2_error+ vel2_error_last+ vel2_error_long_last);
+//         float D = KD_vel * (vel2_error - 2 * vel2_error_last + vel2_error_long_last);
+//         float output = Motor_target_vel_2 +P + I + D;
+//         if(output >= 0)
+//         {
+//             Emm_V5_Vel_Control(addr, 0, (uint8_t)output, acc, 1); // 电机2正转(顺时针)
+//         }
+//         else
+//         {
+//             Emm_V5_Vel_Control(addr, 1, (uint8_t)(-output), acc, 1); // 电机2反转(逆时针)
+//         }
+//     }
+//     else if(addr == 3)
+//     {
+//         // 用PID控制速度
+//         Motor_target_vel_3 = target_vel;
+//         vel3_error = target_vel - Motor_Vel_3;
+//         vel3_error_last = vel3_error;
+//         vel3_error_long_last = vel3_error_last;
+//         float P = KP_vel * (vel3_error );
+//         float I = KI_vel * (vel3_error+ vel3_error_last+ vel3_error_long_last);
+//         float D = KD_vel * (vel3_error - 2 * vel3_error_last + vel3_error_long_last);
+//         float output = Motor_target_vel_3 + P + I + D;
+//         if(output >= 0)
+//         {
+//             Emm_V5_Vel_Control(addr, 0, (uint8_t)output, acc, 1); // 电机3正转(顺时针)
+//         }
+//         else
+//         {
+//             Emm_V5_Vel_Control(addr, 1, (uint8_t)(-output), acc, 1); // 电机3反转(逆时针)
+//         }
+//     }
+//     else if(addr == 4)
+//     {
+//         // 用PID控制速度
+//         Motor_target_vel_4 = target_vel;
+//         vel4_error = target_vel - Motor_Vel_4;
+//         vel4_error_last = vel4_error;
+//         vel4_error_long_last = vel4_error_last;
+//         float P = KP_vel * (vel4_error);
+//         float I = KI_vel * (vel4_error+ vel4_error_last+ vel4_error_long_last);
+//         float D = KD_vel * (vel4_error - 2 * vel4_error_last + vel4_error_long_last);
+//         float output = Motor_target_vel_4 + P + I + D;
+//         if(output >= 0)
+//         {
+//             Emm_V5_Vel_Control(addr, 0, (uint8_t)output, acc, 1); // 电机4正转(顺时针)
+//         }
+//         else
+//         {
+//             Emm_V5_Vel_Control(addr, 1, (uint8_t)(-output), acc, 1); // 电机4反转（逆时针）
+//         }
+//     }
+//     HAL_Delay(10);
+// }
 
 /// @brief 以速度模式前进
 /// @param vel 
@@ -1228,13 +1214,13 @@ void spin_right(uint16_t vel,uint8_t acc, uint32_t angle)
 /// @brief 整车立即停车
 void stop(void)
 {
-    Emm_V5_Stop_Now((uint8_t)1, (bool)0);
+    Emm_V5_Stop_Now((uint8_t)1, 0);
     HAL_Delay(10);
-    Emm_V5_Stop_Now((uint8_t)2,(bool)0);
+    Emm_V5_Stop_Now((uint8_t)2,0);
     HAL_Delay(10);
-    Emm_V5_Stop_Now((uint8_t)3, (bool)0);
+    Emm_V5_Stop_Now((uint8_t)3,0);
     HAL_Delay(10);
-    Emm_V5_Stop_Now((uint8_t)4,(bool) 0);
+    Emm_V5_Stop_Now((uint8_t)4, 0);
     HAL_Delay(10);
 }
 
@@ -1248,7 +1234,7 @@ void stop(void)
   * @param    snF ：多机同步标志，false为不启用，true为启用
   * @retval   地址 + 功能码 + 命令状态 + 校验字节
   */
-void Emm_V5_Vel_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, bool snF)
+void Emm_V5_Vel_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, uint8_t snF)
 {
   uint8_t cmd[16] = {0};
 
@@ -1277,7 +1263,7 @@ void Emm_V5_Vel_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, bo
   * @param    snF ：多机同步标志 ，false为不启用，true为启用
   * @retval   地址 + 功能码 + 命令状态 + 校验字节
   */
-void Emm_V5_Pos_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, uint32_t clk, bool raF, bool snF)
+void Emm_V5_Pos_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, uint32_t clk, uint8_t raF, uint8_t snF)
 {
   uint8_t cmd[16] = {0};
 
@@ -1306,7 +1292,7 @@ void Emm_V5_Pos_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, ui
   * @param    snF   ：多机同步标志，false为不启用，true为启用
   * @retval   地址 + 功能码 + 命令状态 + 校验字节
   */
-void Emm_V5_Stop_Now(uint8_t addr, bool snF)
+void Emm_V5_Stop_Now(uint8_t addr, uint8_t snF)
 {
   uint8_t cmd[16] = {0};
   

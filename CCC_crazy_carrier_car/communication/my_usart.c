@@ -10,7 +10,6 @@ extern float gyro_z;
 /// @brief 串口屏速度控制时用到的速度变量
 int velocity = 30;
 extern float acceleration;
-extern float x_velocity, y_velocity;
 extern float x_move_position , y_move_position; // x、y轴每次移动距离
 extern float volatile spin_which_direction;
 extern float position_move_velocity ; // 单次位置移动速度
@@ -19,13 +18,6 @@ extern int is_slight_move,motor_state,is_slight_spin;
 
 int get_motor_real_vel_ok = 0;
 
-__IO bool rxFrameFlag = FALSE;
-__IO uint8_t rxCmd[FIFO_SIZE] = {0};
-__IO uint8_t rxCount = 0;
-extern float pos , Motor_Cur_Pos_1  , Motor_Cur_Pos_2 , Motor_Cur_Pos_3, Motor_Cur_Pos_4;
-extern float vel , Motor_Vel_1 , Motor_Vel_2 , Motor_Vel_3 , Motor_Vel_4 ;
-
-extern float error_x,error_y,error_x_sum,error_y_sum,error_last_x,error_last_y,error_pre_x,error_pre_y;
 
 extern int volatile get_plate,is_start_get_plate;
 extern int is_get_qrcode_target;
@@ -199,119 +191,119 @@ void UART_receive_process_1(void)
     {
         // HAL_UART_Transmit(&huart3, (uint8_t*)"hello,summer", strlen("hello,summer"), 50);
         // 将PB0引脚电平翻转
-        HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
-        if (rxdata_u1[0] == 0x01 && rxdata_u1[1] == 0x35) // && rxCount == 6
-        {
-            // 拼接成uint16_t类型数据
-            vel = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
-                             ((uint16_t)rxdata_u1[4] << 0));
+        // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
+        // if (rxdata_u1[0] == 0x01 && rxdata_u1[1] == 0x35) // && rxCount == 6
+        // {
+        //     // 拼接成uint16_t类型数据
+        //     vel = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
+        //                      ((uint16_t)rxdata_u1[4] << 0));
 
-            // 实时转速
-            Motor_Vel_1 = vel;
+        //     // 实时转速
+        //     Motor_Vel_1 = vel;
 
-            // 符号
-            if (rxdata_u1[2])
-            {
-                Motor_Vel_1 = -Motor_Vel_1;
-            }
-            // 将rxdata_u1的数据显示在串口屏上
-            // printf("t1.txt=\"m1%s\"\xff\xff\xff", rxdata_u1);
-        }
-        else if (rxdata_u1[0] == 0x02 && rxdata_u1[1] == 0x35) 
-        {
-            vel = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
-                             ((uint16_t)rxdata_u1[4] << 0));
-            Motor_Vel_2 = vel;
+        //     // 符号
+        //     if (rxdata_u1[2])
+        //     {
+        //         Motor_Vel_1 = -Motor_Vel_1;
+        //     }
+        //     // 将rxdata_u1的数据显示在串口屏上
+        //     // printf("t1.txt=\"m1%s\"\xff\xff\xff", rxdata_u1);
+        // }
+        // else if (rxdata_u1[0] == 0x02 && rxdata_u1[1] == 0x35) 
+        // {
+        //     vel = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
+        //                      ((uint16_t)rxdata_u1[4] << 0));
+        //     Motor_Vel_2 = vel;
 
-            if (rxdata_u1[2])
-            {
-                Motor_Vel_2 = -Motor_Vel_2;
-            }
-            // printf("t1.txt=\"m2%s\"\xff\xff\xff", rxdata_u1);
-        }
-        else if (rxdata_u1[0] == 3 && rxdata_u1[1] == 0x35) 
-        {
-            vel = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
-                             ((uint16_t)rxdata_u1[4] << 0));
-            Motor_Vel_3 = vel;
+        //     if (rxdata_u1[2])
+        //     {
+        //         Motor_Vel_2 = -Motor_Vel_2;
+        //     }
+        //     // printf("t1.txt=\"m2%s\"\xff\xff\xff", rxdata_u1);
+        // }
+        // else if (rxdata_u1[0] == 3 && rxdata_u1[1] == 0x35) 
+        // {
+        //     vel = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
+        //                      ((uint16_t)rxdata_u1[4] << 0));
+        //     Motor_Vel_3 = vel;
 
-            if (rxdata_u1[2])
-            {
-                Motor_Vel_3 = -Motor_Vel_3;
-            }
-            // printf("t1.txt=\"m3%s\"\xff\xff\xff", rxdata_u1);
-        }
-        else if (rxdata_u1[0] == 4 && rxdata_u1[1] == 0x35) 
-        {
-            vel = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
-                             ((uint16_t)rxdata_u1[4] << 0));
-            Motor_Vel_4 = vel;
+        //     if (rxdata_u1[2])
+        //     {
+        //         Motor_Vel_3 = -Motor_Vel_3;
+        //     }
+        //     // printf("t1.txt=\"m3%s\"\xff\xff\xff", rxdata_u1);
+        // }
+        // else if (rxdata_u1[0] == 4 && rxdata_u1[1] == 0x35) 
+        // {
+        //     vel = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
+        //                      ((uint16_t)rxdata_u1[4] << 0));
+        //     Motor_Vel_4 = vel;
 
-            if (rxdata_u1[2])
-            {
-                Motor_Vel_4 = -Motor_Vel_4;
-            }
-            // printf("t1.txt=\"m4%s\"\xff\xff\xff", rxdata_u1);
-        }
+        //     if (rxdata_u1[2])
+        //     {
+        //         Motor_Vel_4 = -Motor_Vel_4;
+        //     }
+        //     // printf("t1.txt=\"m4%s\"\xff\xff\xff", rxdata_u1);
+        // }
 
 
 
-        if (rxdata_u1[0] == 1 && rxdata_u1[1] == 0x36 ) //&& rxCount == 8
-        {
-            // 拼接成uint32_t类型
-            pos = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
-                             ((uint32_t)rxdata_u1[4] << 16) |
-                             ((uint32_t)rxdata_u1[5] << 8) |
-                             ((uint32_t)rxdata_u1[6] << 0));
+        // if (rxdata_u1[0] == 1 && rxdata_u1[1] == 0x36 ) //&& rxCount == 8
+        // {
+        //     // 拼接成uint32_t类型
+        //     pos = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
+        //                      ((uint32_t)rxdata_u1[4] << 16) |
+        //                      ((uint32_t)rxdata_u1[5] << 8) |
+        //                      ((uint32_t)rxdata_u1[6] << 0));
 
-            // 转换成角度
-            Motor_Cur_Pos_1 = (float)pos * 360.0f / 65536.0f;
+        //     // 转换成角度
+        //     Motor_Cur_Pos_1 = (float)pos * 360.0f / 65536.0f;
 
-            // 符号
-            if (rxdata_u1[2])
-            {
-                Motor_Cur_Pos_1 = -Motor_Cur_Pos_1;
-            }
-        }
-        else if (rxdata_u1[0] == 2 && rxdata_u1[1] == 0x36) 
-        {
-            pos = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
-                             ((uint32_t)rxdata_u1[4] << 16) |
-                             ((uint32_t)rxdata_u1[5] << 8) |
-                             ((uint32_t)rxdata_u1[6] << 0));
-            Motor_Cur_Pos_2 = (float)pos * 360.0f / 65536.0f;
+        //     // 符号
+        //     if (rxdata_u1[2])
+        //     {
+        //         Motor_Cur_Pos_1 = -Motor_Cur_Pos_1;
+        //     }
+        // }
+        // else if (rxdata_u1[0] == 2 && rxdata_u1[1] == 0x36) 
+        // {
+        //     pos = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
+        //                      ((uint32_t)rxdata_u1[4] << 16) |
+        //                      ((uint32_t)rxdata_u1[5] << 8) |
+        //                      ((uint32_t)rxdata_u1[6] << 0));
+        //     Motor_Cur_Pos_2 = (float)pos * 360.0f / 65536.0f;
 
-            if (rxdata_u1[2])
-            {
-                Motor_Cur_Pos_2 = -Motor_Cur_Pos_2;
-            }
-        }
-        else if (rxdata_u1[0] == 3 && rxdata_u1[1] == 0x36) 
-        {
-            pos = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
-                             ((uint32_t)rxdata_u1[4] << 16) |
-                             ((uint32_t)rxdata_u1[5] << 8) |
-                             ((uint32_t)rxdata_u1[6] << 0));
-            Motor_Cur_Pos_3 = (float)pos * 360.0f / 65536.0f;
+        //     if (rxdata_u1[2])
+        //     {
+        //         Motor_Cur_Pos_2 = -Motor_Cur_Pos_2;
+        //     }
+        // }
+        // else if (rxdata_u1[0] == 3 && rxdata_u1[1] == 0x36) 
+        // {
+        //     pos = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
+        //                      ((uint32_t)rxdata_u1[4] << 16) |
+        //                      ((uint32_t)rxdata_u1[5] << 8) |
+        //                      ((uint32_t)rxdata_u1[6] << 0));
+        //     Motor_Cur_Pos_3 = (float)pos * 360.0f / 65536.0f;
 
-            if (rxdata_u1[2])
-            {
-                Motor_Cur_Pos_3 = -Motor_Cur_Pos_3;
-            }
-        }
-        else if (rxdata_u1[0] == 4 && rxdata_u1[1] == 0x36) 
-        {
-            pos = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
-                             ((uint32_t)rxdata_u1[4] << 16) |
-                             ((uint32_t)rxdata_u1[5] << 8) |
-                             ((uint32_t)rxdata_u1[6] << 0));
-            Motor_Cur_Pos_4 = (float)pos * 360.0f / 65536.0f;
+        //     if (rxdata_u1[2])
+        //     {
+        //         Motor_Cur_Pos_3 = -Motor_Cur_Pos_3;
+        //     }
+        // }
+        // else if (rxdata_u1[0] == 4 && rxdata_u1[1] == 0x36) 
+        // {
+        //     pos = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
+        //                      ((uint32_t)rxdata_u1[4] << 16) |
+        //                      ((uint32_t)rxdata_u1[5] << 8) |
+        //                      ((uint32_t)rxdata_u1[6] << 0));
+        //     Motor_Cur_Pos_4 = (float)pos * 360.0f / 65536.0f;
 
-            if (rxdata_u1[2])
-            {
-                Motor_Cur_Pos_4 = -Motor_Cur_Pos_4;
-            }
-        }
+        //     if (rxdata_u1[2])
+        //     {
+        //         Motor_Cur_Pos_4 = -Motor_Cur_Pos_4;
+        //     }
+        // }
         rxflag_u1 = 0;
         memset(rxdata_u1, 0, 128);
     }
@@ -511,95 +503,6 @@ void UART_receive_process_2(void)
 {
     if (rxflag_u2 > 0)
     {
-        // if(
-        // rxflag > 50)
-        // {
-        //     HAL_UART_Transmit(&huart3, (uint8_t*)"too long\r\n", 10, 50);
-        // }
-        // else
-        // {
-        //     HAL_UART_Transmit(&huart3, (uint8_t*)"success", strlen("success"), 50);
-        //     HAL_UART_Transmit(&huart3, (uint8_t*)rxdata, rxflag, 50);
-        // }
-
-        // 处理接收到的数据
-
-        // // 全向
-        // if (rxdata_u2[0] == 0x38)
-        // {
-        //     // Forward_move_velocity(velocity, acceleration);
-        //     move_all_direction(acceleration, x_velocity, y_velocity);
-
-        // }
-        // // 前进
-        // else if (rxdata_u2[0] == 0x21)
-        // {
-        //     // Forward_move_velocity(velocity, acceleration);
-        //     move_all_direction_position(acceleration, position_move_velocity, 0, y_move_position);
-            
-        // }
-        // // 后退
-        // else if (rxdata_u2[0] == 0x12)
-        // {
-        //     // Backward_move_velocity(velocity, acceleration);
-        //     move_all_direction_position(acceleration, position_move_velocity, 0, -y_move_position);
-
-        // }
-        // // 停止
-        // else if (rxdata_u2[0] == 0x88)
-        // {
-        //     stop();
-        // }
-
-        // // 左走
-        // else if (rxdata_u2[0] == 0x13)
-        // {
-        //     // move_left_velocity(velocity, acceleration);
-        //     move_all_direction_position(acceleration, position_move_velocity, -x_move_position, 0);
-        // }
-        // // 右走
-        // else if (rxdata_u2[0] == 0x14)
-        // {
-        //     // move_right_velocity(velocity, acceleration);
-        //     move_all_direction_position(acceleration, position_move_velocity, x_move_position, 0);
-        // }
-        // // 左旋
-        // else if (rxdata_u2[0] == 0x15)
-        // {
-        //     spin_left(velocity, acceleration, 90);
-        // }
-        // // 右旋
-        // else if (rxdata_u2[0] == 0x16)
-        // {
-        //     spin_right(velocity, acceleration, 90);
-        // }
-        // else if (rxdata_u2[0] == 0x66)
-        // {
-        //     if (velocity < 1000)
-        //     {
-        //         velocity += 10;
-        //     }
-        //     y_velocity += 10;
-        // }
-        // else if (rxdata_u2[0] == 0x99)
-        // {
-        //     if (velocity > 10)
-        //     {
-        //         velocity -= 10;
-        //     }
-        //     y_velocity -= 10;
-        // }
-        // else if (rxdata_u2[0] == 0x78)
-        // {
-        //     x_velocity += 10;
-        //     // x_move_position += 0.1;
-        // }
-        // else if (rxdata_u2[0] == 0x87)
-        // {
-        //     x_velocity -= 10;
-        //     // x_move_position -= 0.1;
-        // }
-
         // 清空接收缓冲区
         rxflag_u2 = 0;
         memset(rxdata_u2, 0, 50);
@@ -661,79 +564,3 @@ void usart_SendByte_u1(uint16_t data)
 		++t0; if(t0 > 8000)	{	return; }
 	}
 }
-
-// void initQueue(void)
-// {
-// 	rxFIFO.ptrRead  = 0;
-// 	rxFIFO.ptrWrite = 0;
-// }
-
-// /**
-// 	* @brief   入队
-// 	* @param   无
-// 	* @retval  无
-// 	*/
-// void fifo_enQueue(uint16_t data)
-// {
-// 	rxFIFO.buffer[rxFIFO.ptrWrite] = data;
-	
-// 	++rxFIFO.ptrWrite;
-	
-// 	if(rxFIFO.ptrWrite >= FIFO_SIZE)
-// 	{
-// 		rxFIFO.ptrWrite = 0;
-// 	}
-// }
-
-// /**
-// 	* @brief   出队
-// 	* @param   无
-// 	* @retval  无
-// 	*/
-// uint16_t fifo_deQueue(void)
-// {
-// 	uint16_t element = 0;
-
-// 	element = rxFIFO.buffer[rxFIFO.ptrRead];
-
-// 	++rxFIFO.ptrRead;
-
-// 	if(rxFIFO.ptrRead >= FIFO_SIZE)
-// 	{
-// 		rxFIFO.ptrRead = 0;
-// 	}
-
-// 	return element;
-// }
-
-// /**
-// 	* @brief   判断空队列
-// 	* @param   无
-// 	* @retval  无
-// 	*/
-// bool fifo_isEmpty(void)
-// {
-// 	if(rxFIFO.ptrRead == rxFIFO.ptrWrite)
-// 	{
-// 		return true;
-// 	}
-
-// 	return false;
-// }
-
-// /**
-// 	* @brief   计算队列长度
-// 	* @param   无
-// 	* @retval  无
-// 	*/
-// uint16_t fifo_queueLength(void)
-// {
-// 	if(rxFIFO.ptrRead <= rxFIFO.ptrWrite)
-// 	{
-// 		return (rxFIFO.ptrWrite - rxFIFO.ptrRead);
-// 	}
-// 	else
-// 	{
-// 		return (FIFO_SIZE - rxFIFO.ptrRead + rxFIFO.ptrWrite);
-// 	}
-// }

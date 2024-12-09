@@ -45,18 +45,17 @@ typedef enum {
 }SysParams_t;
 
 extern float x_velocity, y_velocity; // x、y轴速度
+
 uint32_t get_clk(float distance);
 int get_distance_time(float distance, float velocity);
-void position_pid(void);
-void PID_vel_Control(uint8_t addr,uint8_t acc, float target_vel);
-int PID_motor_control(float x_bias, float y_bias);
+// void PID_vel_Control(uint8_t addr,uint8_t acc, float target_vel);
+// int PID_motor_control(float x_bias, float y_bias);
 void move_all_direction(uint8_t acc,float x_move_velocity,float y_move_velocity);
-void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_velocity);
+// void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_velocity);
 void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length);
 void move_all_direction_position_tim(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int times_count);
 void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count);
 void spin_all_direction_tim(uint8_t acc, float spin_direction, int times_count);
-void test_move(void);
 void stop(void);
 void stop_tim(int times_count);
 void Forward_move_velocity(uint16_t vel,uint8_t acc);
@@ -72,9 +71,9 @@ void move_left(uint16_t vel,uint8_t acc, uint32_t distance);
 void move_right_velocity(uint16_t vel,uint8_t acc);
 void move_right(uint16_t vel,uint8_t acc, uint32_t distance);
 
-void Emm_V5_Pos_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, uint32_t clk, bool raF, bool snF);
-void Emm_V5_Vel_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, bool snF);
-void Emm_V5_Stop_Now(uint8_t addr, bool snF);
+void Emm_V5_Pos_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, uint32_t clk,uint8_t raF, uint8_t snF);
+void Emm_V5_Vel_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, uint8_t snF);
+void Emm_V5_Stop_Now(uint8_t addr, uint8_t snF);
 void Emm_V5_Reset_CurPos_To_Zero(uint8_t addr);
 void Emm_V5_Synchronous_motion(uint8_t addr);
 void Emm_V5_Read_Sys_Params(uint8_t addr, SysParams_t s);

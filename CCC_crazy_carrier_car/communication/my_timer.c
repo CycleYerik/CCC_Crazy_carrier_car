@@ -49,7 +49,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             UART_handle_function_3(); // 处理串口3接收到的数据
         }
 
-        if (tim2_count == 20)
+        if (tim2_count >= 20) //! magic number
         {
             if (rxflag_u4 != 0)
             {
@@ -64,7 +64,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     }
     if (htim->Instance == TIM3) // 10ms
     {
-        // tim3_count++;
+        tim3_count++;
         if(is_slight_spin == 1)
         {
             if (is_motor_start_move == 1)
@@ -171,10 +171,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         }
         
 
-        // if(tim3_count > 100)
-        // {
-        //     tim3_count = 0;
-        //     HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_5);
-        // }
+        if(tim3_count > 100000)
+        {
+            tim3_count = 0;
+            HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_5);
+        }
     }
 }

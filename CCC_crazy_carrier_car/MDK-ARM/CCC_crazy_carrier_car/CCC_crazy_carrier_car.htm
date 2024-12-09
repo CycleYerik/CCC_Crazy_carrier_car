@@ -3,7 +3,7 @@
 <title>Static Call Graph - [CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat Dec 07 11:14:45 2024
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Sat Dec 07 12:24:48 2024
 <BR><P>
 <H3>Maximum Stack Usage =        200 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -422,10 +422,10 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[6a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
-<LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_all_direction_tim
-<LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_clk
 <LI><a href="#[c9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_receive_process_4
 <LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_receive_process_3
+<LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_all_direction_tim
+<LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_clk
 </UL>
 
 <P><STRONG><a name="[6b]"></a>__aeabi_ddiv</STRONG> (Thumb, 222 bytes, Stack size 32 bytes, ddiv.o(.text))
@@ -457,9 +457,9 @@ Global Symbols
 
 <P><STRONG><a name="[ca]"></a>__aeabi_f2d</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, f2d.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
+<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_receive_process_3
 <LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_all_direction_tim
 <LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_clk
-<LI><a href="#[c8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_receive_process_3
 </UL>
 
 <P><STRONG><a name="[6f]"></a>__aeabi_d2f</STRONG> (Thumb, 56 bytes, Stack size 8 bytes, d2f.o(.text))
@@ -525,10 +525,6 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[104]"></a>__scatterload_rt2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, init.o(.text), UNUSED)
-
-<P><STRONG><a name="[105]"></a>__decompress</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __dczerorl2.o(.text), UNUSED)
-
-<P><STRONG><a name="[106]"></a>__decompress1</STRONG> (Thumb, 86 bytes, Stack size unknown bytes, __dczerorl2.o(.text), UNUSED)
 
 <P><STRONG><a name="[72]"></a>Ack</STRONG> (Thumb, 84 bytes, Stack size 16 bytes, scs.o(i.Ack))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
@@ -865,10 +861,10 @@ Global Symbols
 <BR><BR>[Stack]<UL><LI>Max Depth = 168<LI>Call Chain = HAL_TIM_PeriodElapsedCallback &rArr; UART_handle_function_3 &rArr; UART_receive_process_3 &rArr; __aeabi_dmul &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[a7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GPIO_WritePin
-<LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_all_direction_tim
-<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_tim
 <LI><a href="#[a5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_handle_function_4
 <LI><a href="#[a4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_handle_function_3
+<LI><a href="#[a6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_all_direction_tim
+<LI><a href="#[a8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_tim
 </UL>
 <BR>[Called By]<UL><LI><a href="#[90]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_IRQHandler
 </UL>
@@ -1280,7 +1276,7 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
 </UL>
 
-<P><STRONG><a name="[107]"></a>__1printf$3</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0printf$3), UNUSED)
+<P><STRONG><a name="[105]"></a>__1printf$3</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0printf$3), UNUSED)
 
 <P><STRONG><a name="[e9]"></a>__2printf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0printf$3))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = __2printf
@@ -1293,7 +1289,7 @@ Global Symbols
 <LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
 </UL>
 
-<P><STRONG><a name="[108]"></a>__1sprintf$3</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0sprintf$3), UNUSED)
+<P><STRONG><a name="[106]"></a>__1sprintf$3</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0sprintf$3), UNUSED)
 
 <P><STRONG><a name="[ec]"></a>__2sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0sprintf$3))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = __2sprintf
@@ -1301,11 +1297,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[109]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)
+<P><STRONG><a name="[107]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)
 
-<P><STRONG><a name="[10a]"></a>__scatterload_null</STRONG> (Thumb, 2 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_null), UNUSED)
+<P><STRONG><a name="[108]"></a>__scatterload_null</STRONG> (Thumb, 2 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_null), UNUSED)
 
-<P><STRONG><a name="[10b]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
+<P><STRONG><a name="[109]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
 
 <P><STRONG><a name="[e8]"></a>arm_stretch</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, my_servo.o(i.arm_stretch))
 <BR><BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1576,8 +1572,8 @@ Global Symbols
 <LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Ack
 </UL>
 
-<P><STRONG><a name="[a6]"></a>spin_all_direction_tim</STRONG> (Thumb, 504 bytes, Stack size 24 bytes, motor.o(i.spin_all_direction_tim))
-<BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = spin_all_direction_tim &rArr; __aeabi_dmul &rArr; _double_epilogue &rArr; _double_round
+<P><STRONG><a name="[a6]"></a>spin_all_direction_tim</STRONG> (Thumb, 448 bytes, Stack size 32 bytes, motor.o(i.spin_all_direction_tim))
+<BR><BR>[Stack]<UL><LI>Max Depth = 120<LI>Call Chain = spin_all_direction_tim &rArr; __aeabi_dmul &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
 <LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz

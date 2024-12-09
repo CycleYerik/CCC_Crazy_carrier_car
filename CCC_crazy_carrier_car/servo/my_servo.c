@@ -33,7 +33,42 @@ int right_arm = 2935;
 int left_arm = 2935;
 int middle_arm = 2935; //目前为止不对
 
+void get_and_load_ground(int position)
+{
+    // 伸长并打开夹爪
+    if(position != 0)
+    {
+        state_spin(position);
+    }
+    else
+    {
+        state_spin(3);
+    }
 
+    // 放下夹爪
+    put_claw_down_ground();
+    HAL_Delay(1200);
+
+    // 抓取
+    close_claw();
+    HAL_Delay(800);
+
+    // 拉起夹爪
+    put_claw_up_top();
+    HAL_Delay(800);
+    claw_spin_state();
+    HAL_Delay(1200);
+
+    // 放下
+    open_claw();
+    HAL_Delay(800);
+
+    put_claw_up_top();
+    HAL_Delay(300);
+    claw_spin_front();
+    HAL_Delay(1000);
+    // arm_shrink_all();
+}
 
 /// @brief 抓取并放置在载物盘上,开始时夹爪应提前到位，结束时夹爪在最高位，朝前
 /// @param  
