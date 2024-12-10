@@ -325,13 +325,13 @@ void UART_receive_process_3(void)
 
 
         // 得到任务
-        if(is_get_qrcode_target == 0) //! 此处还可以加入更复杂的校验位，避免误操作
+        if(is_get_qrcode_target < 3) //! 此处还可以加入更复杂的校验位，避免误操作
         {
             for (int i = 0; i < 6; i++)
             {
                 target_colour[i] = (int)rxdata_u3[i];
             }
-            is_get_qrcode_target = 1;
+            is_get_qrcode_target ++;
         }
         
 

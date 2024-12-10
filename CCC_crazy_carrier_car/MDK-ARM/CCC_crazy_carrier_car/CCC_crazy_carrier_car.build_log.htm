@@ -27,12 +27,12 @@ Project File Date:  11/19/2024
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling my_servo.c...
-..\servo\my_servo.c(246): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-      int position = (int)(50 + (200* (float)angle / 270.0));
-..\servo\my_servo.c: 1 warning, 0 errors
+compiling main.c...
+../servo/my_servo.h(25): warning:  #1295-D: Deprecated declaration put_claw_down_pile - give arg types
+  void put_claw_down_pile();
+../Core/Src/main.c: 1 warning, 0 errors
 linking...
-Program Size: Code=16684 RO-data=448 RW-data=216 ZI-data=2664  
+Program Size: Code=18740 RO-data=448 RW-data=292 ZI-data=2644  
 FromELF: creating hex file...
 "CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 1 Warning(s).
 
@@ -58,7 +58,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:04
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

@@ -13,25 +13,47 @@ extern TIM_HandleTypeDef htim4;
 // 普通舵机参数范围25-125  270
 int open_claw_position = 118; 
 int close_claw_position = 107;
-int arm_stretch_position = 39;
-int arm_shrink_position = 75;   
-int arm_shrink_all_position = 75;
+int arm_stretch_position = 39; // 弃用
+int arm_shrink_position = 75;  // 弃用
+int arm_shrink_all_position = 75; // 弃用
 int state_spin_position_1 = 25;  //120度对应44.44
 int state_spin_position_2 = 69;
 int state_spin_position_3 = 114; //
 
 
 // 精密舵机参数范围0-4095
-int put_claw_down_state_position = 1200 ; //从车的载物盘上
-int put_claw_down_position = 1950;  // 从转盘上取物料
-int put_claw_down_ground_position = 3400; // 放在地上
-int put_claw_up_top_position = 670; // 最高点
-int put_claw_up_position =800; //  
-int claw_spin_position_front = 1918; // 2号精密舵机回到前方
-int claw_spin_position_state = 221; // 2号精密舵机回到载物盘
+int put_claw_down_pile_position = 2400;
+int put_claw_down_state_position = 1600 ; //从车的载物盘上
+int put_claw_down_position = 2300;  // 从转盘上取物料
+int put_claw_down_ground_position = 3700; // 放在地上
+int put_claw_up_top_position = 1150; // 最高点
+int put_claw_up_position =1300; //  
+int claw_spin_position_front = 1920; // 2号精密舵机回到前方
+int claw_spin_position_state = 223; // 2号精密舵机回到载物盘
 int right_arm = 2935;
 int left_arm = 2935;
-int middle_arm = 2935; //目前为止不对
+int middle_arm = 2906; 
+
+int shrink_arm = 1925;
+int stretch_arm_longgest = 2200;
+int stretch_camera = 640;
+int shrink_arm_all = 600;
+
+
+
+int left_2 = 1595;
+int left_3 = 2412;
+int left_4 = 2182;
+
+int right_2 = 2302; 
+int right_3 = 3350;
+int right_4 = 2258;
+
+int middle_2 = 1921;
+int middle_3 = 2906;
+int middle_4 = 777;
+
+
 
 void get_and_load_ground(int position)
 {
@@ -76,6 +98,7 @@ void get_and_load(int position)
 {
     // 伸长并打开夹爪
     state_spin(position);
+    // arm_shrink(); 
 
     // 放下夹爪
     put_claw_down();
@@ -83,7 +106,8 @@ void get_and_load(int position)
 
     // 抓取
     close_claw();
-    HAL_Delay(800);
+    HAL_Delay(500);
+    // arm_shrink();
 
     // 拉起夹爪
     put_claw_up_top();
@@ -96,18 +120,18 @@ void get_and_load(int position)
     HAL_Delay(800);
 
     put_claw_up_top();
-    HAL_Delay(300);
+    // HAL_Delay(300);
     claw_spin_front();
-    HAL_Delay(1000);
-    // arm_shrink_all();
+    HAL_Delay(800);
 }
 
-/// @brief 从载物盘上取物料
+/// @brief 从载物盘上取物料,结束时为夹爪非最高位，朝前
 /// @param position 载物盘编号1-3
 void get_from_state(int position)
 {
     state_spin(position);
-    // arm_shrink();
+    whole_arm_spin(1);
+    arm_shrink(); // 机械臂收回至载物盘上
     open_claw();
     put_claw_up_top();
     HAL_Delay(1000);
@@ -117,13 +141,13 @@ void get_from_state(int position)
     HAL_Delay(800);
     close_claw();
     put_claw_up();
-    HAL_Delay(400);
+    HAL_Delay(500);
     claw_spin_front();
-    // arm_stretch();
+
 
 }
 
-/// @brief 将物料放在地上，和get_from_state前后联合使用
+/// @brief 将物料放在正前方地上，和get_from_state前后联合使用
 /// @param  
 void put_from_state(void)
 {
@@ -137,6 +161,149 @@ void put_from_state(void)
     // arm_shrink_all();  
 }
 
+void get_and_load_different_position(int position)
+{
+    state_spin(position);
+    whole_arm_spin(1);
+    // arm_shrink(); // 机械臂收回至载物盘上
+    open_claw();
+    put_claw_up();
+    HAL_Delay(1000);
+    if(position == 1) //红
+    {
+        feetech_servo_move(2,right_2,4095,50);
+        feetech_servo_move(3,right_3,4095,50);
+        feetech_servo_move(4,right_4,4095,50);
+    }
+    else if(position == 2)
+    {
+        feetech_servo_move(4,middle_4,4095,50);
+        // HAL_Delay(1000);
+        feetech_servo_move(2,middle_2,4095,50);
+        feetech_servo_move(3,middle_3,4095,50);
+        
+    }
+    else if(position == 3)
+    {
+        feetech_servo_move(2,left_2,4095,50);
+        feetech_servo_move(3,left_3,4095,50);
+        feetech_servo_move(4,left_4,4095,50);
+    }
+
+    HAL_Delay(1200);
+    put_claw_down_ground();
+    // arm_shrink();
+    HAL_Delay(2000);
+    close_claw();
+    HAL_Delay(500);
+    arm_shrink();
+    put_claw_up();
+    HAL_Delay(400);
+    claw_spin_state();
+    HAL_Delay(1500);
+    open_claw();
+    HAL_Delay(800);
+    put_claw_up_top();
+    claw_spin_front();
+    HAL_Delay(800);
+}
+
+/// @brief 根据物料编号在同一个位置放置三个物料
+/// @param position 
+void get_and_put_different_position(int position)
+{
+    state_spin(position);
+    whole_arm_spin(1);
+    arm_shrink(); // 机械臂收回至载物盘上
+    open_claw();
+    put_claw_up_top();
+    HAL_Delay(1000);
+    claw_spin_state();
+    HAL_Delay(1000);
+    put_claw_down_state();
+    HAL_Delay(800);
+    close_claw();
+    put_claw_up();
+    HAL_Delay(500);
+    if(position == 1) //红
+    {
+        feetech_servo_move(2,right_2,4095,50);
+        feetech_servo_move(3,right_3,4095,50);
+        feetech_servo_move(4,right_4,4095,50);
+    }
+    else if(position == 2)
+    {
+        feetech_servo_move(2,middle_2,4095,50);
+        feetech_servo_move(3,middle_3,4095,50);
+        feetech_servo_move(4,middle_4,4095,50);
+    }
+    else if(position == 3)
+    {
+        feetech_servo_move(2,left_2,4095,50);
+        feetech_servo_move(3,left_3,4095,50);
+        feetech_servo_move(4,left_4,4095,50);
+    }
+    HAL_Delay(1200);
+    put_claw_down_ground();
+    HAL_Delay(2000);
+    open_claw();
+    HAL_Delay(500);
+    put_claw_up();
+    HAL_Delay(400);
+    claw_spin_front();
+    // arm_stretch();
+    HAL_Delay(800);
+}
+
+void get_and_put_different_position_pileup(int position)
+{
+    state_spin(position);
+    whole_arm_spin(1);
+    arm_shrink(); // 机械臂收回至载物盘上
+    open_claw();
+    put_claw_up_top();
+    HAL_Delay(1000);
+    claw_spin_state();
+    HAL_Delay(1000);
+    put_claw_down_state();
+    HAL_Delay(800);
+    close_claw();
+    put_claw_up();
+    HAL_Delay(500);
+    if(position == 1) //红
+    {
+        feetech_servo_move(2,right_2,4095,50);
+        feetech_servo_move(3,right_3,4095,50);
+        feetech_servo_move(4,right_4,4095,50);
+    }
+    else if(position == 2)
+    {
+        feetech_servo_move(2,middle_2,4095,50);
+        feetech_servo_move(3,middle_3,4095,50);
+        feetech_servo_move(4,middle_4,4095,50);
+    }
+    else if(position == 3)
+    {
+        feetech_servo_move(2,left_2,4095,50);
+        feetech_servo_move(3,left_3,4095,50);
+        feetech_servo_move(4,left_4,4095,50);
+    }
+    HAL_Delay(1200);
+    put_claw_down_pile();
+    HAL_Delay(2000);
+    open_claw();
+    HAL_Delay(500);
+    put_claw_up();
+    HAL_Delay(400);
+    claw_spin_front();
+    // arm_stretch();
+    HAL_Delay(800);
+}
+
+void put_claw_down_pile()
+{
+    feetech_servo_move(1,put_claw_down_pile_position,4095,50);
+}
 
 /// @brief 精密舵机串口初始化
 void my_servo_init()
@@ -160,11 +327,12 @@ void close_claw(void)
 }
 
 
-/// @brief 机械臂伸长
+/// @brief 机械臂伸长到摄像头
 /// @param  
 void arm_stretch(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_stretch_position);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_stretch_position);
+    feetech_servo_move(4,stretch_camera,4095,50);
 }
 
 
@@ -172,12 +340,14 @@ void arm_stretch(void)
 /// @param  
 void arm_shrink(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_position);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_position);
+    feetech_servo_move(4,shrink_arm,4095,50);
 }
 
 void arm_shrink_all(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_all_position);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_all_position);
+    feetech_servo_move(4,shrink_arm_all,4095,50);
 }
 
 /// @brief 载物盘旋转到对应的位置

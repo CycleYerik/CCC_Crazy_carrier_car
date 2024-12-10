@@ -8,7 +8,8 @@
 
 void get_and_load_ground(int position);
 void get_and_load(int position);
-
+void get_and_put_different_position(int position);
+void get_and_load_different_position(int position);
 
 void my_servo_init(void);
 void feetech_servo_move(uint8_t servo_ID,int16_t Position,uint16_t Speed,uint8_t ACC);
@@ -20,6 +21,8 @@ void arm_shrink(void);
 void arm_shrink_all(void);
 void state_spin(int state_position);
 
+void get_and_put_different_position_pileup(int position);
+void put_claw_down_pile();
 void get_from_state(int position);
 void put_from_state(void);
 void put_claw_down_ground(void);

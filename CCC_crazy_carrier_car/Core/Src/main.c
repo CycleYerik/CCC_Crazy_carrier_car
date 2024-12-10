@@ -73,12 +73,13 @@ float gyro_z = 90;
 int open_loop_move_velocity = 80;
 
 // 目标颜色数组
-volatile int target_colour[6] = {0}; 
+volatile int target_colour[6] = {3,2,1,2,1,3}; 
 int move_sequence_bias = 0; // 根据不同顺序移动带来的位置相对色环位置的偏差，如中-左-右，则偏差为0、-x、+x 
 
 /// @brief 用于判断当前是第几个case,
 int case_count = 0; 
-int timeout_limit = 800; // 超时时间限制，单位ms
+int timeout_limit = 1200; // 超时时间限制，单位10ms
+extern int tim3_count;
 
 int is_get_qrcode_target = 0;
 int volatile is_start_get_plate = 0; // 开始从转盘抓
@@ -187,46 +188,14 @@ int main(void)
 
     HAL_Delay(4000); // 等待电机初始化完成，本该是4000ms
     // 机械臂初始位置设定
+    arm_shrink();
     whole_arm_spin(1);
-    arm_stretch();
-    put_claw_up();
+    put_claw_up_top();
     claw_spin_front();
     open_claw();
+    HAL_Delay(1000);
 
     /*********************************测试区域开始*************************************/
-
-    // state_spin(1); // 载物盘旋转到1号位置
-    // arm_stretch();
-    // get_and_load(1);
-    // get_and_load(2);
-    // get_and_load(3);
-
-    // get_from_state(1);
-    // put_from_state();
-    // get_from_state(2);
-    // put_from_state();
-    // get_from_state(3);
-    // put_from_state();
-
-
-
-
-    // while(1)
-    // {
-    //     HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50);
-    //     HAL_Delay(100);
-    // }
-
-
-
-    // while(1)
-    // {
-    //     spin_right(open_loop_move_velocity,acceleration, 90);
-    //     HAL_Delay(4000);
-    //     spin_left(open_loop_move_velocity,acceleration, 90);
-    //     HAL_Delay(4000);
-    // }
-
     
 
     //实际开始移动
@@ -317,31 +286,40 @@ int main(void)
 
     /**************************************以下为主程序流程代码********************************************/
 
+    //! 小车离开起点并前往转盘
     /*-------------------小车离开起点并前往转盘-----------------------*/
 
     printf("t0.txt=\"start\"\xff\xff\xff"); // 开始
     HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50); // 开始识别二维码
+    HAL_Delay(50);
 
-    move_all_direction_position(acceleration, open_loop_move_velocity, -23 , 0); // 左移出库
+    move_all_direction_position(acceleration, open_loop_move_velocity, -17 , 0); // 左移出库
     HAL_Delay(1500);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 55); // 前进至二维码
-    HAL_Delay(3500);//  
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 60); // 前进至二维码
+    HAL_Delay(5000);//  
     // 将target_colour转为字符串显示在串口屏上
     char* target_colour_str = (char*)malloc(6);
-    sprintf(target_colour_str, "%d %d %d %d %d %d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]);
+    sprintf(target_colour_str, "%d%d%d%d%d%d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]);
     printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); // 将目标颜色显示在串口屏上
     free(target_colour_str);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 90); // 前进至转盘
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 85); // 前进至转盘
     HAL_Delay(3000);
-    spin_right(open_loop_move_velocity,acceleration, 90);
+    spin_right(open_loop_move_velocity,acceleration, 89);
     HAL_Delay(2200);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, -5); 
+    // HAL_Delay(1000);
+    // motor_state = 1;
 
-    is_start_get_plate = 1; // 开始从转盘抓取
+
+    //! 开始从转盘抓取
+    
+    is_start_get_plate = 1; // 
 
     HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); // 开始识别颜色并抓取
     tim3_count = 0; // 开始计时，+1 代表10ms
+    // arm_shrink();
 
-    while(get_plate_count < 3 || tim3_count < 5000) // 从转盘抓取三个色环或者超时
+    while(get_plate_count < 3 && tim3_count < 5000) // 从转盘抓取三个色环或者超时
     {
         if(get_plate == 1)  //此处会不会一次识别发送了好几个，导致重复抓取同一个位置？
         {
@@ -365,109 +343,178 @@ int main(void)
     }
     get_plate_count = 0;
     is_start_get_plate = 0;
+    arm_stretch();
+    //如果tim3_count超时，则加入一个标志位
 
+
+    //! 小车前往粗加工区
     /*------------------前往粗加工区------------------------*/
 
-    spin_right(open_loop_move_velocity,acceleration, 88);
+    spin_right(open_loop_move_velocity,acceleration, 89);
     HAL_Delay(2200);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0,45); 
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,40); 
     HAL_Delay(2000);
-    spin_right(open_loop_move_velocity,acceleration, 88);
+    spin_right(open_loop_move_velocity,acceleration, 89);
     HAL_Delay(2200);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 160);
-    HAL_Delay(4000);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 166);
+    HAL_Delay(5000);
 
+
+    //! 识别色环移动并放置
     /*------------------识别色环移动并放置------------------------*/
 
     // 左蓝中绿右红， 1红2绿3蓝
 
 
     // 粗加工区第一个物料
-    move_follow_sequence(target_colour,1); 
+    // move_follow_sequence(target_colour,1); 
     // 先校正车身位置
     HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正直线
-    HAL_Delay(2000);
+    HAL_Delay(50);
 
     is_slight_spin = 1; // 使能轻微移动
-    while(is_slight_spin != 0)
+    motor_state = 1;
+    tim3_count = 0;
+    while(is_slight_spin != 0 && tim3_count < timeout_limit)
     {
         HAL_Delay(10);
     }
+    is_slight_spin = 0;
     stop();
     printf("t0.txt=\"end_of_line\"\xff\xff\xff"); // 校正结束，调试用，正式比赛中须删除
     HAL_Delay(1000);
 
     is_slight_move = 1; // 使能微调
-    motor_state = 1;
     tim3_count = 0; // 开始计时，+1 代表10ms
     while(is_slight_move != 0 && tim3_count < timeout_limit) // 超时则停止
     {
         HAL_Delay(10);
     }
+    is_slight_move = 0;
     printf("t0.txt=\"1\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
     stop();
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"stop", strlen("stop"), 50); // 通知树莓派结束
+    // HAL_Delay(80);
     if(target_colour[0] != 0)
     {
-        get_from_state(target_colour[0]); 
+        get_and_put_different_position(target_colour[0]);
     }
     else
     {
-        get_from_state(2); 
+        get_and_put_different_position(2);
     }
-    put_from_state();
-    printf("t0.txt=\"end_of_circle1\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
-
-
-    // 粗加工区第二个物料
-    move_follow_sequence(target_colour,2); 
-    is_slight_move = 1;
-    tim3_count = 0;
-    while(is_slight_move != 0 && tim3_count < timeout_limit )
-    {
-        HAL_Delay(10);
-    }
-    stop();
     if(target_colour[1] != 0)
     {
-        get_from_state(target_colour[1]); 
+        get_and_put_different_position(target_colour[1]);
     }
     else
     {
-        get_from_state(3); 
+        get_and_put_different_position(3);
     }
-    put_from_state();
-    printf("t0.txt=\"end_of_circle2\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
-
-
-    // 粗加工区第三个物料
-    move_follow_sequence(target_colour,3); 
-    is_slight_move = 1;
-    tim3_count = 0;
-    while(is_slight_move != 0 && tim3_count < timeout_limit)
-    {
-        HAL_Delay(10);
-    }
-    stop();
     if(target_colour[2] != 0)
     {
-        get_from_state(target_colour[2]); 
+        get_and_put_different_position(target_colour[2]);
     }
     else
     {
-        get_from_state(1); 
+        get_and_put_different_position(1);
     }
-    put_from_state();
-    printf("t0.txt=\"end_of_circle3\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
 
-    HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+    HAL_Delay(2000);
+
+
+    if(target_colour[0] != 0)
+    {
+        get_and_load_different_position(target_colour[0]);
+    }
+    else
+    {
+        get_and_load_different_position(2);
+    }
+    if(target_colour[1] != 0)
+    {
+        get_and_load_different_position(target_colour[1]);
+    }
+    else
+    {
+        get_and_load_different_position(3);
+    }
+    if(target_colour[2] != 0)
+    {
+        get_and_load_different_position(target_colour[2]);
+    }
+    else
+    {
+        get_and_load_different_position(1);
+    }
+    whole_arm_spin(1);
+    claw_spin_front();
+    arm_stretch();
+    HAL_Delay(1000);
+
+
+    // put_from_state();
+    
+    // printf("t0.txt=\"end_of_circle1\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
+
+
+    // // 粗加工区第二个物料
+    // move_follow_sequence(target_colour,2); 
+    // is_slight_move = 1;
+    // tim3_count = 0;
+    // while(is_slight_move != 0 && tim3_count < timeout_limit )
+    // {
+    //     HAL_Delay(10);
+    // }
+    // is_slight_move = 0;
+    // stop();
+    // if(target_colour[1] != 0)
+    // {
+    //     get_from_state(target_colour[1]); 
+    // }
+    // else
+    // {
+    //     get_from_state(3); 
+    // }
+    // put_from_state();
+    // printf("t0.txt=\"end_of_circle2\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
+
+
+    // // 粗加工区第三个物料
+    // move_follow_sequence(target_colour,3); 
+    // is_slight_move = 1;
+    // tim3_count = 0;
+    // while(is_slight_move != 0 && tim3_count < timeout_limit)
+    // {
+    //     HAL_Delay(10);
+    // }
+    // is_slight_move = 0;
+    // stop();
+    // if(target_colour[2] != 0)
+    // {
+    //     get_from_state(target_colour[2]); 
+    // }
+    // else
+    // {
+    //     get_from_state(1); 
+    // }
+    // put_from_state();
+    // printf("t0.txt=\"end_of_circle3\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
+
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"stop", strlen("stop"), 50); // 通知树莓派结束
+    // HAL_Delay(80);
+
+
+
 
     /*------------------再次抓取------------------------*/
-    move_follow_sequence(target_colour,1);
-    get_and_load_ground(target_colour[0]);
-    move_follow_sequence(target_colour,2);
-    get_and_load_ground(target_colour[1]);
-    move_follow_sequence(target_colour,3);
-    get_and_load_ground(target_colour[2]);
+    // open_claw();
+    // move_follow_sequence(target_colour,1);
+    // get_and_load_ground(target_colour[0]);
+    // move_follow_sequence(target_colour,2);
+    // get_and_load_ground(target_colour[1]);
+    // move_follow_sequence(target_colour,3);
+    // get_and_load_ground(target_colour[2]);
 
 
 
@@ -475,19 +522,18 @@ int main(void)
     /*------------------前往暂存区------------------------*/
     spin_right(open_loop_move_velocity,acceleration, 90);
     HAL_Delay(2200);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0,80+ move_sequence_bias); //!待测量
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,82+ move_sequence_bias); //!待测量
     HAL_Delay(2500);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 85);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 85, 0);
     HAL_Delay(3000);
     move_sequence_bias = 0; //! 重置偏差
 
 
     /*------------------识别色环移动并放置------------------------*/
     // 粗加工区第一个物料
-    move_follow_sequence(target_colour,1); 
     // 先校正车身位置
-    HAL_UART_Transmit(&huart3, (uint8_t*)"DD", strlen("DD"), 50);     //! 待修改,发给树莓派，开始校正直线
-    HAL_Delay(2000);
+    HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50);     //! 待修改,发给树莓派，开始校正直线
+    HAL_Delay(50);
 
     is_slight_spin = 1; // 使能轻微移动
     while(is_slight_spin != 0)
@@ -498,6 +544,354 @@ int main(void)
     printf("t0.txt=\"end_of_line\"\xff\xff\xff"); // 校正结束，调试用，正式比赛中须删除
     HAL_Delay(1000);
 
+    // move_follow_sequence(target_colour,1); 
+
+    is_slight_move = 1; // 使能微调
+    tim3_count = 0; // 开始计时，+1 代表10ms
+    while(is_slight_move != 0 && tim3_count < timeout_limit) // 超时则停止
+    {
+        HAL_Delay(10);
+    }
+    is_slight_move = 0;
+    printf("t0.txt=\"1\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
+    stop();
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"stop", strlen("stop"), 50); // 通知树莓派结束
+    // HAL_Delay(80);
+    if(target_colour[0] != 0)
+    {
+        get_and_put_different_position(target_colour[0]);
+    }
+    else
+    {
+        get_and_put_different_position(2);
+    }
+    if(target_colour[1] != 0)
+    {
+        get_and_put_different_position(target_colour[1]);
+    }
+    else
+    {
+        get_and_put_different_position(3);
+    }
+    if(target_colour[2] != 0)
+    {
+        get_and_put_different_position(target_colour[2]);
+    }
+    else
+    {
+        get_and_put_different_position(1);
+    }
+
+    whole_arm_spin(1);
+    claw_spin_front();
+    arm_stretch();
+    HAL_Delay(1000);
+
+    // if(target_colour[0] != 0)
+    // {
+    //     get_from_state(target_colour[0]); 
+    // }
+    // else
+    // {
+    //     get_from_state(2); 
+    // }
+    // put_from_state();
+    // printf("t0.txt=\"end_of_circle1\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
+
+
+    // // 粗加工区第二个物料
+    // move_follow_sequence(target_colour,2); 
+    // is_slight_move = 1;
+    // tim3_count = 0;
+    // while(is_slight_move != 0 && tim3_count < timeout_limit )
+    // {
+    //     HAL_Delay(10);
+    // }
+    // stop();
+    // if(target_colour[1] != 0)
+    // {
+    //     get_from_state(target_colour[1]); 
+    // }
+    // else
+    // {
+    //     get_from_state(3); 
+    // }
+    // put_from_state();
+    // printf("t0.txt=\"end_of_circle2\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
+
+
+    // // 粗加工区第三个物料
+    // move_follow_sequence(target_colour,3); 
+
+    // is_slight_move = 1;
+    // tim3_count = 0;
+    // while(is_slight_move != 0 && tim3_count < timeout_limit)
+    // {
+    //     HAL_Delay(10);
+    // }
+    // stop();
+    // if(target_colour[2] != 0)
+    // {
+    //     get_from_state(target_colour[2]); 
+    // }
+    // else
+    // {
+    //     get_from_state(1); 
+    // }
+    // put_from_state();
+    // printf("t0.txt=\"end_of_circle3\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
+
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+
+
+    /*------------------再次前往转盘------------------------*/
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,88);
+    HAL_Delay(3000);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 42, 0);
+    HAL_Delay(3000);
+
+
+    is_start_get_plate = 1; // 开始从转盘抓取
+
+    HAL_UART_Transmit(&huart3, (uint8_t*)"DD", strlen("DD"), 50); // 开始识别颜色并抓取
+    tim3_count = 0; // 开始计时，+1 代表10ms
+    arm_shrink();
+
+    while(get_plate_count < 3 && tim3_count < 5000) // 从转盘抓取三个色环或者超时
+    {
+        if(get_plate == 1)  //此处会不会一次识别发送了好几个，导致重复抓取同一个位置？
+        {
+            get_and_load(1);
+            get_plate_count++;
+            get_plate = 0;
+        }
+        else if(get_plate == 2)
+        {
+            get_and_load(2);
+            get_plate_count++;
+            get_plate = 0;
+        }
+        else if (get_plate == 3)
+        {
+            get_and_load(3);
+            get_plate_count++;
+            get_plate = 0;
+        }
+        HAL_Delay(10);
+    }
+    get_plate_count = 0;
+    is_start_get_plate = 0;
+    arm_stretch();
+    //如果tim3_count超时，则加入一个标志位
+
+    /*------------------前往粗加工区------------------------*/
+
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,40); 
+    HAL_Delay(2000);
+    spin_right(open_loop_move_velocity,acceleration, 90);
+    HAL_Delay(2200);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 168);
+    HAL_Delay(5000);
+
+    /*------------------识别色环移动并放置------------------------*/
+
+    // 左蓝中绿右红， 1红2绿3蓝
+
+
+    // 粗加工区第一个物料
+    // move_follow_sequence(target_colour,1); 
+    // 先校正车身位置
+    HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正直线
+    HAL_Delay(50);
+
+    is_slight_spin = 1; // 使能轻微移动
+    motor_state = 1;
+    tim3_count = 0;
+    while(is_slight_spin != 0 && tim3_count < timeout_limit)
+    {
+        HAL_Delay(10);
+    }
+    is_slight_spin = 0;
+    stop();
+    printf("t0.txt=\"end_of_line\"\xff\xff\xff"); // 校正结束，调试用，正式比赛中须删除
+    HAL_Delay(1000);
+
+    is_slight_move = 1; // 使能微调
+    tim3_count = 0; // 开始计时，+1 代表10ms
+    while(is_slight_move != 0 && tim3_count < timeout_limit) // 超时则停止
+    {
+        HAL_Delay(10);
+    }
+    is_slight_move = 0;
+    printf("t0.txt=\"1\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
+    stop();
+
+    if(target_colour[3] != 0)
+    {
+        get_and_put_different_position(target_colour[3]);
+    }
+    else
+    {
+        get_and_put_different_position(2);
+    }
+    if(target_colour[4] != 0)
+    {
+        get_and_put_different_position(target_colour[4]);
+    }
+    else
+    {
+        get_and_put_different_position(3);
+    }
+    if(target_colour[5] != 0)
+    {
+        get_and_put_different_position(target_colour[5]);
+    }
+    else
+    {
+        get_and_put_different_position(1);
+    }
+
+    HAL_Delay(2000);
+
+    if(target_colour[3] != 0)
+    {
+        get_and_load_different_position(target_colour[3]);
+    }
+    else
+    {
+        get_and_load_different_position(2);
+    }
+    if(target_colour[4] != 0)
+    {
+        get_and_load_different_position(target_colour[4]);
+    }
+    else
+    {
+        get_and_load_different_position(3);
+    }
+    if(target_colour[5] != 0)
+    {
+        get_and_load_different_position(target_colour[5]);
+    }
+    else
+    {
+        get_and_load_different_position(1);
+    }
+    whole_arm_spin(1);
+    claw_spin_front();
+    arm_stretch();
+    HAL_Delay(1000);
+
+
+
+
+    // if(target_colour[0] != 0)
+    // {
+    //     get_from_state(target_colour[0]); 
+    // }
+    // else
+    // {
+    //     get_from_state(2); 
+    // }
+    // put_from_state();
+    // printf("t0.txt=\"end_of_circle1\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
+
+
+    // // 粗加工区第二个物料
+    // move_follow_sequence(target_colour,2); 
+    // is_slight_move = 1;
+    // tim3_count = 0;
+    // while(is_slight_move != 0 && tim3_count < timeout_limit )
+    // {
+    //     HAL_Delay(10);
+    // }
+    // is_slight_move = 0;
+    // stop();
+    // if(target_colour[1] != 0)
+    // {
+    //     get_from_state(target_colour[1]); 
+    // }
+    // else
+    // {
+    //     get_from_state(3); 
+    // }
+    // put_from_state();
+    // printf("t0.txt=\"end_of_circle2\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
+
+
+    // // 粗加工区第三个物料
+    // move_follow_sequence(target_colour,3); 
+    // is_slight_move = 1;
+    // tim3_count = 0;
+    // while(is_slight_move != 0 && tim3_count < timeout_limit)
+    // {
+    //     HAL_Delay(10);
+    // }
+    // is_slight_move = 0;
+    // stop();
+    // if(target_colour[2] != 0)
+    // {
+    //     get_from_state(target_colour[2]); 
+    // }
+    // else
+    // {
+    //     get_from_state(1); 
+    // }
+    // put_from_state();
+    // printf("t0.txt=\"end_of_circle3\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
+
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"stop", strlen("stop"), 50); // 通知树莓派结束
+    // HAL_Delay(80);
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"stop", strlen("stop"), 50); // 通知树莓派结束
+    // HAL_Delay(80);
+
+
+
+
+    /*------------------再次抓取------------------------*/
+    // open_claw();
+    // move_follow_sequence(target_colour,1);
+    // get_and_load_ground(target_colour[0]);
+    // move_follow_sequence(target_colour,2);
+    // get_and_load_ground(target_colour[1]);
+    // move_follow_sequence(target_colour,3);
+    // get_and_load_ground(target_colour[2]);
+
+
+
+
+    /*------------------前往暂存区------------------------*/
+    spin_right(open_loop_move_velocity,acceleration, 89);
+    HAL_Delay(2200);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0,83+ move_sequence_bias); //!待测量
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,83); //!待测量
+    HAL_Delay(2500);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 80, 0);
+    HAL_Delay(3000);
+    move_sequence_bias = 0; //! 重置偏差
+
+
+    /*------------------识别色环移动并放置------------------------*/
+    // 粗加工区第一个物料
+    // 先校正车身位置
+    HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50);     //! 待修改,发给树莓派，开始校正直线
+    HAL_Delay(50);
+
+    is_slight_spin = 1; // 使能轻微移动
+    while(is_slight_spin != 0)
+    {
+        HAL_Delay(10);
+    }
+    stop();
+    printf("t0.txt=\"end_of_line\"\xff\xff\xff"); // 校正结束，调试用，正式比赛中须删除
+    HAL_Delay(1000);
+
+    // move_follow_sequence(target_colour,1); 
+
     is_slight_move = 1; // 使能微调
     motor_state = 1;
     tim3_count = 0; // 开始计时，+1 代表10ms
@@ -507,67 +901,133 @@ int main(void)
     }
     printf("t0.txt=\"1\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
     stop();
-    if(target_colour[0] != 0)
+
+    if(target_colour[3] != 0)
     {
-        get_from_state(target_colour[0]); 
+        get_and_put_different_position_pileup(target_colour[3]);
     }
     else
     {
-        get_from_state(2); 
+        get_and_put_different_position_pileup(2);
     }
-    put_from_state();
-    printf("t0.txt=\"end_of_circle1\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
-
-
-    // 粗加工区第二个物料
-    move_follow_sequence(target_colour,2); 
-    is_slight_move = 1;
-    tim3_count = 0;
-    while(is_slight_move != 0 && tim3_count < timeout_limit )
+    if(target_colour[4] != 0)
     {
-        HAL_Delay(10);
-    }
-    stop();
-    if(target_colour[1] != 0)
-    {
-        get_from_state(target_colour[1]); 
+        get_and_put_different_position_pileup(target_colour[4]);
     }
     else
     {
-        get_from_state(3); 
+        get_and_put_different_position_pileup(3);
     }
-    put_from_state();
-    printf("t0.txt=\"end_of_circle2\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
-
-
-    // 粗加工区第三个物料
-    move_follow_sequence(target_colour,3); 
-
-    is_slight_move = 1;
-    tim3_count = 0;
-    while(is_slight_move != 0 && tim3_count < timeout_limit)
+    if(target_colour[5] != 0)
     {
-        HAL_Delay(10);
-    }
-    stop();
-    if(target_colour[2] != 0)
-    {
-        get_from_state(target_colour[2]); 
+        get_and_put_different_position_pileup(target_colour[5]);
     }
     else
     {
-        get_from_state(1); 
+        get_and_put_different_position_pileup(1);
     }
-    put_from_state();
-    printf("t0.txt=\"end_of_circle3\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
 
-    HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+    // HAL_Delay(2000);
+
+    // if(target_colour[3] != 0)
+    // {
+    //     get_and_load_different_position(target_colour[3]);
+    // }
+    // else
+    // {
+    //     get_and_load_different_position(2);
+    // }
+    // if(target_colour[4] != 0)
+    // {
+    //     get_and_load_different_position(target_colour[4]);
+    // }
+    // else
+    // {
+    //     get_and_load_different_position(3);
+    // }
+    // if(target_colour[5] != 0)
+    // {
+    //     get_and_load_different_position(target_colour[5]);
+    // }
+    // else
+    // {
+    //     get_and_load_different_position(1);
+    // }
+    whole_arm_spin(1);
+    claw_spin_front();
+    arm_stretch();
+    HAL_Delay(1000);
 
 
-    /*------------------再次前往转盘------------------------*/
+
+    // if(target_colour[0] != 0)
+    // {
+    //     get_from_state(target_colour[0]); 
+    // }
+    // else
+    // {
+    //     get_from_state(2); 
+    // }
+    // put_from_state();
+    // printf("t0.txt=\"end_of_circle1\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
 
 
+    // // 粗加工区第二个物料
+    // move_follow_sequence(target_colour,2); 
+    // is_slight_move = 1;
+    // tim3_count = 0;
+    // while(is_slight_move != 0 && tim3_count < timeout_limit )
+    // {
+    //     HAL_Delay(10);
+    // }
+    // stop();
+    // if(target_colour[1] != 0)
+    // {
+    //     get_from_state(target_colour[1]); 
+    // }
+    // else
+    // {
+    //     get_from_state(3); 
+    // }
+    // put_from_state();
+    // printf("t0.txt=\"end_of_circle2\"\xff\xff\xff");  // 校正结束，调试用，正式比赛中须删除
 
+
+    // // 粗加工区第三个物料
+    // move_follow_sequence(target_colour,3); 
+
+    // is_slight_move = 1;
+    // tim3_count = 0;
+    // while(is_slight_move != 0 && tim3_count < timeout_limit)
+    // {
+    //     HAL_Delay(10);
+    // }
+    // stop();
+    // if(target_colour[2] != 0)
+    // {
+    //     get_from_state(target_colour[2]); 
+    // }
+    // else
+    // {
+    //     get_from_state(1); 
+    // }
+    // put_from_state();
+    // printf("t0.txt=\"end_of_circle3\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
+
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+
+    spin_right(open_loop_move_velocity,acceleration, 88);
+    HAL_Delay(2200);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, 93);
+    HAL_Delay(2500);
+
+    spin_right(open_loop_move_velocity,acceleration, 88);
+    HAL_Delay(2200);
+
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,250); // 回到起点
+    HAL_Delay(5000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
+
+    move_all_direction_position(acceleration, open_loop_move_velocity, -20, 0);
 
 
 
@@ -585,7 +1045,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
 
-    HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50);
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50);
     HAL_Delay(100);
 
 
