@@ -215,7 +215,7 @@ int main(void)
     // HAL_Delay(2200);
     // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 168);
     // HAL_Delay(4000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
-
+    
     // spin_right(open_loop_move_velocity,acceleration, 90);
     // HAL_Delay(2200);
     // move_all_direction_position(acceleration, open_loop_move_velocity, 0,82); // 右移40cm
