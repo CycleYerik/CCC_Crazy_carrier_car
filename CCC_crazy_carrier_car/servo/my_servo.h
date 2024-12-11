@@ -22,7 +22,7 @@ void arm_shrink_all(void);
 void state_spin(int state_position);
 
 void get_and_put_different_position_pileup(int position);
-void put_claw_down_pile();
+void put_claw_down_pile(void);
 void get_from_state(int position);
 void put_from_state(void);
 void put_claw_down_ground(void);

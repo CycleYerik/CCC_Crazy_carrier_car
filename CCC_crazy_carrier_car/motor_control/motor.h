@@ -7,7 +7,7 @@
 #define pi 3.1415926
 #define wheel_circumference 31.2 //轮子周长
 #define pulse_per_circle 3200 //每圈脉冲数
-#define spin_radius 22 //自转半径，数据不准确
+#define spin_radius 21.37 //自转半径，数据不准确
 #define speed_ratio 0.47 //速度比例系数，0.47 cm/s 对应速度为1
 
 // 0.523 cm/s 对应速度为1

@@ -11,8 +11,8 @@ extern TIM_HandleTypeDef htim4;
 // 夹爪PD13  载物盘PD14 机械臂PD12
 
 // 普通舵机参数范围25-125  270
-int open_claw_position = 118; 
-int close_claw_position = 107;
+int open_claw_position = 85; //80 
+int close_claw_position = 74;
 int arm_stretch_position = 39; // 弃用
 int arm_shrink_position = 75;  // 弃用
 int arm_shrink_all_position = 75; // 弃用
@@ -22,36 +22,36 @@ int state_spin_position_3 = 114; //
 
 
 // 精密舵机参数范围0-4095
-int put_claw_down_pile_position = 2400;
-int put_claw_down_state_position = 1600 ; //从车的载物盘上
-int put_claw_down_position = 2300;  // 从转盘上取物料
-int put_claw_down_ground_position = 3700; // 放在地上
-int put_claw_up_top_position = 1150; // 最高点
+int put_claw_down_pile_position = 2699;
+int put_claw_down_state_position = 1696 ; //从车的载物盘上
+int put_claw_down_position = 2553;  // 从转盘上取物料
+int put_claw_down_ground_position = 3857; // 放在地上
+int put_claw_up_top_position = 1205; // 最高点
 int put_claw_up_position =1300; //  
-int claw_spin_position_front = 1920; // 2号精密舵机回到前方
-int claw_spin_position_state = 223; // 2号精密舵机回到载物盘
+int claw_spin_position_front = 1919; // 2号精密舵机回到前方
+int claw_spin_position_state = 230; // 2号精密舵机回到载物盘
 int right_arm = 2935;
 int left_arm = 2935;
-int middle_arm = 2906; 
+int middle_arm = 2365; 
 
 int shrink_arm = 1925;
-int stretch_arm_longgest = 2200;
-int stretch_camera = 640;
-int shrink_arm_all = 600;
+int stretch_arm_longgest = 2102;
+int stretch_camera = 413; 
+int shrink_arm_all = 500;
 
 
 
-int left_2 = 1595;
-int left_3 = 2412;
-int left_4 = 2182;
+int left_2 = 1630;
+int left_3 = 1845;
+int left_4 = 1780;
 
-int right_2 = 2302; 
-int right_3 = 3350;
-int right_4 = 2258;
+int right_2 = 2235; 
+int right_3 = 2877;
+int right_4 = 1830;
 
-int middle_2 = 1921;
-int middle_3 = 2906;
-int middle_4 = 777;
+int middle_2 = 1919;
+int middle_3 = 2365;
+int middle_4 = 413;
 
 
 
@@ -165,28 +165,28 @@ void get_and_load_different_position(int position)
 {
     state_spin(position);
     whole_arm_spin(1);
-    // arm_shrink(); // 机械臂收回至载物盘上
+    arm_shrink(); // 机械臂收回至载物盘上
     open_claw();
     put_claw_up();
     HAL_Delay(1000);
     if(position == 1) //红
     {
         feetech_servo_move(2,right_2,4095,50);
-        feetech_servo_move(3,right_3,4095,50);
+        feetech_servo_move(3,right_3,1500,100);
         feetech_servo_move(4,right_4,4095,50);
     }
     else if(position == 2)
     {
         feetech_servo_move(4,middle_4,4095,50);
         // HAL_Delay(1000);
-        feetech_servo_move(2,middle_2,4095,50);
-        feetech_servo_move(3,middle_3,4095,50);
+        feetech_servo_move(2,middle_2,1500,100);
+        feetech_servo_move(3,middle_3,2000,50);
         
     }
     else if(position == 3)
     {
         feetech_servo_move(2,left_2,4095,50);
-        feetech_servo_move(3,left_3,4095,50);
+        feetech_servo_move(3,left_3,1500,100);
         feetech_servo_move(4,left_4,4095,50);
     }
 
@@ -198,11 +198,11 @@ void get_and_load_different_position(int position)
     HAL_Delay(500);
     arm_shrink();
     put_claw_up();
-    HAL_Delay(400);
+    HAL_Delay(700);
     claw_spin_state();
-    HAL_Delay(1500);
+    HAL_Delay(1200);
     open_claw();
-    HAL_Delay(800);
+    HAL_Delay(500);
     put_claw_up_top();
     claw_spin_front();
     HAL_Delay(800);
@@ -228,19 +228,19 @@ void get_and_put_different_position(int position)
     if(position == 1) //红
     {
         feetech_servo_move(2,right_2,4095,50);
-        feetech_servo_move(3,right_3,4095,50);
+        feetech_servo_move(3,right_3,1500,100);
         feetech_servo_move(4,right_4,4095,50);
     }
     else if(position == 2)
     {
         feetech_servo_move(2,middle_2,4095,50);
-        feetech_servo_move(3,middle_3,4095,50);
+        feetech_servo_move(3,middle_3,1500,100);
         feetech_servo_move(4,middle_4,4095,50);
     }
     else if(position == 3)
     {
         feetech_servo_move(2,left_2,4095,50);
-        feetech_servo_move(3,left_3,4095,50);
+        feetech_servo_move(3,left_3,1500,100);
         feetech_servo_move(4,left_4,4095,50);
     }
     HAL_Delay(1200);
@@ -251,7 +251,7 @@ void get_and_put_different_position(int position)
     put_claw_up();
     HAL_Delay(400);
     claw_spin_front();
-    // arm_stretch();
+    arm_shrink();
     HAL_Delay(800);
 }
 
@@ -273,19 +273,19 @@ void get_and_put_different_position_pileup(int position)
     if(position == 1) //红
     {
         feetech_servo_move(2,right_2,4095,50);
-        feetech_servo_move(3,right_3,4095,50);
+        feetech_servo_move(3,right_3,1500,100);
         feetech_servo_move(4,right_4,4095,50);
     }
     else if(position == 2)
     {
         feetech_servo_move(2,middle_2,4095,50);
-        feetech_servo_move(3,middle_3,4095,50);
+        feetech_servo_move(3,middle_3,1500,100);
         feetech_servo_move(4,middle_4,4095,50);
     }
     else if(position == 3)
     {
         feetech_servo_move(2,left_2,4095,50);
-        feetech_servo_move(3,left_3,4095,50);
+        feetech_servo_move(3,left_3,1500,100);
         feetech_servo_move(4,left_4,4095,50);
     }
     HAL_Delay(1200);
@@ -296,11 +296,11 @@ void get_and_put_different_position_pileup(int position)
     put_claw_up();
     HAL_Delay(400);
     claw_spin_front();
-    // arm_stretch();
+    arm_shrink();
     HAL_Delay(800);
 }
 
-void put_claw_down_pile()
+void put_claw_down_pile(void)
 {
     feetech_servo_move(1,put_claw_down_pile_position,4095,50);
 }
