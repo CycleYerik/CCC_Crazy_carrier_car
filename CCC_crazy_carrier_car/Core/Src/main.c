@@ -70,7 +70,7 @@ extern int is_slight_move,motor_state,is_slight_spin;
 
 float gyro_z = 90;
 
-int open_loop_move_velocity = 180;
+int open_loop_move_velocity = 250;
 
 // 目标颜色数组
 volatile int target_colour[6] = {3,2,1,2,1,3}; 
@@ -241,6 +241,15 @@ int main(void)
     // HAL_Delay(1000);
     // get_and_put_different_position(3);
 
+    // move_all_direction_position(acceleration, 0.1, 0, 10);
+    // HAL_Delay(5000);
+    // move_all_direction_position(acceleration, 0.2, 0, 10);
+    // HAL_Delay(5000);
+    // move_all_direction_position(acceleration, 0.3, 0, 10);
+    // HAL_Delay(5000);
+    // move_all_direction_position(acceleration, 0.4, 0, 10);
+    // HAL_Delay(5000);
+
     // while(1)
     // {
     //     HAL_Delay(5000);
@@ -259,21 +268,41 @@ int main(void)
 
     //小车离开起点并前往转盘
     start_and_come_to_turntable(); // 从起点前往转盘
-    // get_from_turntable(1);  // 从转盘抓取物料
+    get_from_turntable(1);  // 从转盘抓取物料
 
     //小车第一次前往粗加工区
     come_to_raw_processing_area();
 
     //粗加工区识别色环移动并放置
-    // arm_stretch();
-    // get_and_put_in_one_position(1);
-    // get_and_load_in_one_position(1);
+    arm_stretch();
+    get_and_put_in_one_position(1);
+    get_and_load_in_one_position(1);
+
+    /************方案二*************/
+    // get_and_put_with_movement(1);
+
+    
+    // move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
+    // HAL_Delay(1000);
+    // move_sequence_bias = 0;
+
+
+
     
     //小车第一次前往暂存区
     come_to_temporary_area();
+    
 
     //暂存区识别色环移动并放置
-    // get_and_put_in_one_position(2);
+    arm_stretch();
+    get_and_put_in_one_position(2);
+
+
+    /*************方案二**************/
+    // get_and_put_with_movement(1);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
+    // HAL_Delay(1000);
+    // move_sequence_bias = 0;
 
     // 第一次从暂存区去转盘
     come_to_turntable_from_temparea();
@@ -282,20 +311,23 @@ int main(void)
 
 
     // 第二次从转盘抓取物料  
-    // get_from_turntable(2);
+    arm_stretch();
+    get_from_turntable(2);
 
     // 第二次前往粗加工区
     come_to_raw_processing_area();
 
     //粗加工区识别色环移动并放置
-    // get_and_put_in_one_position(3);
-    // get_and_load_in_one_position(3);
+    arm_stretch();
+    get_and_put_in_one_position(3);
+    get_and_load_in_one_position(3);
 
     // 第二次前往暂存区
     come_to_temporary_area();
 
     //暂存区识别色环移动并放置
-    // get_and_put_in_one_position(4);
+    arm_stretch();
+    get_and_put_in_one_position(4);
 
     // 第二次从暂存区回原点
     come_back_to_start_from_temparea();
@@ -308,6 +340,8 @@ int main(void)
     // get_and_load_ground(target_colour[1]);
     // move_follow_sequence(target_colour,3);
     // get_and_load_ground(target_colour[2]);
+
+
 
 
 
@@ -457,7 +491,7 @@ void move_follow_sequence(int target_colour_input[6],int case_count_input)
 /// @param  
 void start_and_come_to_turntable(void)
 {
-    int start_move_left = -16;
+    int start_move_left = -17;
     int move_to_qrcode = 60;
     int move_from_qrcode_to_table = 83;
     int spin_right_angle = 90;
@@ -470,16 +504,18 @@ void start_and_come_to_turntable(void)
     move_all_direction_position(acceleration, open_loop_move_velocity, start_move_left , 0); // 左移出库
     HAL_Delay(1500);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_to_qrcode); // 前进至二维码
-    HAL_Delay(5000);
+    HAL_Delay(2000);
     // 将target_colour转为字符串显示在串口屏上
     char* target_colour_str = (char*)malloc(6);
     sprintf(target_colour_str, "%d%d%d%d%d%d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]);
     printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); // 将目标颜色显示在串口屏上
-    free(target_colour_str);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table); // 前进至转盘
     HAL_Delay(3000);
     spin_right(open_loop_move_velocity,acceleration, spin_right_angle);
     HAL_Delay(2200);
+    sprintf(target_colour_str, "%d%d%d%d%d%d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]);
+    printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); // 将目标颜色显示在串口屏上
+    free(target_colour_str);
     // move_all_direction_position(acceleration, open_loop_move_velocity, 0, -5); 
     // HAL_Delay(1000);
 }
@@ -557,7 +593,7 @@ void come_to_raw_processing_area(void)
 /// @param  
 void come_to_temporary_area(void)
 {
-    int move_front_length = 81;
+    int move_front_length = 82;
     int move_right_length = 80;
     spin_right(open_loop_move_velocity,acceleration, 90);
     HAL_Delay(2200);
@@ -571,7 +607,7 @@ void come_to_temporary_area(void)
 /// @param  
 void come_to_turntable_from_temparea(void)
 {
-    int move_right_length = 43;
+    int move_right_length = 44;
     int move_front_length = 90;
     spin_right(open_loop_move_velocity,acceleration, 90);
     HAL_Delay(2200);
@@ -586,7 +622,7 @@ void come_back_to_start_from_temparea(void)
 {
     int move_left_length = -18;
     int move_front_length_1 = 93;
-    int move_front_length_2 = 180;
+    int move_front_length_2 = 186;
     spin_right(open_loop_move_velocity,acceleration, 90);
     HAL_Delay(2200);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_1);
@@ -615,6 +651,12 @@ void get_and_put_in_one_position(int time_status)
     {
         HAL_Delay(10);
     }
+    if(tim3_count >= timeout_limit)
+    {
+        HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+        HAL_Delay(80);
+    }
+    
     is_slight_spin = 0;
     stop();
     printf("t0.txt=\"end_of_line\"\xff\xff\xff"); // 校正结束，调试用，正式比赛中须删除
@@ -625,6 +667,11 @@ void get_and_put_in_one_position(int time_status)
     while(is_slight_move != 0 && tim3_count < timeout_limit) // 超时则停止
     {
         HAL_Delay(10);
+    }
+    if(tim3_count >= timeout_limit)
+    {
+        HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+        HAL_Delay(80);
     }
     is_slight_move = 0;
     printf("t0.txt=\"1\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
@@ -747,6 +794,108 @@ void get_and_load_in_one_position(int time_status)
     claw_spin_front();
     // arm_stretch();
     HAL_Delay(1000);
+}
+
+
+void get_and_put_with_movement(int status)
+{
+    // state_spin(position);
+    move_follow_sequence(target_colour,1);
+    arm_stretch();
+    HAL_Delay(1000);
+
+
+    HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正直线
+    HAL_Delay(50);
+
+    is_slight_spin = 1; // 使能轻微移动
+    motor_state = 1;
+    tim3_count = 0;
+    while(is_slight_spin != 0 && tim3_count < timeout_limit)
+    {
+        HAL_Delay(10);
+    }
+    if(tim3_count >= timeout_limit)
+    {
+        HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+        HAL_Delay(80);
+    }
+    is_slight_spin = 0;
+    stop();
+    printf("t0.txt=\"end_of_line\"\xff\xff\xff"); // 校正结束，调试用，正式比赛中须删除
+    HAL_Delay(1000);
+
+    is_slight_move = 1; // 使能微调
+    tim3_count = 0; // 开始计时，+1 代表10ms
+    while(is_slight_move != 0 && tim3_count < timeout_limit) // 超时则停止
+    {
+        HAL_Delay(10);
+    }
+    if(tim3_count >= timeout_limit)
+    {
+        HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+        HAL_Delay(80);
+    }
+    is_slight_move = 0;
+    printf("t0.txt=\"1\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
+    stop();
+
+    get_from_state(target_colour[0]);
+    put_from_state();
+    arm_stretch();
+
+    move_follow_sequence(target_colour,2);
+    HAL_Delay(1000);
+
+    is_slight_move = 1; // 使能微调
+    tim3_count = 0; // 开始计时，+1 代表10ms
+    while(is_slight_move != 0 && tim3_count < timeout_limit) // 超时则停止
+    {
+        HAL_Delay(10);
+    }
+    if(tim3_count >= timeout_limit)
+    {
+        HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+        HAL_Delay(80);
+    }
+    is_slight_move = 0;
+    printf("t0.txt=\"1\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
+    stop();
+
+    get_from_state(target_colour[1]);
+    put_from_state();
+    arm_stretch();
+
+    move_follow_sequence(target_colour,3);
+    HAL_Delay(1000);
+
+    is_slight_move = 1; // 使能微调
+    tim3_count = 0; // 开始计时，+1 代表10ms
+    while(is_slight_move != 0 && tim3_count < timeout_limit) // 超时则停止
+    {
+        HAL_Delay(10);
+    }
+    is_slight_move = 0;
+    printf("t0.txt=\"1\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
+    stop();
+
+    get_from_state(target_colour[2]);
+    put_from_state();
+    arm_stretch();
+
+
+
+}
+
+void get_and_load_with_movement(int status)
+{
+    // state_spin(position);
+    move_follow_sequence(target_colour,1);
+    arm_stretch();
+    HAL_Delay(1000);
+
+    get_and_load(target_colour[0]); 
+
 }
 
 /* USER CODE END 4 */

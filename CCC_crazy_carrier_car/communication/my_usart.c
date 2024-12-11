@@ -25,6 +25,18 @@ extern volatile int target_colour[6];
 
 volatile int test_slight_move = 1;
 
+float x_err_1 = 0;
+float x_err_2 = 0;
+float x_err_3 = 0;
+float y_err_1 = 0;
+float y_err_2 = 0;
+float y_err_3 = 0;
+
+
+#define Kp_slight_move 0.5
+#define Ki_slight_move 0.1
+#define Kd_slight_move 0.1
+
 
 
 
@@ -364,7 +376,7 @@ void UART_receive_process_3(void)
                     spin_which_direction = 10;
                 }
                 else{
-                    spin_which_direction = (float)rxdata_u3[1];
+                    spin_which_direction = 0.8*(float)rxdata_u3[1];
                 }
                 
             }
@@ -375,7 +387,7 @@ void UART_receive_process_3(void)
                     spin_which_direction = -10;
                 }
                 else{
-                    spin_which_direction = - (float)rxdata_u3[1];
+                    spin_which_direction = - 0.8*(float)rxdata_u3[1];
                 }
             }
             
@@ -430,6 +442,22 @@ void UART_receive_process_3(void)
             }
             x_move_position *= 0.1;
             y_move_position *= 0.1;
+
+            // 对位置微调进行PID控制
+            // x_err_1 = x_move_position;
+            // y_err_1 = y_move_position;
+            // x_err_2 = x_err_1;
+            // y_err_2 = y_err_1;
+            // x_err_3 = x_err_2;
+            // y_err_3 = y_err_2;
+
+            // x_move_position = Kp_slight_move * (x_err_1- x_err_2) + Ki_slight_move * x_err_1 + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2);
+            // y_move_position = Kp_slight_move * (y_err_1- y_err_2) + Ki_slight_move * y_err_1 + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2);
+
+
+
+
+
             if(x_move_position > 5)
             {
                 x_move_position = 5;

@@ -22,12 +22,12 @@ int state_spin_position_3 = 114; //
 
 
 // 精密舵机参数范围0-4095
-int put_claw_down_pile_position = 2699;
-int put_claw_down_state_position = 1696 ; //从车的载物盘上
-int put_claw_down_position = 2553;  // 从转盘上取物料
-int put_claw_down_ground_position = 3857; // 放在地上
-int put_claw_up_top_position = 1205; // 最高点
-int put_claw_up_position =1300; //  
+int put_claw_down_pile_position = 3057;
+int put_claw_down_state_position = 1917 ; //从车的载物盘上
+int put_claw_down_position = 2852;  // 从转盘上取物料
+int put_claw_down_ground_position = 4053; // 放在地上
+int put_claw_up_top_position = 1438; // 最高点
+int put_claw_up_position =1500; //  
 int claw_spin_position_front = 1919; // 2号精密舵机回到前方
 int claw_spin_position_state = 230; // 2号精密舵机回到载物盘
 int right_arm = 2935;
@@ -107,13 +107,13 @@ void get_and_load(int position)
     // 抓取
     close_claw();
     HAL_Delay(500);
-    // arm_shrink();
+    arm_shrink();
 
     // 拉起夹爪
     put_claw_up_top();
-    HAL_Delay(800);
+    HAL_Delay(700);
     claw_spin_state();
-    HAL_Delay(1200);
+    HAL_Delay(1100);
 
     // 放下
     open_claw();
@@ -122,7 +122,8 @@ void get_and_load(int position)
     put_claw_up_top();
     // HAL_Delay(300);
     claw_spin_front();
-    HAL_Delay(800);
+    arm_stretch();
+    HAL_Delay(500);
 }
 
 /// @brief 从载物盘上取物料,结束时为夹爪非最高位，朝前
@@ -140,9 +141,10 @@ void get_from_state(int position)
     put_claw_down_state();
     HAL_Delay(800);
     close_claw();
-    put_claw_up();
+    put_claw_up_top();
     HAL_Delay(500);
     claw_spin_front();
+    arm_stretch();
 
 
 }
