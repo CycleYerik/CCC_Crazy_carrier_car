@@ -11,7 +11,7 @@ extern TIM_HandleTypeDef htim4;
 // 夹爪PD13  载物盘PD14 机械臂PD12
 
 // 普通舵机参数范围25-125  270
-int open_claw_position = 85; //80 
+int open_claw_position = 88; //80 
 int close_claw_position = 74;
 int arm_stretch_position = 39; // 弃用
 int arm_shrink_position = 75;  // 弃用
@@ -69,11 +69,11 @@ void get_and_load_ground(int position)
 
     // 放下夹爪
     put_claw_down_ground();
-    HAL_Delay(1200);
+    HAL_Delay(1000);
 
     // 抓取
     close_claw();
-    HAL_Delay(800);
+    HAL_Delay(500);
 
     // 拉起夹爪
     put_claw_up_top();
@@ -113,7 +113,7 @@ void get_and_load(int position)
     put_claw_up_top();
     HAL_Delay(700);
     claw_spin_state();
-    HAL_Delay(1100);
+    HAL_Delay(1000);
 
     // 放下
     open_claw();
@@ -154,6 +154,18 @@ void get_from_state(int position)
 void put_from_state(void)
 {
     put_claw_down_ground();
+    HAL_Delay(2000);
+    open_claw();
+    HAL_Delay(1000);
+    put_claw_up();
+    HAL_Delay(800); 
+    //!
+    // arm_shrink_all();  
+}
+
+void put_from_state_pileup(void)
+{
+    put_claw_down_pile();
     HAL_Delay(2000);
     open_claw();
     HAL_Delay(1000);

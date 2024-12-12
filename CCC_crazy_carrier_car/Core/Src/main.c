@@ -70,7 +70,8 @@ extern int is_slight_move,motor_state,is_slight_spin;
 
 float gyro_z = 90;
 
-int open_loop_move_velocity = 250;
+int open_loop_move_velocity = 300;
+int open_loop_spin_velocity = 500;
 
 // 目标颜色数组
 volatile int target_colour[6] = {3,2,1,2,1,3}; 
@@ -113,7 +114,7 @@ int fgetc(FILE *f)
     HAL_UART_Receive(&huart5, &ch, 1, 0xffff);
     return ch;
 }
-void move_follow_sequence(int target_colour_input[6],int case_count);
+void move_follow_sequence(int target_colour_input[6], int case_count_input, int status);
 void start_and_come_to_turntable(void);
 void come_to_raw_processing_area(void);
 void come_to_temporary_area(void);
@@ -124,6 +125,8 @@ void get_from_turntable(int turntable_status);
 void get_and_put_in_one_position(int time_status);
 void get_and_load_in_one_position(int time_status);
 
+void get_and_put_with_movement(int status,int is_pile_up);
+void get_and_load_with_movement(int status);
 
 
 /* USER CODE END PFP */
@@ -270,21 +273,27 @@ int main(void)
     start_and_come_to_turntable(); // 从起点前往转盘
     get_from_turntable(1);  // 从转盘抓取物料
 
+
+
     //小车第一次前往粗加工区
     come_to_raw_processing_area();
 
+
+
     //粗加工区识别色环移动并放置
-    arm_stretch();
-    get_and_put_in_one_position(1);
-    get_and_load_in_one_position(1);
+    /*************方案一**************/
+    // arm_stretch();
+    // get_and_put_in_one_position(1);
+    // get_and_load_in_one_position(1);
 
     /************方案二*************/
-    // get_and_put_with_movement(1);
+    get_and_put_with_movement(1,0);
+    get_and_load_with_movement(1);
 
     
-    // move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
-    // HAL_Delay(1000);
-    // move_sequence_bias = 0;
+    move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
+    HAL_Delay(1000);
+    move_sequence_bias = 0;
 
 
 
@@ -295,14 +304,16 @@ int main(void)
 
     //暂存区识别色环移动并放置
     arm_stretch();
-    get_and_put_in_one_position(2);
-
+    /*************方案一**************/
+    // get_and_put_in_one_position(2);
 
     /*************方案二**************/
-    // get_and_put_with_movement(1);
-    // move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
-    // HAL_Delay(1000);
-    // move_sequence_bias = 0;
+    get_and_put_with_movement(1,0);
+    move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
+    HAL_Delay(1000);
+    move_sequence_bias = 0;
+
+
 
     // 第一次从暂存区去转盘
     come_to_turntable_from_temparea();
@@ -314,37 +325,48 @@ int main(void)
     arm_stretch();
     get_from_turntable(2);
 
+
+
     // 第二次前往粗加工区
     come_to_raw_processing_area();
 
+
+
     //粗加工区识别色环移动并放置
-    arm_stretch();
-    get_and_put_in_one_position(3);
-    get_and_load_in_one_position(3);
+    /*************方案一**************/
+    // arm_stretch();
+    // get_and_put_in_one_position(3);
+    // get_and_load_in_one_position(3);
+
+    /************方案二*************/
+    get_and_put_with_movement(2,0);
+    get_and_load_with_movement(2);
+    move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
+    HAL_Delay(1000);
+
+
 
     // 第二次前往暂存区
     come_to_temporary_area();
 
+
+
     //暂存区识别色环移动并放置
     arm_stretch();
-    get_and_put_in_one_position(4);
+    /*************方案一**************/
+    // get_and_put_in_one_position(4);
+
+    /*************方案二**************/
+    get_and_put_with_movement(2,1);
+
+
+
 
     // 第二次从暂存区回原点
     come_back_to_start_from_temparea();
 
-    /*------------------再次抓取------------------------*/
-    // open_claw();
-    // move_follow_sequence(target_colour,1);
-    // get_and_load_ground(target_colour[0]);
-    // move_follow_sequence(target_colour,2);
-    // get_and_load_ground(target_colour[1]);
-    // move_follow_sequence(target_colour,3);
-    // get_and_load_ground(target_colour[2]);
 
-
-
-
-
+    //! 总体代码流程到此结束了
 
   /* USER CODE END 2 */
 
@@ -415,75 +437,145 @@ void SystemClock_Config(void)
 /// @brief 根据识别到的颜色顺序，移动到对应的位置,左蓝中绿右红， 1红2绿3蓝
 /// @param target_colour_input 
 /// @param case 放置的阶段，1 2 3 对应粗加工区，然后循环，1 2 3 对应暂存区 ，第二轮则又从 1 2 3 开始
-void move_follow_sequence(int target_colour_input[6],int case_count_input)
+void move_follow_sequence(int target_colour_input[6], int case_count_input, int status)
 {
-    switch (case_count_input)
+    if (status == 1)
     {
+
+        switch (case_count_input)
+        {
         case 1:
-            if(target_colour_input[0] == 1)
+            if (target_colour_input[0] == 1)
             {
-                move_all_direction_position(acceleration, open_loop_move_velocity, 15 +move_sequence_bias, 0);
+                move_all_direction_position(acceleration, open_loop_move_velocity, 15 + move_sequence_bias, 0);
                 HAL_Delay(2500);
                 move_sequence_bias = -15;
-                
             }
-            else if(target_colour_input[0] == 2)
+            else if (target_colour_input[0] == 2)
             {
                 move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
                 HAL_Delay(2500);
                 move_sequence_bias = 0;
             }
-            else if(target_colour_input[0] == 3)
+            else if (target_colour_input[0] == 3)
             {
-                move_all_direction_position(acceleration, open_loop_move_velocity, -15+move_sequence_bias, 0);
+                move_all_direction_position(acceleration, open_loop_move_velocity, -15 + move_sequence_bias, 0);
                 HAL_Delay(2500);
                 move_sequence_bias = 15;
             }
             break;
-        
+
         case 2:
-            if(target_colour_input[1] == 1)
+            if (target_colour_input[1] == 1)
             {
-                move_all_direction_position(acceleration, open_loop_move_velocity, 15+move_sequence_bias, 0); //即相对中线右移15cm，再加上偏差
+                move_all_direction_position(acceleration, open_loop_move_velocity, 15 + move_sequence_bias, 0); // 即相对中线右移15cm，再加上偏差
                 HAL_Delay(2500);
                 move_sequence_bias = -15;
             }
-            else if(target_colour_input[1] == 2)
+            else if (target_colour_input[1] == 2)
             {
                 move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
                 HAL_Delay(2500);
                 move_sequence_bias = 0;
-
             }
-            else if(target_colour_input[1] == 3)
+            else if (target_colour_input[1] == 3)
             {
-                move_all_direction_position(acceleration, open_loop_move_velocity, -15+move_sequence_bias, 0);
+                move_all_direction_position(acceleration, open_loop_move_velocity, -15 + move_sequence_bias, 0);
                 HAL_Delay(2500);
                 move_sequence_bias = 15;
             }
             break;
 
         case 3:
-            if(target_colour_input[2] == 1)
+            if (target_colour_input[2] == 1)
             {
-                move_all_direction_position(acceleration, open_loop_move_velocity, 15+move_sequence_bias, 0); //即相对中线右移15cm，再加上偏差
+                move_all_direction_position(acceleration, open_loop_move_velocity, 15 + move_sequence_bias, 0); // 即相对中线右移15cm，再加上偏差
                 HAL_Delay(2500);
                 move_sequence_bias = -15;
             }
-            else if(target_colour_input[2] == 2)
+            else if (target_colour_input[2] == 2)
             {
                 move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
                 HAL_Delay(2500);
                 move_sequence_bias = 0;
-
             }
-            else if(target_colour_input[2] == 3)
+            else if (target_colour_input[2] == 3)
             {
-                move_all_direction_position(acceleration, open_loop_move_velocity, -15+move_sequence_bias, 0);
+                move_all_direction_position(acceleration, open_loop_move_velocity, -15 + move_sequence_bias, 0);
                 HAL_Delay(2500);
                 move_sequence_bias = 15;
             }
             break;
+        }
+    }
+
+    if (status == 2)
+    {
+        switch (case_count_input)
+        {
+        case 1:
+            if (target_colour_input[3] == 1)
+            {
+                move_all_direction_position(acceleration, open_loop_move_velocity, 15 + move_sequence_bias, 0);
+                HAL_Delay(2500);
+                move_sequence_bias = -15;
+            }
+            else if (target_colour_input[3] == 2)
+            {
+                move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
+                HAL_Delay(2500);
+                move_sequence_bias = 0;
+            }
+            else if (target_colour_input[3] == 3)
+            {
+                move_all_direction_position(acceleration, open_loop_move_velocity, -15 + move_sequence_bias, 0);
+                HAL_Delay(2500);
+                move_sequence_bias = 15;
+            }
+            break;
+
+        case 2:
+            if (target_colour_input[4] == 1)
+            {
+                move_all_direction_position(acceleration, open_loop_move_velocity, 15 + move_sequence_bias, 0); // 即相对中线右移15cm，再加上偏差
+                HAL_Delay(2500);
+                move_sequence_bias = -15;
+            }
+            else if (target_colour_input[4] == 2)
+            {
+                move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
+                HAL_Delay(2500);
+                move_sequence_bias = 0;
+            }
+            else if (target_colour_input[4] == 3)
+            {
+                move_all_direction_position(acceleration, open_loop_move_velocity, -15 + move_sequence_bias, 0);
+                HAL_Delay(2500);
+                move_sequence_bias = 15;
+            }
+            break;
+
+        case 3:
+            if (target_colour_input[5] == 1)
+            {
+                move_all_direction_position(acceleration, open_loop_move_velocity, 15 + move_sequence_bias, 0); // 即相对中线右移15cm，再加上偏差
+                HAL_Delay(2500);
+                move_sequence_bias = -15;
+            }
+            else if (target_colour_input[5] == 2)
+            {
+                move_all_direction_position(acceleration, open_loop_move_velocity, move_sequence_bias, 0);
+                HAL_Delay(2500);
+                move_sequence_bias = 0;
+            }
+            else if (target_colour_input[5] == 3)
+            {
+                move_all_direction_position(acceleration, open_loop_move_velocity, -15 + move_sequence_bias, 0);
+                HAL_Delay(2500);
+                move_sequence_bias = 15;
+            }
+            break;
+        }
     }
 }
 
@@ -511,7 +603,7 @@ void start_and_come_to_turntable(void)
     printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); // 将目标颜色显示在串口屏上
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table); // 前进至转盘
     HAL_Delay(3000);
-    spin_right(open_loop_move_velocity,acceleration, spin_right_angle);
+    spin_right(open_loop_spin_velocity,acceleration, spin_right_angle);
     HAL_Delay(2200);
     sprintf(target_colour_str, "%d%d%d%d%d%d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]);
     printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); // 将目标颜色显示在串口屏上
@@ -561,30 +653,34 @@ void get_from_turntable(int turntable_status)
     get_plate_count = 0;
     is_start_get_plate = 0;
     // arm_stretch();
-    HAL_Delay(500);
+    // HAL_Delay(500);
 }
 
 /// @brief 从转盘前往粗加工区
 /// @param  
 void come_to_raw_processing_area(void)
 {
-    int move_right_length = 41;
-    int move_front_length = 170;
-    // move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length,0);
+    // int move_right_length = 41;
+    // int move_front_length = 170;
+    // spin_right(open_loop_spin_velocity,acceleration, 90);
+    // HAL_Delay(2200);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_right_length);
     // HAL_Delay(2000);
-    // spin_right(open_loop_move_velocity,acceleration, 180);
+    // spin_right(open_loop_spin_velocity,acceleration, 90);
     // HAL_Delay(2000);
     // move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_front_length);
-    // HAL_Delay(5000);
+    // HAL_Delay(4000);
 
-    spin_right(open_loop_move_velocity,acceleration, 90);
-    HAL_Delay(2200);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_right_length);
+
+    //一次转动
+    int move_right_length = 41;
+    int move_front_length = 170;
+    move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length,0);
     HAL_Delay(2000);
-    spin_right(open_loop_move_velocity,acceleration, 90);
+    spin_right(open_loop_spin_velocity,acceleration, 180);
     HAL_Delay(2000);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_front_length);
-    HAL_Delay(4000);
+    HAL_Delay(5000);
 
 
 }
@@ -595,7 +691,7 @@ void come_to_temporary_area(void)
 {
     int move_front_length = 82;
     int move_right_length = 80;
-    spin_right(open_loop_move_velocity,acceleration, 90);
+    spin_right(open_loop_spin_velocity,acceleration, 90);
     HAL_Delay(2200);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length );
     HAL_Delay(2500);
@@ -609,7 +705,7 @@ void come_to_turntable_from_temparea(void)
 {
     int move_right_length = 44;
     int move_front_length = 90;
-    spin_right(open_loop_move_velocity,acceleration, 90);
+    spin_right(open_loop_spin_velocity,acceleration, 90);
     HAL_Delay(2200);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length);
     HAL_Delay(3000);
@@ -620,18 +716,18 @@ void come_to_turntable_from_temparea(void)
 /// @brief 从暂存区回到起点
 void come_back_to_start_from_temparea(void)
 {
-    int move_left_length = -18;
+    int move_45_length = -18;
     int move_front_length_1 = 93;
-    int move_front_length_2 = 186;
-    spin_right(open_loop_move_velocity,acceleration, 90);
+    int move_front_length_2 = 180;
+    spin_right(open_loop_spin_velocity,acceleration, 90);
     HAL_Delay(2200);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_1);
     HAL_Delay(2500);
-    spin_right(open_loop_move_velocity,acceleration, 90);
+    spin_right(open_loop_spin_velocity,acceleration, 90);
     HAL_Delay(2200);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_2);
     HAL_Delay(4000);//  length /(0.47cm/s * velocity) *1000 = delaytime(ms)
-    move_all_direction_position(acceleration, open_loop_move_velocity, move_left_length, 0);
+    move_all_direction_position(acceleration, open_loop_move_velocity, move_45_length, -move_45_length);
     HAL_Delay(2000);
 }
 
@@ -796,11 +892,12 @@ void get_and_load_in_one_position(int time_status)
     HAL_Delay(1000);
 }
 
-
-void get_and_put_with_movement(int status)
+/// @brief 移动进行放置，1为第一轮，2为第二轮
+/// @param status 
+void get_and_put_with_movement(int status,int is_pile_up)
 {
     // state_spin(position);
-    move_follow_sequence(target_colour,1);
+    move_follow_sequence(target_colour,1,status);
     arm_stretch();
     HAL_Delay(1000);
 
@@ -808,7 +905,7 @@ void get_and_put_with_movement(int status)
     HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正直线
     HAL_Delay(50);
 
-    is_slight_spin = 1; // 使能轻微移动
+    is_slight_spin = 1; // 直线
     motor_state = 1;
     tim3_count = 0;
     while(is_slight_spin != 0 && tim3_count < timeout_limit)
@@ -840,11 +937,26 @@ void get_and_put_with_movement(int status)
     printf("t0.txt=\"1\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
     stop();
 
-    get_from_state(target_colour[0]);
-    put_from_state();
+    if(status == 1) // 第一轮
+    {
+        get_from_state(target_colour[0]);
+    }
+    else if(status == 2) // 第二轮
+    {
+        get_from_state(target_colour[3]);
+    }
+
+    if(is_pile_up == 1)
+    {
+        put_from_state_pileup();
+    }
+    else
+    {
+        put_from_state();
+    }
     arm_stretch();
 
-    move_follow_sequence(target_colour,2);
+    move_follow_sequence(target_colour,2,status);
     HAL_Delay(1000);
 
     is_slight_move = 1; // 使能微调
@@ -862,11 +974,26 @@ void get_and_put_with_movement(int status)
     printf("t0.txt=\"1\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
     stop();
 
-    get_from_state(target_colour[1]);
-    put_from_state();
+    if(status == 1) // 第一轮
+    {
+        get_from_state(target_colour[1]);
+    }
+    else if(status == 2) // 第二轮
+    {
+        get_from_state(target_colour[4]);
+    }
+    
+    if(is_pile_up == 1)
+    {
+        put_from_state_pileup();
+    }
+    else
+    {
+        put_from_state();
+    }
     arm_stretch();
 
-    move_follow_sequence(target_colour,3);
+    move_follow_sequence(target_colour,3,status);
     HAL_Delay(1000);
 
     is_slight_move = 1; // 使能微调
@@ -879,9 +1006,25 @@ void get_and_put_with_movement(int status)
     printf("t0.txt=\"1\"\xff\xff\xff"); //校正结束，调试用，正式比赛中须删除
     stop();
 
-    get_from_state(target_colour[2]);
-    put_from_state();
+    if(status == 1) // 第一轮
+    {
+        get_from_state(target_colour[2]);
+    }
+    else if(status == 2) // 第二轮
+    {
+        get_from_state(target_colour[5]);
+    }
+    
+    if(is_pile_up == 1)
+    {
+        put_from_state_pileup();
+    }
+    else
+    {
+        put_from_state();
+    }
     arm_stretch();
+    HAL_Delay(1000);
 
 
 
@@ -889,12 +1032,44 @@ void get_and_put_with_movement(int status)
 
 void get_and_load_with_movement(int status)
 {
-    // state_spin(position);
-    move_follow_sequence(target_colour,1);
+    move_follow_sequence(target_colour,1,status);
     arm_stretch();
     HAL_Delay(1000);
 
-    get_and_load(target_colour[0]); 
+    if(status == 1) // 第一轮
+    {
+        get_and_load_ground(target_colour[0]);
+    }
+    else if(status == 2) // 第二轮
+    {
+        get_and_load_ground(target_colour[3]);
+    }
+
+    move_follow_sequence(target_colour,2,status);
+    HAL_Delay(1000);
+
+    if(status == 1) // 第一轮
+    {
+        get_and_load_ground(target_colour[1]);
+    }
+    else if(status == 2) // 第二轮
+    {
+        get_and_load_ground(target_colour[4]);
+    }
+
+    move_follow_sequence(target_colour,3,status);
+    HAL_Delay(1000);
+
+    if(status == 1) // 第一轮
+    {
+        get_and_load_ground(target_colour[2]);
+    }
+    else if(status == 2) // 第二轮
+    {
+        get_and_load_ground(target_colour[5]);
+    }
+
+    
 
 }
 
