@@ -33,8 +33,8 @@ float y_err_2 = 0;
 float y_err_3 = 0;
 
 
-#define Kp_slight_move 1.2
-#define Ki_slight_move 0.3
+#define Kp_slight_move 0.5
+#define Ki_slight_move 0.05
 #define Kd_slight_move 0.01
 
 
@@ -341,7 +341,10 @@ void UART_receive_process_3(void)
         {
             for (int i = 0; i < 6; i++)
             {
-                target_colour[i] = (int)rxdata_u3[i];
+                if((int)rxdata_u3[i]  == 1 || (int)rxdata_u3[i] == 2 || (int)rxdata_u3[i] == 3)
+                {
+                    target_colour[i] = (int)rxdata_u3[i];
+                }
             }
             is_get_qrcode_target ++;
         }
@@ -375,9 +378,9 @@ void UART_receive_process_3(void)
                 {
                     spin_which_direction = 10;
                 }
-                else if((float)rxdata_u3[1] < 2)
+                else if((float)rxdata_u3[1] < 1)
                 {
-                    spin_which_direction = 2;
+                    spin_which_direction = 1;
                 }
                 else{
                     spin_which_direction =(float)rxdata_u3[1];
@@ -390,9 +393,9 @@ void UART_receive_process_3(void)
                 {
                     spin_which_direction = -10;
                 }
-                else if((float)rxdata_u3[1] < 2)
+                else if((float)rxdata_u3[1] < 1)
                 {
-                    spin_which_direction = -2;
+                    spin_which_direction = -1;
                 }
                 else{
                     spin_which_direction = -(float)rxdata_u3[1];

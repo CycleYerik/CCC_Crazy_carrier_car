@@ -22,14 +22,14 @@ int state_spin_position_3 = 114; //
 
 
 // 精密舵机参数范围0-4095
-int put_claw_down_pile_position = 3057;
-int put_claw_down_state_position = 1917 ; //从车的载物盘上
-int put_claw_down_position = 2852;  // 从转盘上取物料
-int put_claw_down_ground_position = 4053; // 放在地上
-int put_claw_up_top_position = 1438; // 最高点
-int put_claw_up_position =1500; //  
+int put_claw_down_pile_position = 2357;
+int put_claw_down_state_position = 1217 ; //从车的载物盘上
+int put_claw_down_position = 2152;  // 从转盘上取物料
+int put_claw_down_ground_position = 3347; // 放在地上
+int put_claw_up_top_position = 738; // 最高点  -700
+int put_claw_up_position =800; //  
 int claw_spin_position_front = 1919; // 2号精密舵机回到前方
-int claw_spin_position_state = 230; // 2号精密舵机回到载物盘
+int claw_spin_position_state = 233; // 2号精密舵机回到载物盘// 230
 int right_arm = 2935;
 int left_arm = 2935;
 int middle_arm = 2365; 
@@ -41,7 +41,7 @@ int shrink_arm_all = 500;
 
 
 
-int left_2 = 1560;
+int left_2 = 1620;
 int left_3 = 1837;
 int left_4 = 1790;
 

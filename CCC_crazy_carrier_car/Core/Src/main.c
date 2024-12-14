@@ -89,7 +89,7 @@ int get_plate_count = 0;
 
 extern volatile int test_slight_move; // 用于判断微调是否完成
 extern int spin_which_direction;
-
+extern int put_claw_down_ground_position;
 
 /* USER CODE END PV */
 
@@ -207,6 +207,9 @@ int main(void)
     put_claw_up_top();
     claw_spin_front();
     open_claw();
+
+    
+
     HAL_Delay(1000);
 
     /*********************************测试区域开始*************************************/
@@ -247,6 +250,13 @@ int main(void)
         // get_and_put_different_position(target_colour[0]);
         // get_and_put_different_position(target_colour[1]);
         // get_and_put_different_position(target_colour[2]);
+        // while(1)
+        // {
+        //     get_and_put_in_one_position(1);
+        //     arm_stretch();
+        //     HAL_Delay(3000);
+        // }
+    
 
 //     while(1)
 //     {
@@ -621,11 +631,9 @@ void start_and_come_to_turntable(void)
     int move_from_qrcode_to_table = 85;
     int spin_right_angle = 90;
     
-    
     printf("t0.txt=\"start\"\xff\xff\xff"); // 开始
     HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50); // 开始识别二维码
     HAL_Delay(50);
-
     move_all_direction_position(acceleration, open_loop_move_velocity, start_move_left , 0); // 左移出库
     HAL_Delay(1500);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_to_qrcode); // 前进至二维码
@@ -650,7 +658,7 @@ void start_and_come_to_turntable(void)
 /// @param  
 void get_from_turntable(int turntable_status)
 {
-    //! 开始从转盘抓取
+        //! 开始从转盘抓取
     is_start_get_plate = 1;
     if(turntable_status == 1)
     {
@@ -739,15 +747,15 @@ void come_to_temporary_area(void)
 /// @param  
 void come_to_turntable_from_temparea(void)
 {
-    int move_right_length = 46;
+    int move_right_length = 45;
     int move_front_length = 90;
     spin_right(open_loop_spin_velocity,acceleration, 90);
+    arm_stretch();
     HAL_Delay(2200);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length);
     HAL_Delay(3000);
-    // spin_adjust_line();  //! 实际联调需要加上
 
-    arm_stretch();
+    // spin_adjust_line();  //! 实际联调需要加上
 
     move_all_direction_position(acceleration, open_loop_move_velocity,move_right_length, 0);
     HAL_Delay(3000);
@@ -757,8 +765,8 @@ void come_to_turntable_from_temparea(void)
 void come_back_to_start_from_temparea(void)
 {
     int move_45_length = -18;
-    int move_front_length_1 = 86;
-    int move_front_length_2 = 176;
+    int move_front_length_1 = 89;
+    int move_front_length_2 = 173;
     spin_right(open_loop_spin_velocity,acceleration, 90);
     HAL_Delay(2200);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_1);
@@ -801,7 +809,7 @@ void get_and_put_in_one_position(int time_status)
     }
     else
     {
-        feetech_servo_move(1,3600,4095,50);
+        feetech_servo_move(1,put_claw_down_ground_position-520,4095,50);
     }
     
     // printf("t0.txt=\"end_of_line\"\xff\xff\xff"); // 校正结束，调试用，正式比赛中须删除
@@ -892,11 +900,7 @@ void get_and_put_in_one_position(int time_status)
 /// @param time_status
 void get_and_load_in_one_position(int time_status)
 {
-get_and_put_different_position(2);
-    HAL_Delay(1000);
-    get_and_put_different_position(1);
-    HAL_Delay(1000);
-    get_and_put_different_position(3);    if (target_colour[0] != 0)
+    if (target_colour[0] != 0)
     {
         if (time_status == 1 )
         {
