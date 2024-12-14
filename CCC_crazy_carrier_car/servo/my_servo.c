@@ -41,12 +41,12 @@ int shrink_arm_all = 500;
 
 
 
-int left_2 = 1630;
-int left_3 = 1845;
-int left_4 = 1780;
+int left_2 = 1560;
+int left_3 = 1837;
+int left_4 = 1790;
 
-int right_2 = 2235; 
-int right_3 = 2877;
+int right_2 = 2250; 
+int right_3 = 2875;
 int right_4 = 1830;
 
 int middle_2 = 1919;
@@ -69,11 +69,12 @@ void get_and_load_ground(int position)
 
     // 放下夹爪
     put_claw_down_ground();
-    HAL_Delay(1000);
+    HAL_Delay(1200);
 
     // 抓取
     close_claw();
     HAL_Delay(500);
+    arm_shrink();
 
     // 拉起夹爪
     put_claw_up_top();
@@ -113,11 +114,11 @@ void get_and_load(int position)
     put_claw_up_top();
     HAL_Delay(700);
     claw_spin_state();
-    HAL_Delay(1000);
+    HAL_Delay(1200);
 
     // 放下
     open_claw();
-    HAL_Delay(800);
+    HAL_Delay(500);
 
     put_claw_up_top();
     // HAL_Delay(300);
@@ -186,21 +187,21 @@ void get_and_load_different_position(int position)
     if(position == 1) //红
     {
         feetech_servo_move(2,right_2,4095,50);
-        feetech_servo_move(3,right_3,1500,100);
+        feetech_servo_move(3,right_3,1000,100);
         feetech_servo_move(4,right_4,4095,50);
     }
     else if(position == 2)
     {
-        feetech_servo_move(4,middle_4,4095,50);
+        feetech_servo_move(4,middle_4-20,4095,50); //! magic number
         // HAL_Delay(1000);
-        feetech_servo_move(2,middle_2,1500,100);
+        feetech_servo_move(2,middle_2,1000,100);
         feetech_servo_move(3,middle_3,2000,50);
         
     }
     else if(position == 3)
     {
         feetech_servo_move(2,left_2,4095,50);
-        feetech_servo_move(3,left_3,1500,100);
+        feetech_servo_move(3,left_3,1000,100);
         feetech_servo_move(4,left_4,4095,50);
     }
 
@@ -242,27 +243,27 @@ void get_and_put_different_position(int position)
     if(position == 1) //红
     {
         feetech_servo_move(2,right_2,4095,50);
-        feetech_servo_move(3,right_3,1500,100);
+        feetech_servo_move(3,right_3,1000,100);
         feetech_servo_move(4,right_4,4095,50);
     }
     else if(position == 2)
     {
         feetech_servo_move(2,middle_2,4095,50);
-        feetech_servo_move(3,middle_3,1500,100);
+        feetech_servo_move(3,middle_3,1000,100);
         feetech_servo_move(4,middle_4,4095,50);
     }
     else if(position == 3)
     {
         feetech_servo_move(2,left_2,4095,50);
-        feetech_servo_move(3,left_3,1500,100);
+        feetech_servo_move(3,left_3,1000,100);
         feetech_servo_move(4,left_4,4095,50);
     }
     HAL_Delay(1200);
     put_claw_down_ground();
-    HAL_Delay(2000);
+    HAL_Delay(1800);
     open_claw();
     HAL_Delay(500);
-    put_claw_up();
+    put_claw_up_top();
     HAL_Delay(400);
     claw_spin_front();
     arm_shrink();
@@ -287,19 +288,19 @@ void get_and_put_different_position_pileup(int position)
     if(position == 1) //红
     {
         feetech_servo_move(2,right_2,4095,50);
-        feetech_servo_move(3,right_3,1500,100);
+        feetech_servo_move(3,right_3,1000,100);
         feetech_servo_move(4,right_4,4095,50);
     }
     else if(position == 2)
     {
         feetech_servo_move(2,middle_2,4095,50);
-        feetech_servo_move(3,middle_3,1500,100);
+        feetech_servo_move(3,middle_3,1000,100);
         feetech_servo_move(4,middle_4,4095,50);
     }
     else if(position == 3)
     {
         feetech_servo_move(2,left_2,4095,50);
-        feetech_servo_move(3,left_3,1500,100);
+        feetech_servo_move(3,left_3,1000,100);
         feetech_servo_move(4,left_4,4095,50);
     }
     HAL_Delay(1200);
@@ -418,14 +419,14 @@ void put_claw_up_top(void)
 /// @param  
 void claw_spin_front(void)
 {
-    feetech_servo_move(2,claw_spin_position_front,2000,50);
+    feetech_servo_move(2,claw_spin_position_front,4000,50);
 }
 
 /// @brief 夹爪旋转到朝向载物台
 /// @param
 void claw_spin_state(void)
 {
-    feetech_servo_move(2,claw_spin_position_state,2000,50);
+    feetech_servo_move(2,claw_spin_position_state,4000,50);
 }
 
 /// @brief 中板旋转,1为中间位置
@@ -434,7 +435,7 @@ void whole_arm_spin(int status)
 {
     if(status == 1)
     {
-        feetech_servo_move(3,middle_arm,2000,50);
+        feetech_servo_move(3,middle_arm,1000,100);
     }
     
 }

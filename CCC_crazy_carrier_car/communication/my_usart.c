@@ -33,9 +33,9 @@ float y_err_2 = 0;
 float y_err_3 = 0;
 
 
-#define Kp_slight_move 0.5
-#define Ki_slight_move 0.1
-#define Kd_slight_move 0.1
+#define Kp_slight_move 1.2
+#define Ki_slight_move 0.3
+#define Kd_slight_move 0.01
 
 
 
@@ -337,7 +337,7 @@ void UART_receive_process_3(void)
 
 
         // 得到任务
-        if(is_get_qrcode_target < 3) //! 此处还可以加入更复杂的校验位，避免误操作
+        if(is_get_qrcode_target < 2) //! 此处还可以加入更复杂的校验位，避免误操作
         {
             for (int i = 0; i < 6; i++)
             {
@@ -375,8 +375,12 @@ void UART_receive_process_3(void)
                 {
                     spin_which_direction = 10;
                 }
+                else if((float)rxdata_u3[1] < 2)
+                {
+                    spin_which_direction = 2;
+                }
                 else{
-                    spin_which_direction = 0.8*(float)rxdata_u3[1];
+                    spin_which_direction =(float)rxdata_u3[1];
                 }
                 
             }
@@ -386,8 +390,12 @@ void UART_receive_process_3(void)
                 {
                     spin_which_direction = -10;
                 }
+                else if((float)rxdata_u3[1] < 2)
+                {
+                    spin_which_direction = -2;
+                }
                 else{
-                    spin_which_direction = - 0.8*(float)rxdata_u3[1];
+                    spin_which_direction = -(float)rxdata_u3[1];
                 }
             }
             
@@ -444,15 +452,15 @@ void UART_receive_process_3(void)
             y_move_position *= 0.1;
 
             // 对位置微调进行PID控制
-            // x_err_1 = x_move_position;
-            // y_err_1 = y_move_position;
-            // x_err_2 = x_err_1;
-            // y_err_2 = y_err_1;
-            // x_err_3 = x_err_2;
-            // y_err_3 = y_err_2;
+            x_err_1 = x_move_position;
+            y_err_1 = y_move_position;
+            x_err_2 = x_err_1;
+            y_err_2 = y_err_1;
+            x_err_3 = x_err_2;
+            y_err_3 = y_err_2;
 
-            // x_move_position = Kp_slight_move * (x_err_1- x_err_2) + Ki_slight_move * x_err_1 + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2);
-            // y_move_position = Kp_slight_move * (y_err_1- y_err_2) + Ki_slight_move * y_err_1 + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2);
+            x_move_position = Kp_slight_move * (x_err_1) + Ki_slight_move * (x_err_1+x_err_2 + x_err_3) + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2)/2;
+            y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + x_err_2 + x_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2    ;
 
 
 

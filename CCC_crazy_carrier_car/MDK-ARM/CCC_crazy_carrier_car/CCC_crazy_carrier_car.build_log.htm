@@ -27,24 +27,14 @@ Project File Date:  11/19/2024
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling main.c...
-../Core/Src/main.c(899): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,1,status);
-../Core/Src/main.c(958): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,2,status);
-../Core/Src/main.c(995): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,3,status);
-../Core/Src/main.c(1034): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,1,status);
-../Core/Src/main.c(1047): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,2,status);
-../Core/Src/main.c(1059): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,3,status);
-../Core/Src/main.c: 6 warnings, 0 errors
+compiling my_servo.c...
+..\servo\my_servo.c(466): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      int position = (int)(50 + (200* (float)angle / 270.0));
+..\servo\my_servo.c: 1 warning, 0 errors
 linking...
-Program Size: Code=18484 RO-data=448 RW-data=296 ZI-data=2640  
+Program Size: Code=14252 RO-data=448 RW-data=308 ZI-data=2132  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 6 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 1 Warning(s).
 
 <h2>Software Packages used:</h2>
 

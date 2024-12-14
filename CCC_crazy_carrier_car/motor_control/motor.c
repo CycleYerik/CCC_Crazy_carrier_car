@@ -21,7 +21,7 @@
 // float x_bias_limit = 1, y_bias_limit = 1; // x、y偏差限制,单位cm,待根据视觉情况调整
 
 /// 所有运动情况下的加速度
-float acceleration = 5;  //一直用的50
+float acceleration = 2;  //一直用的50
 
 
 /// @brief x、y轴移动速度（根据树莓派发送的偏差值进行调整）
@@ -287,16 +287,16 @@ void spin_all_direction_tim(uint8_t acc, float spin_direction, int times_count)
         switch(times_count)
         {
             case 1:
-                Emm_V5_Vel_Control(1,1,spin_direction*0.5, acceleration, 1);
+                Emm_V5_Vel_Control(1,1,spin_direction, acceleration, 1);
                 break;
             case 2:
-                Emm_V5_Vel_Control(2,1,spin_direction*0.5, acceleration, 1);
+                Emm_V5_Vel_Control(2,1,spin_direction, acceleration, 1);
                 break;
             case 3:
-                Emm_V5_Vel_Control(3,1,spin_direction*0.5, acceleration, 1);
+                Emm_V5_Vel_Control(3,1,spin_direction, acceleration, 1);
                 break;
             case 4:
-                Emm_V5_Vel_Control(4,1,spin_direction*0.5, acceleration, 1);
+                Emm_V5_Vel_Control(4,1,spin_direction, acceleration, 1);
                 break;
             case 5:
                 {
@@ -310,16 +310,16 @@ void spin_all_direction_tim(uint8_t acc, float spin_direction, int times_count)
         switch(times_count)
         {
             case 1:
-                Emm_V5_Vel_Control(1,0,-spin_direction*0.5, acceleration, 1);
+                Emm_V5_Vel_Control(1,0,-spin_direction, acceleration, 1);
                 break;
             case 2:
-                Emm_V5_Vel_Control(2,0,-spin_direction*0.5, acceleration, 1);
+                Emm_V5_Vel_Control(2,0,-spin_direction, acceleration, 1);
                 break;
             case 3:
-                Emm_V5_Vel_Control(3,0,-spin_direction*0.5, acceleration, 1);
+                Emm_V5_Vel_Control(3,0,-spin_direction, acceleration, 1);
                 break;
             case 4:
-                Emm_V5_Vel_Control(4,0,-spin_direction*0.5, acceleration, 1);
+                Emm_V5_Vel_Control(4,0,-spin_direction, acceleration, 1);
                 break;
             case 5:
                 {
