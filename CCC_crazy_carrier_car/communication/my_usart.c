@@ -33,7 +33,7 @@ float y_err_2 = 0;
 float y_err_3 = 0;
 
 
-#define Kp_slight_move 0.5
+#define Kp_slight_move 0.6  // 0.5
 #define Ki_slight_move 0.05
 #define Kd_slight_move 0.01
 
@@ -337,18 +337,20 @@ void UART_receive_process_3(void)
 
 
         // 得到任务
-        if(is_get_qrcode_target < 2) //! 此处还可以加入更复杂的校验位，避免误操作
+        if (is_get_qrcode_target < 2) //! 此处还可以加入更复杂的校验位，避免误操作
         {
-            for (int i = 0; i < 6; i++)
+            if ((int)rxdata_u3[0] == 9 && (int)rxdata_u3[1] == 9)
             {
-                if((int)rxdata_u3[i]  == 1 || (int)rxdata_u3[i] == 2 || (int)rxdata_u3[i] == 3)
+                for (int i = 2; i < 8; i++)
                 {
-                    target_colour[i] = (int)rxdata_u3[i];
+                    if ((int)rxdata_u3[i] == 1 || (int)rxdata_u3[i] == 2 || (int)rxdata_u3[i] == 3)
+                    {
+                        target_colour[i-2] = (int)rxdata_u3[i];
+                    }
                 }
+                is_get_qrcode_target++;
             }
-            is_get_qrcode_target ++;
         }
-        
 
         // 在从转盘抓取
         if (is_start_get_plate == 1) 
@@ -378,9 +380,9 @@ void UART_receive_process_3(void)
                 {
                     spin_which_direction = 10;
                 }
-                else if((float)rxdata_u3[1] < 1)
+                else if((float)rxdata_u3[1] < 0.5)
                 {
-                    spin_which_direction = 1;
+                    spin_which_direction = 0.5;
                 }
                 else{
                     spin_which_direction =(float)rxdata_u3[1];
@@ -393,9 +395,9 @@ void UART_receive_process_3(void)
                 {
                     spin_which_direction = -10;
                 }
-                else if((float)rxdata_u3[1] < 1)
+                else if((float)rxdata_u3[1] < 0.5)
                 {
-                    spin_which_direction = -1;
+                    spin_which_direction = -0.5;
                 }
                 else{
                     spin_which_direction = -(float)rxdata_u3[1];
@@ -451,7 +453,7 @@ void UART_receive_process_3(void)
                 y_move_position = - (float) rxdata_u3[3];
                 // y_move_position = -10;
             }
-            x_move_position *= 0.1;
+            x_move_position *= 0.1;  //! magic number
             y_move_position *= 0.1;
 
             // 对位置微调进行PID控制

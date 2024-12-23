@@ -71,7 +71,7 @@ extern int is_slight_move,motor_state,is_slight_spin;
 float gyro_z = 90;
 
 int open_loop_move_velocity = 200;
-int open_loop_spin_velocity = 800;
+int open_loop_spin_velocity = 200;
 
 // 目标颜色数组
 volatile int target_colour[6] = {2,3,1,2,1,3}; 
@@ -187,19 +187,19 @@ int main(void)
     // HAL_UART_Receive_IT(&huart2, &received_rxdata_u2, 1); // 使能串口2接收中断
 
 
-
     HAL_TIM_Base_Start_IT(&htim2); // 使能定时器2中断
     HAL_TIM_Base_Start_IT(&htim3); // 使能定时器3中断
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1); // 开启TIM1通道1 PWM输出
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2); // 开启TIM1通道2 PWM输出
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 开启TIM1通道3 PWM输出
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // 开启TIM1通道4 PWM输出  
+	HAL_Delay(2000);
     my_servo_init(); //精密电机初始化，使用精密电机则必须加入
 
 
     /*******************************实际功能的初始化******************************************/
 
-    HAL_Delay(4000); // 等待电机初始化完成，本该是4000ms
+    HAL_Delay(2000); // 等待电机初始化完成，本该是4000ms
     // 机械臂初始位置设定
     // arm_shrink();
     arm_stretch();
@@ -208,33 +208,19 @@ int main(void)
     claw_spin_front();
     open_claw();
 
-    
 
-    HAL_Delay(1000);
+    // HAL_Delay(1000);
 
     /*********************************测试区域开始*************************************/
 
-
-    // 以下为分别移动的代码留存
-    // open_claw();
-    // move_follow_sequence(target_colour,1);
-    // get_and_load_ground(target_colour[0]);
-    // move_follow_sequence(target_colour,2);
-    // get_and_load_ground(target_colour[1]);
-    // move_follow_sequence(target_colour,3);
-    // get_and_load_ground(target_colour[2]);
-    // close_claw();
-    // put_claw_down_ground();
-    // HAL_Delay(8000);
-    // open_claw();
-    // put_claw_up_top();
-    // claw_spin_state();
-    // HAL_Delay(1000);
-    // state_spin(1);
-    // close_claw();
-    // arm_stretch();
-    // put_claw_down_ground();
-    // HAL_Delay(5000);
+    // while(1)
+    // {
+    //     spin_right(open_loop_spin_velocity,acceleration,90);
+    //     HAL_Delay(4000);
+    //     spin_left(open_loop_spin_velocity,acceleration,90);
+    //     HAL_Delay(4000);
+    // }
+    
 
     // get_and_load_different_position(1);
     // HAL_Delay(1000);
@@ -271,16 +257,48 @@ int main(void)
 //     {
 //         HAL_Delay(10);
 //     }
+// 	stop();
 //     if(tim3_count >= timeout_limit)
 //     {
 //         HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
 //         HAL_Delay(80);
 //     }
+
+
+	// HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正
+    // HAL_Delay(50);
+	// is_slight_move = 1;
+	// motor_state = 1;
+	// tim3_count = 0;
+	// while(is_slight_move != 0 && tim3_count < timeout_limit)
+	// {
+	// 	HAL_Delay(10);
+	// }
+	// if(tim3_count >= timeout_limit)
+    // {
+    //     HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+    //     HAL_Delay(80);
+    // }
+	// is_slight_move = 0;
+	// stop();
+	// HAL_Delay(2000);
+	// }
+
     
 //     is_slight_spin = 0;
 //     stop();
 //     HAL_Delay(4000);
-//     }
+    //    }
+    //     while(1)
+    //    {
+    //         move_all_direction_position(acceleration, open_loop_move_velocity, 0, 150);
+	// 		HAL_Delay(4000);
+	// 		move_all_direction_position(acceleration, open_loop_move_velocity, 0, -150);
+    //         HAL_Delay(4000);
+    //    }
+
+	
+
 
 
 
@@ -294,20 +312,20 @@ int main(void)
 
     //小车离开起点并前往转盘
     start_and_come_to_turntable(); // 从起点前往转盘
-    get_from_turntable(1);  // 从转盘抓取物料
+    // get_from_turntable(1);  // 从转盘抓取物料
 
-    // HAL_Delay(2000); //! 单独路径测试
+    HAL_Delay(2000); //! 单独路径测试
 
     //小车第一次前往粗加工区
     come_to_raw_processing_area();
 
-    // HAL_Delay(2000); //! 单独路径测试
+    HAL_Delay(2000); //! 单独路径测试
 
     //粗加工区识别色环移动并放置
     /*************方案一**************/
-    arm_stretch();
-    get_and_put_in_one_position(1);
-    get_and_load_in_one_position(1);
+    // arm_stretch();
+    // get_and_put_in_one_position(1);
+    // get_and_load_in_one_position(1);
 
     /************方案二*************/
     // get_and_put_with_movement(1,0);
@@ -322,12 +340,12 @@ int main(void)
     //小车第一次前往暂存区
     come_to_temporary_area();
     
-    // HAL_Delay(2000); //! 单独路径测试
+    HAL_Delay(2000); //! 单独路径测试
 
     //暂存区识别色环移动并放置
     /*************方案一**************/
-    arm_stretch();
-    get_and_put_in_one_position(2);
+    // arm_stretch();
+    // get_and_put_in_one_position(2);
 
     /*************方案二**************/
     // get_and_put_with_movement(1,0);
@@ -340,25 +358,27 @@ int main(void)
     // 第一次从暂存区去转盘
     come_to_turntable_from_temparea();
 
-// HAL_Delay(2000); //! 单独路径测试
+HAL_Delay(2000); //! 单独路径测试
 
 
     // 第二次从转盘抓取物料  
-    arm_stretch();
-    get_from_turntable(2);
+    // arm_stretch();
+    // get_from_turntable(2);
 
 
 
     // 第二次前往粗加工区
     come_to_raw_processing_area();
-// HAL_Delay(2000); //! 单独路径测试
+HAL_Delay(2000); //! 单独路径测试
 
 
     //粗加工区识别色环移动并放置
     /*************方案一**************/
-    arm_stretch();
-    get_and_put_in_one_position(3);
-    get_and_load_in_one_position(3);
+    // arm_stretch();
+    // get_and_put_in_one_position(3);
+    // get_and_load_in_one_position(3);
+	// arm_stretch();
+
 
     /************方案二*************/
     // get_and_put_with_movement(2,0);
@@ -370,14 +390,13 @@ int main(void)
 
     // 第二次前往暂存区
     come_to_temporary_area();
-// HAL_Delay(2000); //! 单独路径测试
+HAL_Delay(2000); //! 单独路径测试
 
 
     //暂存区识别色环移动并放置
     
     /*************方案一**************/
-    arm_stretch();
-    get_and_put_in_one_position(4);
+    // get_and_put_in_one_position(4);
 
     /*************方案二**************/
     // get_and_put_with_movement(2,1);

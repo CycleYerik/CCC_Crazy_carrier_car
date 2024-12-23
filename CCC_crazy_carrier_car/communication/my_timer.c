@@ -56,6 +56,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                 UART_handle_function_4(); // 处理串口4接收到的数据
             }
             tim2_count = 0;
+            printf("t1.txt=\"%.3f\"\xff\xff\xff", gyro_z);
         }
         // if(is_motor_start_move == 0)
         // {
@@ -75,23 +76,23 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                 }
                 if(send_motor_message_flag == 1)
                 {
-                    spin_all_direction_tim(acceleration,spin_which_direction,1);
+                    spin_all_direction_tim(0,spin_which_direction,1);
                 }
                 if(send_motor_message_flag == 2)
                 {
-                    spin_all_direction_tim(acceleration,spin_which_direction,2);
+                    spin_all_direction_tim(0,spin_which_direction,2);
                 }
                 if(send_motor_message_flag == 3)
                 {
-                    spin_all_direction_tim(acceleration,spin_which_direction,3);
+                    spin_all_direction_tim(0,spin_which_direction,3);
                 }
                 if(send_motor_message_flag == 4)
                 {
-                    spin_all_direction_tim(acceleration,spin_which_direction,4);
+                    spin_all_direction_tim(0,spin_which_direction,4);
                 }
                 if(send_motor_message_flag == 5)
                 {
-                    spin_all_direction_tim(acceleration,spin_which_direction,5);
+                    spin_all_direction_tim(0,spin_which_direction,5);
                     is_motor_moving = 1;
                 }
             }

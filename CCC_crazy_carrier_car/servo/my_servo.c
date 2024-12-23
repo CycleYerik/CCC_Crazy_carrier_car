@@ -11,28 +11,30 @@ extern TIM_HandleTypeDef htim4;
 // 夹爪PD13  载物盘PD14 机械臂PD12
 
 // 普通舵机参数范围25-125  270
-int open_claw_position = 88; //80 
+int open_claw_position = 87; //80 
 int close_claw_position = 74;
 int arm_stretch_position = 39; // 弃用
 int arm_shrink_position = 75;  // 弃用
 int arm_shrink_all_position = 75; // 弃用
 int state_spin_position_1 = 25;  //120度对应44.44
 int state_spin_position_2 = 69;
-int state_spin_position_3 = 114; //
+int state_spin_position_3 = 114; 
 
 
 // 精密舵机参数范围0-4095
-int put_claw_down_pile_position = 2357;
-int put_claw_down_state_position = 1217 ; //从车的载物盘上
-int put_claw_down_position = 2152;  // 从转盘上取物料
-int put_claw_down_ground_position = 3347; // 放在地上
-int put_claw_up_top_position = 738; // 最高点  -700
-int put_claw_up_position =800; //  
-int claw_spin_position_front = 1919; // 2号精密舵机回到前方
+int feet_acc = 5;
+
+int put_claw_down_pile_position = 2391;
+int put_claw_down_state_position = 1246 ; //从车的载物盘上  
+int put_claw_down_position = 2230;  // 从转盘上取物料
+int put_claw_down_ground_position = 3400; // 放在地上
+int put_claw_up_top_position = 743; // 最高点  -700
+int put_claw_up_position =960; //  
+int claw_spin_position_front = 1937; // 2号精密舵机回到前方
 int claw_spin_position_state = 233; // 2号精密舵机回到载物盘// 230
 int right_arm = 2935;
 int left_arm = 2935;
-int middle_arm = 2365; 
+int middle_arm = 2865; 
 
 int shrink_arm = 1925;
 int stretch_arm_longgest = 2102;
@@ -42,15 +44,15 @@ int shrink_arm_all = 500;
 
 
 int left_2 = 1620;
-int left_3 = 1837;
+int left_3 = 2337; // +500
 int left_4 = 1790;
 
 int right_2 = 2250; 
-int right_3 = 2875;
+int right_3 = 3375; // +500
 int right_4 = 1830;
 
-int middle_2 = 1919;
-int middle_3 = 2365;
+int middle_2 = 1937;
+int middle_3 = 2865; // +500
 int middle_4 = 413;
 
 
@@ -186,23 +188,23 @@ void get_and_load_different_position(int position)
     HAL_Delay(1000);
     if(position == 1) //红
     {
-        feetech_servo_move(2,right_2,4095,50);
-        feetech_servo_move(3,right_3,1000,100);
-        feetech_servo_move(4,right_4,4095,50);
+        feetech_servo_move(2,right_2,4095,feet_acc);
+        feetech_servo_move(3,right_3,1000,feet_acc);
+        feetech_servo_move(4,right_4,4095,feet_acc);
     }
     else if(position == 2)
     {
-        feetech_servo_move(4,middle_4-20,4095,50); //! magic number
+        feetech_servo_move(4,middle_4-20,4095,feet_acc); //! magic number
         // HAL_Delay(1000);
-        feetech_servo_move(2,middle_2,1000,100);
-        feetech_servo_move(3,middle_3,2000,50);
+        feetech_servo_move(2,middle_2,1000,feet_acc);
+        feetech_servo_move(3,middle_3,2000,feet_acc);
         
     }
     else if(position == 3)
     {
-        feetech_servo_move(2,left_2,4095,50);
-        feetech_servo_move(3,left_3,1000,100);
-        feetech_servo_move(4,left_4,4095,50);
+        feetech_servo_move(2,left_2,4095,feet_acc);
+        feetech_servo_move(3,left_3,1000,feet_acc);
+        feetech_servo_move(4,left_4,4095,feet_acc);
     }
 
     HAL_Delay(1200);
@@ -242,25 +244,25 @@ void get_and_put_different_position(int position)
     HAL_Delay(500);
     if(position == 1) //红
     {
-        feetech_servo_move(2,right_2,4095,50);
-        feetech_servo_move(3,right_3,1000,100);
-        feetech_servo_move(4,right_4,4095,50);
+        feetech_servo_move(2,right_2,4095,feet_acc);
+        feetech_servo_move(3,right_3,1000,feet_acc);
+        feetech_servo_move(4,right_4,4095,feet_acc);
     }
     else if(position == 2)
     {
-        feetech_servo_move(2,middle_2,4095,50);
-        feetech_servo_move(3,middle_3,1000,100);
-        feetech_servo_move(4,middle_4,4095,50);
+        feetech_servo_move(2,middle_2,4095,feet_acc);
+        feetech_servo_move(3,middle_3,1000,feet_acc);
+        feetech_servo_move(4,middle_4,4095,feet_acc);
     }
     else if(position == 3)
     {
-        feetech_servo_move(2,left_2,4095,50);
-        feetech_servo_move(3,left_3,1000,100);
-        feetech_servo_move(4,left_4,4095,50);
+        feetech_servo_move(2,left_2,4095,feet_acc);
+        feetech_servo_move(3,left_3,1000,feet_acc);
+        feetech_servo_move(4,left_4,4095,feet_acc);
     }
     HAL_Delay(1200);
     put_claw_down_ground();
-    HAL_Delay(1800);
+    HAL_Delay(1200);
     open_claw();
     HAL_Delay(500);
     put_claw_up_top();
@@ -287,21 +289,21 @@ void get_and_put_different_position_pileup(int position)
     HAL_Delay(500);
     if(position == 1) //红
     {
-        feetech_servo_move(2,right_2,4095,50);
-        feetech_servo_move(3,right_3,1000,100);
-        feetech_servo_move(4,right_4,4095,50);
+        feetech_servo_move(2,right_2,4095,feet_acc);
+        feetech_servo_move(3,right_3,1000,feet_acc);
+        feetech_servo_move(4,right_4,4095,feet_acc);
     }
     else if(position == 2)
     {
-        feetech_servo_move(2,middle_2,4095,50);
-        feetech_servo_move(3,middle_3,1000,100);
-        feetech_servo_move(4,middle_4,4095,50);
+        feetech_servo_move(2,middle_2,4095,feet_acc);
+        feetech_servo_move(3,middle_3,1000,feet_acc);
+        feetech_servo_move(4,middle_4,4095,feet_acc);
     }
     else if(position == 3)
     {
-        feetech_servo_move(2,left_2,4095,50);
-        feetech_servo_move(3,left_3,1000,100);
-        feetech_servo_move(4,left_4,4095,50);
+        feetech_servo_move(2,left_2,4095,feet_acc);
+        feetech_servo_move(3,left_3,1000,feet_acc);
+        feetech_servo_move(4,left_4,4095,feet_acc);
     }
     HAL_Delay(1200);
     put_claw_down_pile();
@@ -317,7 +319,7 @@ void get_and_put_different_position_pileup(int position)
 
 void put_claw_down_pile(void)
 {
-    feetech_servo_move(1,put_claw_down_pile_position,4095,50);
+    feetech_servo_move(1,put_claw_down_pile_position,4095,feet_acc);
 }
 
 /// @brief 精密舵机串口初始化
@@ -347,7 +349,7 @@ void close_claw(void)
 void arm_stretch(void)
 {
     // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_stretch_position);
-    feetech_servo_move(4,stretch_camera,4095,50);
+    feetech_servo_move(4,stretch_camera,4095,feet_acc);
 }
 
 
@@ -356,13 +358,13 @@ void arm_stretch(void)
 void arm_shrink(void)
 {
     // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_position);
-    feetech_servo_move(4,shrink_arm,4095,50);
+    feetech_servo_move(4,shrink_arm,4095,feet_acc);
 }
 
 void arm_shrink_all(void)
 {
     // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_all_position);
-    feetech_servo_move(4,shrink_arm_all,4095,50);
+    feetech_servo_move(4,shrink_arm_all,4095,feet_acc);
 }
 
 /// @brief 载物盘旋转到对应的位置
@@ -386,47 +388,47 @@ void state_spin(int state_position)
 
 void put_claw_down_ground(void)
 {
-    feetech_servo_move(1,put_claw_down_ground_position,4095,50);
+    feetech_servo_move(1,put_claw_down_ground_position,4095,feet_acc);
 }
 
 /// @brief 夹爪下降到车的载物盘高度
 /// @param  
 void put_claw_down_state(void)
 {
-    feetech_servo_move(1,put_claw_down_state_position,4095,50);
+    feetech_servo_move(1,put_claw_down_state_position,4095,feet_acc);
 }
 
 /// @brief 绳驱转盘转动，夹爪下降,抓取转盘上的物品
 /// @param  
 void put_claw_down(void)
 {
-    feetech_servo_move(1,put_claw_down_position,4095,50);
+    feetech_servo_move(1,put_claw_down_position,4095,feet_acc);
 }
 
 /// @brief 绳驱转盘转动，夹爪上升
 /// @param  
 void put_claw_up(void)
 {
-    feetech_servo_move(1,put_claw_up_position,4095,50);
+    feetech_servo_move(1,put_claw_up_position,4095,feet_acc);
 }
 
 void put_claw_up_top(void)
 {
-    feetech_servo_move(1,put_claw_up_top_position,4095,50);
+    feetech_servo_move(1,put_claw_up_top_position,4095,feet_acc);
 }
 
 /// @brief 夹爪旋转到朝向前方
 /// @param  
 void claw_spin_front(void)
 {
-    feetech_servo_move(2,claw_spin_position_front,4000,50);
+    feetech_servo_move(2,claw_spin_position_front,4000,feet_acc);
 }
 
 /// @brief 夹爪旋转到朝向载物台
 /// @param
 void claw_spin_state(void)
 {
-    feetech_servo_move(2,claw_spin_position_state,4000,50);
+    feetech_servo_move(2,claw_spin_position_state,4000,feet_acc);
 }
 
 /// @brief 中板旋转,1为中间位置
@@ -435,7 +437,7 @@ void whole_arm_spin(int status)
 {
     if(status == 1)
     {
-        feetech_servo_move(3,middle_arm,1000,100);
+        feetech_servo_move(3,middle_arm,1000,feet_acc);
     }
     
 }
