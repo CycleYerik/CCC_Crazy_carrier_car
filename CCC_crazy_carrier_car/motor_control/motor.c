@@ -21,7 +21,7 @@
 // float x_bias_limit = 1, y_bias_limit = 1; // x、y偏差限制,单位cm,待根据视觉情况调整
 
 /// 所有运动情况下的加速度
-float acceleration = 100;  //!一直用的50
+float acceleration = 150;  //!一直用的50
 
 
 /// @brief x、y轴移动速度（根据树莓派发送的偏差值进行调整）

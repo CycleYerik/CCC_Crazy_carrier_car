@@ -33,8 +33,8 @@ float y_err_2 = 0;
 float y_err_3 = 0;
 
 
-#define Kp_slight_move 0.6  // 0.5
-#define Ki_slight_move 0.05
+#define Kp_slight_move 0.4  // 0.6  2025.1.3
+#define Ki_slight_move 0.01 // 0.05
 #define Kd_slight_move 0.01
 
 
