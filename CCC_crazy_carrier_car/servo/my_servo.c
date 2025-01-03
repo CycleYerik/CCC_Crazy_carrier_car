@@ -11,7 +11,8 @@ extern TIM_HandleTypeDef htim4;
 // 夹爪PD13  载物盘PD14 机械臂PD12
 
 // 普通舵机参数范围25-125  270
-int open_claw_position = 87; //80 
+int open_claw_180_position = 99; //87 为正常抓放的位置
+int open_claw_position = 87; //87 为正常抓放的位置
 int close_claw_position = 74;
 int arm_stretch_position = 39; // 弃用
 int arm_shrink_position = 75;  // 弃用
@@ -22,7 +23,7 @@ int state_spin_position_3 = 114;
 
 
 // 精密舵机参数范围0-4095
-int feet_acc = 5;
+int feet_acc = 50;
 
 int put_claw_down_pile_position = 2391;
 int put_claw_down_state_position = 1246 ; //从车的载物盘上  
@@ -53,7 +54,7 @@ int right_4 = 1830;
 
 int middle_2 = 1937;
 int middle_3 = 2865; // +500
-int middle_4 = 413;
+int middle_4 = 430;  // 413
 
 
 
@@ -116,11 +117,11 @@ void get_and_load(int position)
     put_claw_up_top();
     HAL_Delay(700);
     claw_spin_state();
-    HAL_Delay(1200);
+    HAL_Delay(1100);
 
     // 放下
     open_claw();
-    HAL_Delay(500);
+    HAL_Delay(300);
 
     put_claw_up_top();
     // HAL_Delay(300);
@@ -148,8 +149,6 @@ void get_from_state(int position)
     HAL_Delay(500);
     claw_spin_front();
     arm_stretch();
-
-
 }
 
 /// @brief 将物料放在正前方地上，和get_from_state前后联合使用
@@ -206,11 +205,10 @@ void get_and_load_different_position(int position)
         feetech_servo_move(3,left_3,1000,feet_acc);
         feetech_servo_move(4,left_4,4095,feet_acc);
     }
-
-    HAL_Delay(1200);
     put_claw_down_ground();
+    HAL_Delay(1200);
+    
     // arm_shrink();
-    HAL_Delay(2000);
     close_claw();
     HAL_Delay(500);
     arm_shrink();
@@ -219,10 +217,10 @@ void get_and_load_different_position(int position)
     claw_spin_state();
     HAL_Delay(1200);
     open_claw();
-    HAL_Delay(500);
+    HAL_Delay(300);
     put_claw_up_top();
     claw_spin_front();
-    HAL_Delay(800);
+    HAL_Delay(500);
 }
 
 /// @brief 根据物料编号在同一个位置放置三个物料
@@ -234,14 +232,15 @@ void get_and_put_different_position(int position)
     arm_shrink(); // 机械臂收回至载物盘上
     open_claw();
     put_claw_up_top();
-    HAL_Delay(1000);
+    // HAL_Delay(500);
     claw_spin_state();
-    HAL_Delay(1000);
+    HAL_Delay(800);    
     put_claw_down_state();
     HAL_Delay(800);
+
     close_claw();
-    put_claw_up();
-    HAL_Delay(500);
+    put_claw_up_top();
+    HAL_Delay(600);
     if(position == 1) //红
     {
         feetech_servo_move(2,right_2,4095,feet_acc);
@@ -260,16 +259,18 @@ void get_and_put_different_position(int position)
         feetech_servo_move(3,left_3,1000,feet_acc);
         feetech_servo_move(4,left_4,4095,feet_acc);
     }
-    HAL_Delay(1200);
-    put_claw_down_ground();
-    HAL_Delay(1200);
+    put_claw_down_ground();    
+    HAL_Delay(1600);
     open_claw();
     HAL_Delay(500);
     put_claw_up_top();
-    HAL_Delay(400);
-    claw_spin_front();
+    HAL_Delay(500);
+    if(position == 1 || position == 3)
+    {
+        claw_spin_front();
+    }
     arm_shrink();
-    HAL_Delay(800);
+    HAL_Delay(500);
 }
 
 void get_and_put_different_position_pileup(int position)
@@ -281,9 +282,10 @@ void get_and_put_different_position_pileup(int position)
     put_claw_up_top();
     HAL_Delay(1000);
     claw_spin_state();
-    HAL_Delay(1000);
+    HAL_Delay(800);    
     put_claw_down_state();
-    HAL_Delay(800);
+    HAL_Delay(1000);
+
     close_claw();
     put_claw_up();
     HAL_Delay(500);
@@ -305,16 +307,19 @@ void get_and_put_different_position_pileup(int position)
         feetech_servo_move(3,left_3,1000,feet_acc);
         feetech_servo_move(4,left_4,4095,feet_acc);
     }
+    HAL_Delay(500);
+    put_claw_down_pile();    
     HAL_Delay(1200);
-    put_claw_down_pile();
-    HAL_Delay(2000);
     open_claw();
     HAL_Delay(500);
-    put_claw_up();
+    put_claw_up_top();
     HAL_Delay(400);
-    claw_spin_front();
+    if(position == 1 || position == 3)
+    {
+        claw_spin_front();
+    }
     arm_shrink();
-    HAL_Delay(800);
+    HAL_Delay(500);
 }
 
 void put_claw_down_pile(void)
@@ -326,6 +331,11 @@ void put_claw_down_pile(void)
 void my_servo_init()
 {
     Uart_Init(115200);
+}
+
+void open_claw_180(void)
+{
+    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, open_claw_180_position);
 }
 
 /// @brief 夹爪打开

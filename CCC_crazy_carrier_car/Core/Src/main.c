@@ -68,9 +68,9 @@ extern float x_move_position, y_move_position; // x、y
 extern int is_motor_start_move; 
 extern int is_slight_move,motor_state,is_slight_spin;
 
-float gyro_z = 90;
+float volatile gyro_z = 90;
 
-int open_loop_move_velocity = 200;
+int open_loop_move_velocity = 400; //!200
 int open_loop_spin_velocity = 200;
 
 // 目标颜色数组
@@ -79,7 +79,7 @@ int move_sequence_bias = 0; // 根2不同顺序移动带来的位置相对色环
 
 /// @brief 用于判断当前是第几个case,
 int case_count = 0; 
-int timeout_limit = 1800; // 超时时间限制，单位10ms
+int timeout_limit = 3000; // 超时时间限制，单位10ms
 extern int tim3_count;
 
 int is_get_qrcode_target = 0; //!!!!!!
@@ -120,6 +120,10 @@ void come_to_raw_processing_area(void);
 void come_to_temporary_area(void);
 void come_to_turntable_from_temparea(void);
 void come_back_to_start_from_temparea(void);
+
+void get_from_turntable_test(void);
+void get_and_put_in_one_position_test(int time_status);
+void get_and_load_in_one_position_test(void);
 
 void get_from_turntable(int turntable_status);
 void get_and_put_in_one_position(int time_status);
@@ -193,41 +197,80 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2); // 开启TIM1通道2 PWM输出
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 开启TIM1通道3 PWM输出
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // 开启TIM1通道4 PWM输出  
-	HAL_Delay(2000);
-    my_servo_init(); //精密电机初始化，使用精密电机则必须加入
+	HAL_Delay(1000);
+    my_servo_init(); //精密舵机初始化，使用精密舵机则必须加入
 
 
     /*******************************实际功能的初始化******************************************/
 
-    HAL_Delay(2000); // 等待电机初始化完成，本该是4000ms
+    // HAL_Delay(2000); // !等待电机初始化完成，本该是4000ms
     // 机械臂初始位置设定
     // arm_shrink();
     arm_stretch();
     whole_arm_spin(1);
     put_claw_up_top();
     claw_spin_front();
-    open_claw();
+    open_claw_180();
 
 
     // HAL_Delay(1000);
 
     /*********************************测试区域开始*************************************/
+    // float gyro_error_last = 0;
+    // float target_angle = 90; // 目标角度
+    // float current_angle = 0; // 当前角度
+    float gyro_error_last = 0; // 上一次陀螺仪角度
 
     // while(1)
     // {
-    //     spin_right(open_loop_spin_velocity,acceleration,90);
-    //     HAL_Delay(4000);
-    //     spin_left(open_loop_spin_velocity,acceleration,90);
-    //     HAL_Delay(4000);
+    //     gyro_error_last = gyro_z;
+    //     printf("t0.txt=\"%.3f\"\xff\xff\xff", gyro_z);
+    //     spin_right_velocity(30, acceleration);
+    //     HAL_Delay(500);
+    //     while(abs(gyro_z - gyro_error_last) < 90)
+    //     {
+    //         // current_angle = gyro_z - gyro_error_last;
+    //         // if(current_angle < 0)
+    //         // {
+    //         //     current_angle += 360; // 将负角度转换为正角度
+    //         // }
+    //         HAL_Delay(10);
+    //         // printf("t0.txt=\"%.3f\"\xff\xff\xff", gyro_z);
+    //     }
+    //     stop();
+    //     printf("t0.txt=\"%.3f\"\xff\xff\xff", gyro_z);
+    //     HAL_Delay(2000);
+
+    //     // gyro_error_last = gyro_z;
+    //     // spin_left_velocity(50, acceleration);
+    //     // while(abs(current_angle - target_angle) < 90)
+    //     // {
+    //     //     current_angle = gyro_z - gyro_error_last;
+    //     //     if(current_angle < 0)
+    //     //     {
+    //     //         current_angle += 360; // 将负角度转换为正角度
+    //     //     }
+    //     //     HAL_Delay(10);
+    //     // }
+    //     // stop();
+    //     // HAL_Delay(4000);
     // }
     
 
+
+    // get_and_put_different_position(1);
+    // get_and_put_different_position(2);
+    // get_and_put_different_position(3);
     // get_and_load_different_position(1);
     // HAL_Delay(1000);
     // get_and_load_different_position(2);
     // HAL_Delay(1000);
     // get_and_load_different_position(3);
     // HAL_Delay(3000);
+    // while(1)
+    // {
+    //     HAL_Delay(4000);
+    // }
     // close_claw();
     // arm_stretch();
     // put_claw_down_ground();
@@ -265,24 +308,27 @@ int main(void)
 //     }
 
 
-	// HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正
+	// while(1)
+    // {
+    //     HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正
     // HAL_Delay(50);
 	// is_slight_move = 1;
 	// motor_state = 1;
 	// tim3_count = 0;
-	// while(is_slight_move != 0 && tim3_count < timeout_limit)
+	// while(is_slight_move != 0)
 	// {
 	// 	HAL_Delay(10);
 	// }
-	// if(tim3_count >= timeout_limit)
-    // {
-    //     HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
-    //     HAL_Delay(80);
-    // }
+	// // if(tim3_count >= timeout_limit)
+    // // {
+    // //     HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+    // //     HAL_Delay(80);
+    // // }
 	// is_slight_move = 0;
 	// stop();
 	// HAL_Delay(2000);
 	// }
+    
 
     
 //     is_slight_spin = 0;
@@ -311,21 +357,27 @@ int main(void)
     /**************************************以下为主程序流程代码********************************************/
 
     //小车离开起点并前往转盘
-    start_and_come_to_turntable(); // 从起点前往转盘
-    // get_from_turntable(1);  // 从转盘抓取物料
 
-    HAL_Delay(2000); //! 单独路径测试
+    start_and_come_to_turntable(); // 从起点前往转盘
+    get_from_turntable(1);  // 从转盘抓取物料
+
+    // get_from_turntable_test();  // !从转盘抓取物料测试
+    // HAL_Delay(4000); //! 单独路径测试
 
     //小车第一次前往粗加工区
     come_to_raw_processing_area();
 
-    HAL_Delay(2000); //! 单独路径测试
+
+// HAL_Delay(4000); //! 单独路径测试
 
     //粗加工区识别色环移动并放置
     /*************方案一**************/
-    // arm_stretch();
-    // get_and_put_in_one_position(1);
-    // get_and_load_in_one_position(1);
+    arm_stretch();
+    get_and_put_in_one_position(1);
+    get_and_load_in_one_position(1);
+
+    // get_and_put_in_one_position_test(1); // !测试
+    // get_and_load_in_one_position_test(); // !测试
 
     /************方案二*************/
     // get_and_put_with_movement(1,0);
@@ -340,12 +392,14 @@ int main(void)
     //小车第一次前往暂存区
     come_to_temporary_area();
     
-    HAL_Delay(2000); //! 单独路径测试
+    // HAL_Delay(4000); //! 单独路径测试
 
     //暂存区识别色环移动并放置
     /*************方案一**************/
-    // arm_stretch();
-    // get_and_put_in_one_position(2);
+    arm_stretch();
+    get_and_put_in_one_position(2);
+
+    // get_and_put_in_one_position_test(2); // !测试
 
     /*************方案二**************/
     // get_and_put_with_movement(1,0);
@@ -358,26 +412,31 @@ int main(void)
     // 第一次从暂存区去转盘
     come_to_turntable_from_temparea();
 
-HAL_Delay(2000); //! 单独路径测试
+    // HAL_Delay(4000); //! 单独路径测试
 
 
     // 第二次从转盘抓取物料  
-    // arm_stretch();
-    // get_from_turntable(2);
+    arm_stretch();
+    open_claw_180();
+    get_from_turntable(2);
 
-
+    // get_from_turntable_test();  // !从转盘抓取物料测试
 
     // 第二次前往粗加工区
     come_to_raw_processing_area();
-HAL_Delay(2000); //! 单独路径测试
+    // HAL_Delay(4000); //! 单独路径测试
 
 
     //粗加工区识别色环移动并放置
     /*************方案一**************/
-    // arm_stretch();
-    // get_and_put_in_one_position(3);
-    // get_and_load_in_one_position(3);
-	// arm_stretch();
+    arm_stretch();
+    get_and_put_in_one_position(3);
+    get_and_load_in_one_position(3);
+
+    // get_and_put_in_one_position_test(3); // !测试
+    // get_and_load_in_one_position_test(); // !测试
+
+	arm_stretch();
 
 
     /************方案二*************/
@@ -390,13 +449,15 @@ HAL_Delay(2000); //! 单独路径测试
 
     // 第二次前往暂存区
     come_to_temporary_area();
-HAL_Delay(2000); //! 单独路径测试
+    // HAL_Delay(4000); //! 单独路径测试
 
 
     //暂存区识别色环移动并放置
     
     /*************方案一**************/
-    // get_and_put_in_one_position(4);
+    get_and_put_in_one_position(4);
+
+    // get_and_put_in_one_position_test(4); // !测试
 
     /*************方案二**************/
     // get_and_put_with_movement(2,1);
@@ -645,16 +706,16 @@ void move_follow_sequence(int target_colour_input[6], int case_count_input, int 
 /// @param  
 void start_and_come_to_turntable(void)
 {
-    int start_move_left = -15;
-    int move_to_qrcode = 60;
+    int start_move = 15;
+    int move_to_qrcode = 45;
     int move_from_qrcode_to_table = 85;
     int spin_right_angle = 90;
     
     printf("t0.txt=\"start\"\xff\xff\xff"); // 开始
     HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50); // 开始识别二维码
     HAL_Delay(50);
-    move_all_direction_position(acceleration, open_loop_move_velocity, start_move_left , 0); // 左移出库
-    HAL_Delay(1500);
+    move_all_direction_position(acceleration, open_loop_move_velocity, -start_move , start_move); // 左移出库
+    HAL_Delay(1000);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_to_qrcode); // 前进至二维码
     HAL_Delay(2000);
     // 将target_colour转为字符串显示在串口屏上
@@ -662,9 +723,9 @@ void start_and_come_to_turntable(void)
     sprintf(target_colour_str, "%d%d%d%d%d%d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]);
     printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); // 将目标颜色显示在串口屏上
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table); // 前进至转盘
-    HAL_Delay(3000);
+    HAL_Delay(2500);
     spin_right(open_loop_spin_velocity,acceleration, spin_right_angle);
-    HAL_Delay(2200);
+    HAL_Delay(1300);
     sprintf(target_colour_str, "%d%d%d%d%d%d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]);
     printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); // 将目标颜色显示在串口屏上
     free(target_colour_str);
@@ -678,42 +739,89 @@ void start_and_come_to_turntable(void)
 void get_from_turntable(int turntable_status)
 {
         //! 开始从转盘抓取
+    int is_1_get = 0, is_2_get = 0, is_3_get = 0;
     is_start_get_plate = 1;
     if(turntable_status == 1)
     {
         HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); // 开始识别颜色并抓取
+        HAL_Delay(100);
+        HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); // 开始识别颜色并抓取
+        HAL_Delay(100);
+        HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); // 开始识别颜色并抓取
+        HAL_Delay(100);
     }
     else if(turntable_status == 2)
     {
         HAL_UART_Transmit(&huart3, (uint8_t*)"DD", strlen("DD"), 50); // 开始识别颜色并抓取
+        HAL_Delay(200);
     }
     tim3_count = 0; // 开始计时，+1 代表10ms
-    while(get_plate_count < 3 && tim3_count < 5000) // 从转盘抓取三个色环或者超时
+    while(get_plate_count < 3 ) // 从转盘抓取三个色环或者超时
+    // while(1)
     {
-        if(get_plate == 1)  //此处会不会一次识别发送了好几个，导致重复抓取同一个位置？
+        HAL_UART_Transmit(&huart3, (uint8_t*)&get_plate, 1, 50);
+        if(get_plate == 1 && is_1_get == 0)  //此处会不会一次识别发送了好几个，导致重复抓取同一个位置？
         {
-            get_and_load(1);
-            get_plate_count++;
             get_plate = 0;
+            // is_start_get_plate = 0;
+            get_and_load(1);   //!
+            get_plate_count++;
+            HAL_UART_Transmit(&huart3, (uint8_t*)"red", strlen("red"), 50); 
+            HAL_Delay(50);
+            // is_start_get_plate = 1;
+            get_plate = 0;
+            is_1_get = 1; //!
+            
         }
-        else if(get_plate == 2)
+        else if(get_plate == 2 && is_2_get == 0)
         {
-            get_and_load(2);
-            get_plate_count++;
             get_plate = 0;
+            // is_start_get_plate = 0;
+            get_and_load(2);  //!
+            get_plate_count++;
+            HAL_UART_Transmit(&huart3, (uint8_t*)"green", strlen("green"), 50);
+            HAL_Delay(50); 
+            // is_start_get_plate = 1;
+            get_plate = 0;
+            is_2_get = 1; //!
+            
         }
-        else if (get_plate == 3)
+        else if (get_plate == 3 && is_3_get == 0)
         {
-            get_and_load(3);
-            get_plate_count++;
             get_plate = 0;
+            // is_start_get_plate = 0;
+            get_and_load(3);  //!
+            get_plate_count++;
+            HAL_UART_Transmit(&huart3, (uint8_t*)"blue", strlen("blue"), 50); 
+            HAL_Delay(50);
+            // is_start_get_plate = 1;
+            get_plate = 0;
+            is_3_get = 1; //!
+            
         }
-        HAL_Delay(10);
+        HAL_UART_Transmit(&huart3, (uint8_t*)"loop", strlen("loop"), 50); // 开始识别颜色并抓取
+        get_plate = 0;
+        HAL_UART_Transmit(&huart3, (uint8_t*)&get_plate, 1, 50);
+        HAL_Delay(100);
+        
+
     }
     get_plate_count = 0;
     is_start_get_plate = 0;
     // arm_stretch();
     // HAL_Delay(500);
+}
+
+/// @brief 无视觉从转盘抓取物料，用于调试
+/// @param  
+void get_from_turntable_test(void)
+{
+    get_and_load(1);
+    HAL_Delay(2000);
+    get_and_load(2);
+    HAL_Delay(2000);
+    get_and_load(3);
+    HAL_Delay(2000);
 }
 
 /// @brief 从转盘前往粗加工区
@@ -752,7 +860,7 @@ void come_to_raw_processing_area(void)
 /// @param  
 void come_to_temporary_area(void)
 {
-    int move_front_length = 91;
+    int move_front_length = 85; // 88
     int move_right_length = 85;
     spin_right(open_loop_spin_velocity,acceleration, 90);
     HAL_Delay(2200);
@@ -766,7 +874,7 @@ void come_to_temporary_area(void)
 /// @param  
 void come_to_turntable_from_temparea(void)
 {
-    int move_right_length = 45;
+    int move_right_length = 47;
     int move_front_length = 90;
     spin_right(open_loop_spin_velocity,acceleration, 90);
     arm_stretch();
@@ -798,30 +906,50 @@ void come_back_to_start_from_temparea(void)
     HAL_Delay(2000);
 }
 
+/// @brief 无视觉原地放置三个物料测试
+/// @param  
+void get_and_put_in_one_position_test(int time_status)
+{
+    if(time_status == 4)
+    {
+        get_and_put_different_position_pileup(2);
+        get_and_put_different_position_pileup(1);
+        get_and_put_different_position_pileup(3);
+    }
+    else
+    {
+        get_and_put_different_position(2);
+        get_and_put_different_position(1);
+        get_and_put_different_position(3);
+    }
+    whole_arm_spin(1);
+    claw_spin_front();
+    HAL_Delay(1000);
+}
 
 /// @brief 原地放置三个物料
 /// @param time_status 放置的阶段，1为第一次放置，2为第二次放置，一直到4，第四次码垛
 void get_and_put_in_one_position(int time_status)
 {
-    // 先校正车身位置
+    // //! 先校正车身位置
     HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正直线
     HAL_Delay(50);
 
-    is_slight_spin = 1; // 使能轻微移动
+    // is_slight_spin = 1; // 使能轻微移动
     motor_state = 1;
-    tim3_count = 0;
-    while(is_slight_spin != 0 && tim3_count < timeout_limit)
-    {
-        HAL_Delay(10);
-    }
-    if(tim3_count >= timeout_limit)
-    {
-        HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
-        HAL_Delay(80);
-    }
+    // tim3_count = 0;
+    // while(is_slight_spin != 0 && tim3_count < timeout_limit)
+    // {
+    //     HAL_Delay(10);
+    // }
+    // if(tim3_count >= timeout_limit)
+    // {
+    //     HAL_UART_Transmit(&huart3, (uint8_t*)"st", strlen("st"), 50); // 通知树莓派结束
+    //     HAL_Delay(80);
+    // }
     
-    is_slight_spin = 0;
-    stop();
+    // is_slight_spin = 0;
+    // stop();
     if(time_status == 4)
     {
         put_claw_up_top();
@@ -829,9 +957,9 @@ void get_and_put_in_one_position(int time_status)
     else
     {
         feetech_servo_move(1,put_claw_down_ground_position-520,4095,50);
+        open_claw_180();
     }
     
-    // printf("t0.txt=\"end_of_line\"\xff\xff\xff"); // 校正结束，调试用，正式比赛中须删除
     HAL_Delay(1000);
 
 
@@ -912,6 +1040,18 @@ void get_and_put_in_one_position(int time_status)
     whole_arm_spin(1);
     claw_spin_front();
     // arm_stretch();
+    HAL_Delay(1000);
+}
+
+/// @brief 无视觉
+/// @param  
+void get_and_load_in_one_position_test(void)
+{
+    get_and_load_different_position(2);
+    get_and_load_different_position(1);
+    get_and_load_different_position(3);
+    whole_arm_spin(1);
+    claw_spin_front();
     HAL_Delay(1000);
 }
 

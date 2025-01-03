@@ -4,7 +4,7 @@ uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128],rxdata_u4[50],rxdata_u5[50]; 
 uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1,received_rxdata_u4,received_rxdata_u5; // 暂存usart1,2,3接收到的数据
 uchar rxflag_u2,rxflag_u3,rxflag_u1,rxflag_u4,rxflag_u5; // usart1,2,3接收到的数据的标志位
 
-extern float gyro_z;
+extern float volatile gyro_z;
 
 
 /// @brief 串口屏速度控制时用到的速度变量
@@ -330,7 +330,7 @@ void UART_receive_process_3(void)
     if (rxflag_u3 > 0)
     {
         // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
-
+        // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, rxflag_u3, 50);
 
 
         is_motor_start_move = 1;
@@ -355,18 +355,24 @@ void UART_receive_process_3(void)
         // 在从转盘抓取
         if (is_start_get_plate == 1) 
         {
-            if (rxdata_u3[0] == 0x01) //! 此处可以加入更复杂的校验位
+            if (rxdata_u3[0] == 0x07) //! 此处可以加入更复杂的校验位
             {
                 get_plate = 1;
+                rxdata_u3[0] = 0x00;
             }
-            if (rxdata_u3[0] == 0x02) // 绿
+            if (rxdata_u3[0] == 0x08) // 绿
             {
                 get_plate = 2;
+                rxdata_u3[0] = 0x00;
             }
-            if (rxdata_u3[0] == 0x03) // 蓝
+            if (rxdata_u3[0] == 0x09) // 蓝
             {
                 get_plate = 3;
+                rxdata_u3[0] = 0x00;
             }
+            // 将get_plate数值发送给树莓派
+            // HAL_UART_Transmit(&huart3, (uint8_t*)&get_plate, 1, 50);
+            // HAL_UART_Transmit(&huart3, (uint8_t*), strlen("get_plate"), 50);
         }
 
 
@@ -535,7 +541,7 @@ void UART_receive_process_3(void)
 
 
         rxflag_u3 = 0;
-        memset(rxdata_u3, 0, 50);
+        memset(rxdata_u3, 0, 50); //
     }
 }
 
@@ -572,6 +578,10 @@ void UART_receive_process_4(void)
             //提取数据
             uint16_t temp = (uint16_t)((rxdata_u4[i+7] << 8 )| rxdata_u4[i+6]);
             gyro_z = (float)(temp * 180.0/32768.0); // / 32768.0
+            if(gyro_z > 180)
+            {
+                gyro_z = gyro_z - 360;
+            }
         }
         // printf("t0.txt=\"%.3f\"\xff\xff\xff", gyro_z);
         rxflag_u4 = 0;

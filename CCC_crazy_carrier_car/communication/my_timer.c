@@ -37,6 +37,8 @@ extern uint8_t rxdata_u3[50];
 extern uint8_t received_rxdata_u3;
 extern uint8_t rxflag_u3,rxflag_u4;
 
+extern float gyro_z;
+
 /// @brief 中断回调函数，所有的定时器中断都在这里处理
 /// @param htim
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
@@ -49,14 +51,15 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
             UART_handle_function_3(); // 处理串口3接收到的数据
         }
 
-        if (tim2_count >= 20) //! magic number
+        if (tim2_count >= 10) //! magic number 20
         {
             if (rxflag_u4 != 0)
             {
                 UART_handle_function_4(); // 处理串口4接收到的数据
             }
-            tim2_count = 0;
-            printf("t1.txt=\"%.3f\"\xff\xff\xff", gyro_z);
+            HAL_UART_Transmit(&huart3,(uint8_t*)rxdata_u3,strlen((char*)rxdata_u3),50);
+
+			// printf("t1.txt=\"%.3f\"\xff\xff\xff", gyro_z);
         }
         // if(is_motor_start_move == 0)
         // {
