@@ -13,7 +13,7 @@ extern TIM_HandleTypeDef htim4;
 // 普通舵机参数范围25-125  270
 int open_claw_180_position = 103; //87 为正常抓放的位置
 int open_claw_position = 87; //87 为正常抓放的位置
-int close_claw_position = 74;
+int close_claw_position = 74; //71
 int arm_stretch_position = 39; // 弃用
 int arm_shrink_position = 75;  // 弃用
 int arm_shrink_all_position = 75; // 弃用
@@ -28,11 +28,11 @@ int feet_acc = 180;
 int put_claw_down_pile_position = 2391;
 int put_claw_down_state_position = 1246 ; //从车的载物盘上  
 int put_claw_down_position = 2230;  // 从转盘上取物料
-int put_claw_down_ground_position = 3350; // 放在地上
-int put_claw_up_top_position = 720; // 最高点  -700
+int put_claw_down_ground_position = 3250; // 放在地上
+int put_claw_up_top_position = 600; // 最高点  550
 int put_claw_up_position =960; //  
 int claw_spin_position_front = 1937; // 2号精密舵机回到前方
-int claw_spin_position_state = 233; // 2号精密舵机回到载物盘// 230
+int claw_spin_position_state = 225; // 2号精密舵机回到载物盘//! 233
 int right_arm = 2935;
 int left_arm = 2935;
 int middle_arm = 2865; 
@@ -44,17 +44,17 @@ int shrink_arm_all = 500;
 
 
 
-int left_2 = 1620;
-int left_3 = 2337; 
-int left_4 = 1790; //1790
+int left_2 = 1620; //1620
+int left_3 = 2337;  //2337
+int left_4 = 1680; //1790
 
-int right_2 = 2250;  
-int right_3 = 3375; 
-int right_4 = 1850;
+int right_2 = 2260;  //2250
+int right_3 = 3375;  //3375
+int right_4 = 1870;  //1850
 
-int middle_2 = 1937;
-int middle_3 = 2865; 
-int middle_4 = 430;  
+int middle_2 = 1937; //1937
+int middle_3 = 2865; //2865
+int middle_4 = 430;  //430
 
 
 
@@ -194,7 +194,7 @@ void get_and_load_different_position(int position)
     }
     else if(position == 2)
     {
-        feetech_servo_move(4,middle_4-20,4095,feet_acc); //! magic number
+        feetech_servo_move(4,middle_4,4095,feet_acc); //! magic number
         // HAL_Delay(1000);
         feetech_servo_move(2,middle_2,1000,feet_acc);
         feetech_servo_move(3,middle_3,2000,feet_acc);
@@ -216,7 +216,7 @@ void get_and_load_different_position(int position)
     put_claw_up_top();
     HAL_Delay(800);
     claw_spin_state();
-    HAL_Delay(800);
+    HAL_Delay(900);
     open_claw();
     HAL_Delay(500);
     put_claw_up_top();
@@ -241,7 +241,7 @@ void get_and_put_different_position(int position)
 
     close_claw();
     put_claw_up_top();
-    HAL_Delay(600);
+    HAL_Delay(500);
     if(position == 1) //红
     {
         feetech_servo_move(2,right_2,4095,feet_acc);
@@ -262,15 +262,16 @@ void get_and_put_different_position(int position)
     }
     put_claw_down_ground();    
     HAL_Delay(1500);
+    // HAL_Delay(1500); //! 单独测试使用
     open_claw();
     HAL_Delay(500);
     put_claw_up_top();
-    // HAL_Delay(500);
-    // if(position == 1 || position == 3)
-    // {
-    //     claw_spin_front();
-    // }
-    arm_shrink();
+    //// HAL_Delay(500);
+    //// if(position == 1 || position == 3)
+    //// {
+    ////     claw_spin_front();
+    //// }
+    // arm_shrink();
     HAL_Delay(500);
 }
 
@@ -288,7 +289,7 @@ void get_and_put_different_position_pileup(int position)
     HAL_Delay(700);
 
     close_claw();
-    put_claw_up();
+    put_claw_up_top();
     HAL_Delay(600);
     if(position == 1) //红
     {
@@ -314,13 +315,13 @@ void get_and_put_different_position_pileup(int position)
     open_claw();
     HAL_Delay(500);
     put_claw_up_top();
-    // HAL_Delay(400);
+    HAL_Delay(400);
     // if(position == 1 || position == 3)
     // {
     //     claw_spin_front();
     // }
-    arm_shrink();
-    HAL_Delay(500);
+    // arm_shrink();
+    // HAL_Delay(500);
 }
 
 void put_claw_down_pile(void)
