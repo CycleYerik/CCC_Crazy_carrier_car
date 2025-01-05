@@ -859,7 +859,7 @@ void come_to_raw_processing_area(void)
     // spin_right(open_loop_spin_velocity,acceleration, 180);//! magic number 
     // HAL_Delay(1700);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length);
-    HAL_Delay(3500);
+    HAL_Delay(3000);
     spin_right(open_loop_spin_velocity,acceleration, 180);
     HAL_Delay(2000);
     char* target_colour_str = (char*)malloc(6);
