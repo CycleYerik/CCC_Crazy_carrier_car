@@ -25,10 +25,10 @@ int state_spin_position_3 = 114;
 // 精密舵机参数范围0-4095
 int feet_acc = 180;
 
-int put_claw_down_pile_position = 2391;
-int put_claw_down_state_position = 1246 ; //从车的载物盘上  
-int put_claw_down_position = 2230;  // 从转盘上取物料
-int put_claw_down_ground_position = 3250; // 放在地上
+int put_claw_down_pile_position = 2197;
+int put_claw_down_state_position = 1040 ; //从车的载物盘上  
+int put_claw_down_position = 1980;  // 从转盘上取物料
+int put_claw_down_ground_position = 3171; // 放在地上
 int put_claw_up_top_position = 600; // 最高点  550
 int put_claw_up_position =960; //  
 int claw_spin_position_front = 1937; // 2号精密舵机回到前方

@@ -277,29 +277,31 @@ int main(void)
     //     HAL_Delay(3000);
     // }
     
+    // feetech_servo_move(1,put_claw_down_ground_position-520,4095,50);
+    // HAL_Delay(2000);
 
-    while(1)
-    {
-// 先校正车身位置
-    HAL_UART_Transmit(&huart3, (uint8_t*)"EE", strlen("EE"), 50); //发给树莓派，开始校正直线
-    HAL_Delay(50);
+//     while(1) //! 直线校正测试
+//     {
+// // 先校正车身位置
+//     HAL_UART_Transmit(&huart3, (uint8_t*)"EE", strlen("EE"), 50); //发给树莓派，开始校正直线
+//     HAL_Delay(50);
 
-    is_slight_spin = 1; // 使能轻微移动
-    motor_state = 1;
-    tim3_count = 0;
-    while(is_slight_spin != 0)
-    {
-        HAL_Delay(10);
-    }
-	stop();
-    HAL_Delay(3000);
-    }
+//     is_slight_spin = 1; // 使能轻微移动
+//     motor_state = 1;
+//     tim3_count = 0;
+//     while(is_slight_spin != 0)
+//     {
+//         HAL_Delay(10);
+//     }
+// 	stop();
+//     HAL_Delay(3000);
+//     }
 
 
     // feetech_servo_move(1,put_claw_down_ground_position-520,4095,50);
     // HAL_Delay(2000);
 
-
+    // //! 微调测试
     // HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正
     // HAL_Delay(50);
 	// is_slight_move = 1;
@@ -393,7 +395,8 @@ int main(void)
     
     //小车第一次前往暂存区
     arm_stretch();
-    // come_to_temporary_area();
+  
+  // come_to_temporary_area();
     come_to_temporary_area_v2();
     
     // HAL_Delay(4000); //! 单独路径测试
@@ -849,14 +852,16 @@ void come_to_raw_processing_area(void)
 
 
     //一次转动
-    int move_right_length = 38; //39
+    int move_right_length = 40; //38
     int move_front_length = 174;  //172
     move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length,0);
     HAL_Delay(1200);
-    spin_right(open_loop_spin_velocity,acceleration, 180);//! magic number 
-    HAL_Delay(1700);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_front_length);
+    // spin_right(open_loop_spin_velocity,acceleration, 180);//! magic number 
+    // HAL_Delay(1700);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length);
     HAL_Delay(3500);
+    spin_right(open_loop_spin_velocity,acceleration, 180);
+    HAL_Delay(2000);
     char* target_colour_str = (char*)malloc(6);
     sprintf(target_colour_str, "%d%d%d%d%d%d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]);
     printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); // 将目标颜色显示在串口屏上
@@ -868,9 +873,9 @@ void come_to_raw_processing_area(void)
 /// @param  
 void come_to_temporary_area(void)
 {
-    int move_front_length = 85; // 88
+    int move_front_length = 87; // 85
     int move_right_length = 86;
-    spin_right(open_loop_spin_velocity,acceleration, 90);
+    spin_right(open_loop_spin_velocity,acceleration, 90); 
     HAL_Delay(2200);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length );
     HAL_Delay(2000);
@@ -882,11 +887,11 @@ void come_to_temporary_area(void)
 /// @param  
 void come_to_temporary_area_v2(void)
 {
-    int move_front_length = 82; // 85
-    int move_back_length = 85; //86
+    int move_front_length = 84; // 82
+    int move_back_length = 85; //85
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length);
     HAL_Delay(2200);
-    spin_right(open_loop_spin_velocity,acceleration, 90);
+    spin_right(open_loop_spin_velocity,acceleration, 92);//! magic number
     HAL_Delay(1500);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length );
     HAL_Delay(2000);
@@ -931,8 +936,8 @@ void come_back_to_start_from_temparea(void)
 void come_back_to_start_from_temparea_v2(void)
 {
     int move_45_length = 18;
-    int move_front_length = 72;
-    int move_back_length = 175;
+    int move_front_length = 85;
+    int move_back_length = 176;
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length);
     HAL_Delay(3000);
     spin_right(open_loop_spin_velocity,acceleration, 90);
@@ -971,10 +976,10 @@ void get_and_put_in_one_position(int time_status)
     // //! 先校正车身位置
     HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正直线
     HAL_Delay(50);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, -3); // 后退5cm
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, -3); // 后退5cm
 
     motor_state = 1;
-    if(time_status == 2 || time_status == 4)
+    if(1) //!    全部采用或者24采用
     {
         is_slight_spin = 1; // 使能轻微移动
         tim3_count = 0;
