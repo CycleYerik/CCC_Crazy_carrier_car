@@ -79,7 +79,7 @@ int move_sequence_bias = 0; // 根2不同顺序移动带来的位置相对色环
 
 /// @brief 用于判断当前是第几个case,
 int case_count = 0; 
-int timeout_limit = 1000; // 超时时间限制，单位10ms
+int timeout_limit = 300; // 超时时间限制，单位10ms
 extern int tim3_count;
 
 int is_get_qrcode_target = 0; //!!!!!!
@@ -277,8 +277,8 @@ int main(void)
     //     HAL_Delay(3000);
     // }
     
-    // feetech_servo_move(1,put_claw_down_ground_position-520,4095,50);
-    // HAL_Delay(2000);
+//     feetech_servo_move(1,put_claw_down_ground_position-520,4095,50);
+//     HAL_Delay(2000);
 
 //     while(1) //! 直线校正测试
 //     {
@@ -894,14 +894,16 @@ void come_to_temporary_area_v2(void)
     spin_right(open_loop_spin_velocity,acceleration, 92);//! magic number
     HAL_Delay(1500);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length );
-    HAL_Delay(2000);
+    HAL_Delay(1800);
+    move_all_direction_position(acceleration, open_loop_move_velocity, -3, 0);
+    HAL_Delay(400);
 }
 
 /// @brief 从暂存区前往转盘
 /// @param  
 void come_to_turntable_from_temparea(void)
 {
-    int move_right_length = 46; //45
+    int move_right_length = 48; //45
     int move_front_length = 89;
     spin_right(open_loop_spin_velocity,acceleration, 90);
     arm_stretch();
@@ -936,8 +938,8 @@ void come_back_to_start_from_temparea(void)
 void come_back_to_start_from_temparea_v2(void)
 {
     int move_45_length = 18;
-    int move_front_length = 85;
-    int move_back_length = 176;
+    int move_front_length = 80;
+    int move_back_length = 174;
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length);
     HAL_Delay(3000);
     spin_right(open_loop_spin_velocity,acceleration, 90);

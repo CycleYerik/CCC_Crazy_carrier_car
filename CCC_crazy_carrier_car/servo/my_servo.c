@@ -12,7 +12,7 @@ extern TIM_HandleTypeDef htim4;
 
 // 普通舵机参数范围25-125  270
 int open_claw_180_position = 103; //87 为正常抓放的位置
-int open_claw_position = 87; //87 为正常抓放的位置
+int open_claw_position = 86; //87 为正常抓放的位置
 int close_claw_position = 74; //71
 int arm_stretch_position = 39; // 弃用
 int arm_shrink_position = 75;  // 弃用
@@ -46,11 +46,11 @@ int shrink_arm_all = 500;
 
 int left_2 = 1620; //1620
 int left_3 = 2337;  //2337
-int left_4 = 1680; //1790
+int left_4 = 1680; //1680
 
 int right_2 = 2260;  //2250
 int right_3 = 3375;  //3375
-int right_4 = 1870;  //1850
+int right_4 = 1870;  //1870
 
 int middle_2 = 1937; //1937
 int middle_3 = 2865; //2865
