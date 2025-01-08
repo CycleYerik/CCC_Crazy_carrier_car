@@ -25,38 +25,170 @@ int state_spin_position_3 = 114;
 // 精密舵机参数范围0-4095
 int feet_acc = 180;
 
-int put_claw_down_pile_position = 2197;
-int put_claw_down_state_position = 1040 ; //从车的载物盘上  
-int put_claw_down_position = 1980;  // 从转盘上取物料
-int put_claw_down_ground_position = 3171; // 放在地上
-int put_claw_up_top_position = 600; // 最高点  550
+int put_claw_down_pile_position = 1819; //1819
+int put_claw_down_state_position = 737 ; //从车的载物盘上  737
+int put_claw_down_position = 1625;  // 从转盘上取物料  1625
+int put_claw_down_ground_position = 2899; // 放在地上 2899
+int put_claw_up_top_position = 360; // 最高点  360
 int put_claw_up_position =960; //  
-int claw_spin_position_front = 1937; // 2号精密舵机回到前方
-int claw_spin_position_state = 225; // 2号精密舵机回到载物盘//! 233
+int claw_spin_position_front = 3972; // 2号精密舵机回到前方
+int claw_spin_position_state = 2242; // 2号精密舵机回到载物盘//! 233
+int put_claw_down_near_ground_position = 2800;
+
+
+// 机械臂位置限制 
+// 2280左 3400右
+// 2000后 4050前
+int theta_left_position_limit = 2280;
+int theta_right_position_limit = 3400;
+int r_front_position_limit = 4050;
+int r_back_position_limit = 2000;
+
 int right_arm = 2935;
 int left_arm = 2935;
-int middle_arm = 2865; 
+int middle_arm = 2865;  
 
-int shrink_arm = 1925;
-int stretch_arm_longgest = 2102;
-int stretch_camera = 413; 
-int shrink_arm_all = 500;
+int shrink_arm = 3000;  //原先为1925
+int stretch_arm_longgest = 3000; //原先为2102
+int stretch_camera = 3000;  //原先为413
+int shrink_arm_all = 3000;   //原先为500
 
 
-
+//!下列数据为开环放置数据，全部不能用
 int left_2 = 1620; //1620
 int left_3 = 2337;  //2337
-int left_4 = 1680; //1680
+int left_4 =  3000; //1680
 
-int right_2 = 2260;  //2250
+int right_2 = 2260;  //2260
 int right_3 = 3375;  //3375
-int right_4 = 1870;  //1870
+int right_4 =  3000;  //1870
 
 int middle_2 = 1937; //1937
 int middle_3 = 2865; //2865
-int middle_4 = 430;  //430
+int middle_4 =  3000;  //430
 
 
+volatile int x_camera_error = 0, y_camera_error = 0; // 物料中心和色环中心的偏差
+volatile int  r_servo_now =  3000; // 机械臂伸缩舵机的位置
+volatile int  theta_servo_now = 2865; // 机械臂中板旋转舵机的位置
+
+
+// 机械臂位置阈值
+int r_big_limit = 50;
+int r_mid_limit = 10;
+int r_small_limit = 2;
+int theta_big_limit = 50;
+int theta_mid_limit = 10;
+int theta_small_limit = 2;
+
+int r_pulse_servo_big = 50; // 精密舵机伸缩位置步进（大）
+int r_pulse_servo_mid = 20; // 精密舵机伸缩位置步进（中）
+int r_pulse_servo_small = 13; // 精密舵机伸缩位置步进（小）
+
+int theta_pulse_servo_big = 35; // 精密舵机旋转位置步进（大）
+int theta_pulse_servo_mid = 10; // 精密舵机旋转位置步进（中）   
+int theta_pulse_servo_small = 5; // 精密舵机旋转位置步进（小）
+
+/// @brief 根据视觉进行机械臂末端姿态校正
+/// @param x_error 
+/// @param y_error 
+int adjust_position_with_camera(int x_error, int y_error )
+{   
+    int r_adjust_values = 0, theta_adjust_values = 0;
+    int is_theta_ok = 0, is_r_ok = 0;
+
+    if(x_error > theta_big_limit) // 应该向右转动
+    {
+        theta_adjust_values = theta_pulse_servo_big;
+    }
+    else if(x_error < theta_big_limit && x_error > theta_mid_limit)
+    {
+        theta_adjust_values = theta_pulse_servo_mid;
+    }
+    else if(x_error < theta_mid_limit && x_error > theta_small_limit)
+    {
+        theta_adjust_values = theta_pulse_servo_small;
+    }
+    else if(x_error >0 && x_error < theta_small_limit)
+    {
+        theta_adjust_values = 1;
+        is_theta_ok = 1;
+    }
+    else if(x_error < -theta_big_limit) // 应该向左转动
+    {
+        theta_adjust_values = -theta_pulse_servo_big;
+    }
+    else if(x_error > -theta_big_limit && x_error < -theta_mid_limit)
+    {
+        theta_adjust_values = -theta_pulse_servo_mid;
+    }
+    else if(x_error > -theta_mid_limit && x_error < -theta_small_limit)
+    {
+        theta_adjust_values = -theta_pulse_servo_small;
+    }
+    else if(x_error < 0 && x_error > -theta_small_limit)
+    {
+        theta_adjust_values = -1;
+        is_theta_ok = 1;
+    }
+
+    if(y_error >r_big_limit) // 应该向前伸长
+    {
+        r_adjust_values = r_pulse_servo_big;
+    }
+    else if(y_error < r_big_limit && y_error > r_mid_limit)
+    {
+        r_adjust_values = r_pulse_servo_mid;
+    }
+    else if(y_error < r_mid_limit && y_error > r_small_limit)
+    {
+        r_adjust_values = r_pulse_servo_small;
+    }
+    else if(y_error > 0 && y_error < r_small_limit)
+    {
+        r_adjust_values = 1;
+        is_r_ok = 1;
+    }
+    else if(y_error < -r_big_limit) // 应该向后缩短
+    {
+        r_adjust_values = -r_pulse_servo_big;
+    }
+    else if(y_error > -r_big_limit && y_error < -r_mid_limit)
+    {
+        r_adjust_values = -r_pulse_servo_mid;
+    }
+    else if(y_error > -r_mid_limit && y_error < -r_small_limit)
+    {
+        r_adjust_values = -r_pulse_servo_small;
+    }
+    else if(y_error < 0 && y_error >- r_small_limit)
+    {
+        r_adjust_values = -1;
+        is_r_ok = 1;
+    }
+
+    if(theta_servo_now + theta_adjust_values < theta_right_position_limit && theta_servo_now + theta_adjust_values > theta_left_position_limit)
+    {
+        
+        feetech_servo_move(3,theta_servo_now + theta_adjust_values,3000,50);
+        theta_servo_now += theta_adjust_values;
+    }
+    HAL_Delay(20);
+    if(r_servo_now + r_adjust_values < r_front_position_limit && r_servo_now + r_adjust_values > r_back_position_limit) //! 还得考虑到限位的情况（角度转动）
+    {
+        feetech_servo_move(4,r_servo_now + r_adjust_values,3000,50);
+        r_servo_now += r_adjust_values;
+    }
+
+    if(is_r_ok == 1 && is_theta_ok == 1)
+    {
+        return 1;
+    }
+    else
+    {
+        return 0;
+    }
+}
 
 void get_and_load_ground(int position)
 {
@@ -401,6 +533,11 @@ void state_spin(int state_position)
 void put_claw_down_ground(void)
 {
     feetech_servo_move(1,put_claw_down_ground_position,4095,feet_acc);
+}
+
+void put_claw_down_near_ground(void)
+{
+    feetech_servo_move(1,put_claw_down_near_ground_position,4095,feet_acc);
 }
 
 /// @brief 夹爪下降到车的载物盘高度

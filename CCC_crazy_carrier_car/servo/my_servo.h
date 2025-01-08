@@ -22,12 +22,16 @@ void arm_shrink(void);
 void arm_shrink_all(void);
 void state_spin(int state_position);
 
+int adjust_position_with_camera(int x_error, int y_error );
+
+
 void get_and_put_different_position_pileup(int position);
 void put_claw_down_pile(void);
 void get_from_state(int position);
 void put_from_state(void);
 void put_from_state_pileup(void);
 void put_claw_down_ground(void);
+void put_claw_down_near_ground(void);
 void put_claw_down_state(void);
 void put_claw_down(void);
 void put_claw_up(void);

@@ -68,6 +68,9 @@ extern float x_move_position, y_move_position; // x、y
 extern int is_motor_start_move; 
 extern int is_slight_move,motor_state,is_slight_spin;
 
+extern volatile int x_camera_error, y_camera_error; // 视觉闭环微调时的x、y偏差值
+int is_find_circle = 0;
+
 float volatile gyro_z = 90;
 
 int open_loop_move_velocity = 400; //!200
@@ -86,6 +89,10 @@ int is_get_qrcode_target = 0; //!!!!!!
 int volatile is_start_get_plate = 0; // 开始从转盘抓
 int volatile get_plate = 0; // 1 2 3 
 int get_plate_count = 0;
+
+int seeking_for_circle = 0; // 当还没看到完整色环时置1
+int is_servo_adjust= 0; // 当在视觉闭环微调舵机时置1
+
 
 extern volatile int test_slight_move; // 用于判断微调是否完成
 extern int spin_which_direction;
@@ -205,34 +212,114 @@ int main(void)
 
     /*******************************实际功能的初始化******************************************/
 
-    // HAL_Delay(2000); // !等待电机初始化完成，本该是4000ms
-    // 机械臂初始位置设定
-    // arm_shrink();
+    // !等待电机初始化完成，本该是4000ms
     arm_stretch();
     whole_arm_spin(1);
-    put_claw_up_top();
+    // put_claw_up_top(); //! 正式比赛时取消注释
     claw_spin_front();
     open_claw_180();
+    state_spin(1);
 
 
     // HAL_Delay(1000);
 
     /*********************************测试区域开始*************************************/
+    //! 测试开始，以下为测试代码
+    //! 测试开始，以下为测试代码
+    //! 测试开始，以下为测试代码
+    HAL_Delay(1000);
+
     // float gyro_error_last = 0;
     // float target_angle = 90; // 目标角度
     // float current_angle = 0; // 当前角度
-    float gyro_error_last = 0; // 上一次陀螺仪角度
+    // float gyro_error_last = 0; // 上一次陀螺仪角度
 
-    
+    // claw_spin_state();
+    // HAL_Delay(1000);
+
+    //! 抓取放置动作
     // while(1)
     // {
-    //     HAL_Delay(2000);
-    //     close_claw();
     //     HAL_Delay(1000);
-    //     open_claw_180();
+    //     arm_shrink();
+    //     put_claw_up_top();
+    //     open_claw();
+    //     HAL_Delay(1000);
+    //     claw_spin_state();
+    //     HAL_Delay(1000);
+    //     put_claw_down_state();
+    //     HAL_Delay(1500);
+    //     close_claw();
+    //     put_claw_up_top();
+    //     HAL_Delay(1000);
+    //     claw_spin_front();
+    //     HAL_Delay(1000);
+    //     put_claw_down_ground();
+    //     HAL_Delay(4000);
+    //     open_claw();
+    //     HAL_Delay(5000);
+
+
+
     // }
 
+
+    //! 机械臂微调测试
+    // HAL_Delay(2000);
+    // feetech_servo_move(3,2800,1000,50);
+    // HAL_Delay(1000);
+    // feetech_servo_move(3,3200,1000,50);
+    // HAL_Delay(1000);
+    // feetech_servo_move(3,2865,1000,50);
+
+
+    //! 视觉闭环测试
+    close_claw();
+    HAL_UART_Transmit(&huart3, (uint8_t*)"GG", strlen("GG"), 50); //发给树莓派，开始校正
+    HAL_Delay(500);
+    put_claw_down_near_ground();
+    // HAL_Delay(3000);
+
+			
+			
+			is_servo_adjust = 1;
+    // int is_servo_adjust_ok =0;
+    while(is_servo_adjust != 0)
+    {
+        // if(is_find_circle == 0)
+        // {
+        //     // adjust_position_with_camera(5,-5);
+        // }
+        // else
+        // {
+        adjust_position_with_camera(x_camera_error, y_camera_error);
+        // }
+        // x_camera_error = 0;
+        // y_camera_error = 0;
+        HAL_Delay(100);
+    }
+    put_claw_down_ground();
+    HAL_Delay(500);
+    open_claw_180();
+    HAL_Delay(5000);
+    while(1)
+    {
+        HAL_Delay(1000);
+    }
+
+
+
+    // // //! 前后移动测试
     // while(1)
+    // {
+    //     move_all_direction_position(acceleration, open_loop_move_velocity-100,0,100);
+    //     HAL_Delay(1000);
+    //     move_all_direction_position(acceleration, open_loop_move_velocity-100,0,100);
+    //     HAL_Delay(1000);
+    // }
+
+    //! 陀螺仪测试
+    // while(1)  
     // {
     //     gyro_error_last = gyro_z;
     //     printf("t0.txt=\"%.3f\"\xff\xff\xff", gyro_z);
@@ -297,11 +384,9 @@ int main(void)
 //     HAL_Delay(3000);
 //     }
 
-
+    // //! 微调测试
     // feetech_servo_move(1,put_claw_down_ground_position-520,4095,50);
     // HAL_Delay(2000);
-
-    // //! 微调测试
     // HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正
     // HAL_Delay(50);
 	// is_slight_move = 1;
@@ -354,6 +439,8 @@ int main(void)
 
 
     /*********************************测试区域结束*************************************/
+    //! 调试到此为止，不会进入下面的主程序流程代码
+    //! 调试到此为止，不会进入下面的主程序流程代码
     //! 调试到此为止，不会进入下面的主程序流程代码
 
 

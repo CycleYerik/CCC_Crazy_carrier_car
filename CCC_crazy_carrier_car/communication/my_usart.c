@@ -16,6 +16,14 @@ extern float position_move_velocity ; // 单次位置移动速度
 extern int is_motor_start_move;
 extern int is_slight_move,motor_state,is_slight_spin;
 
+extern int is_servo_adjust;
+extern volatile int x_camera_error , y_camera_error ;
+extern volatile int  r_servo_now ; // 机械臂伸缩舵机的位置
+extern volatile int  theta_servo_now ; // 机械臂中板旋转舵机的位置
+
+extern int seeking_for_circle;
+extern int is_find_circle;
+
 int get_motor_real_vel_ok = 0;
 
 
@@ -515,19 +523,13 @@ void UART_receive_process_3(void)
             
         }
 
-
-
         if( rxdata_u3[0] == 0x17 ) // !停止移动
         {
             // is_slight_move = 0;
             // HAL_UART_Transmit(&huart3, (uint8_t*)"stop", strlen("stop"), 50);
             x_move_position = 0;
             y_move_position = 0;
-
-
- 
         }
-
         if(rxdata_u3[0] == 0x18 )  //结束微调
         {
             // motor_state = 0;
@@ -538,7 +540,58 @@ void UART_receive_process_3(void)
 
         }
 
-        
+
+
+        //! 进行视觉闭环微调
+        // if(rxdata_u3[0] == 0x37 )
+        // {
+        //     is_servo_adjust = 1;
+        // }
+
+        // if(rxdata_u3[0] == 0x38 )
+        // {
+        //     is_servo_adjust = 0;
+        //     x_camera_error = 0;
+        //     y_camera_error = 0;
+        // }
+        // 结束
+        if(rxdata_u3[0] == 0x39)
+        {
+            is_servo_adjust = 0;
+            x_camera_error = 0;
+            y_camera_error = 0;
+        }
+
+        if(is_servo_adjust == 1)
+        {
+            if(rxdata_u3[0] == 0x01)
+            {
+                x_camera_error = (int) rxdata_u3[1];
+                is_find_circle = 1;
+                // x_move_position = 10;
+                // HAL_UART_Transmit(&huart3, (uint8_t*)"right front", strlen("right front"), 50);
+            }
+            else if(rxdata_u3[0] == 0x02)
+            {
+                x_camera_error = - (int) rxdata_u3[1];
+                is_find_circle = 1;
+                // x_move_position = -10;
+                // HAL_UART_Transmit(&huart3, (uint8_t*)"left front", strlen("left front"), 50);
+            }
+            if(rxdata_u3[2] == 0x01)
+            {
+                y_camera_error = (int) rxdata_u3[3];
+                is_find_circle = 1;
+                // y_move_position = 10;
+            }
+            else if(rxdata_u3[2] == 0x02)
+            {
+                y_camera_error = - (int) rxdata_u3[3];
+                is_find_circle = 1;
+                // y_move_position = -10;
+            }
+        }
+
 
 
 
