@@ -2,9 +2,11 @@
 
 int tim3_count = 0;
 int tim2_count = 0;
+int tim2_count_2 = 0;
 
 int is_slight_spin = 0; //! 是否进行微调旋转,1为进行微调，在到位后开始微调，将此置为1
 int is_slight_move = 0; //! 是否进行微调,1为进行微调，在到位后开始微调，将此置为1
+int is_slight_spin_and_move = 0; //! 是否进行微调,1为进行微调，在到位后开始微调，将此置为1
 int motor_state = 0; // 电机状态，0为默认情况，1为微调情况
 
 /// @brief 电机是否可以开始移动（当已经接受了移动指令后，到电机移动到位前，该标志位为1）
@@ -36,9 +38,11 @@ int acceleration_adjust = 200;
 
 extern uint8_t rxdata_u3[50];
 extern uint8_t received_rxdata_u3;
-extern uint8_t rxflag_u3,rxflag_u4;
+extern uint8_t rxflag_u3,rxflag_u4,rxflag_u1;
 
 extern float gyro_z;
+
+extern int is_adjust_motor_in_tim;
 
 /// @brief 中断回调函数，所有的定时器中断都在这里处理
 /// @param htim
@@ -47,21 +51,53 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (htim->Instance == TIM2) // 10ms一次 用来进行电机控制
     {
         tim2_count++;
+        tim2_count_2++;
         if (rxflag_u3 != 0)
         {
             UART_handle_function_3(); // 处理串口3接收到的数据
         }
-
-        if (tim2_count >= 10) //! magic number 20
+        // if(tim2_count %8 == 2)
+        // {
+            // Emm_V5_Read_Sys_Params(1, S_CPOS); 
+        // }
+        // if(tim2_count %8  == 4)
+        // {
+        //     Emm_V5_Read_Sys_Params(2, S_CPOS);
+        // }
+        // if(tim2_count%8 == 6)
+        // {
+        //     Emm_V5_Read_Sys_Params(3, S_CPOS);
+        // }
+        // if(tim2_count %8== 0)
+        // {
+        //     Emm_V5_Read_Sys_Params(4, S_CPOS);
+        // }
+        // if (rxflag_u4 != 0)
+        //     {
+        //         UART_handle_function_4(); // 处理串口4接收到的数据
+        //     }
+        // if (tim2_count_2 >= 10) //! magic number 20
+        // {
+        //     if (rxflag_u4 != 0)
+        //     {
+        //         UART_handle_function_4(); // 处理串口4接收到的数据
+        //     }
+        //     tim2_count_2 = 0;
+        // }
+        if(tim2_count > 100000)
         {
-            if (rxflag_u4 != 0)
-            {
-                UART_handle_function_4(); // 处理串口4接收到的数据
-            }
-            HAL_UART_Transmit(&huart3,(uint8_t*)rxdata_u3,strlen((char*)rxdata_u3),50);
-
-			// printf("t1.txt=\"%.3f\"\xff\xff\xff", gyro_z);
+            tim2_count = 0;
         }
+        //     // HAL_UART_Transmit(&huart3,(uint8_t*)rxdata_u3,strlen((char*)rxdata_u3),50);
+            
+        //     // Emm_V5_Read_Sys_Params(2, S_CPOS);
+
+		// 	// printf("t1.txt=\"%.3f\"\xff\xff\xff", gyro_z);
+        // }
+        // if(rxflag_u1 != 0)
+        // {
+        //     UART_handle_function_1(); // 处理串口1接收到的数据
+        // }
         // if(is_motor_start_move == 0)
         // {
         //     is_motor_start_move = 1;
@@ -70,6 +106,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (htim->Instance == TIM3) // 10ms
     {
         tim3_count++;
+        if(is_adjust_motor_in_tim == 1)
+        {
         if(is_slight_spin == 1)
         {
             if (is_motor_start_move == 1)
@@ -173,6 +211,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                     send_motor_message_flag = 0;
                 }
             }
+        }
         }
         
 

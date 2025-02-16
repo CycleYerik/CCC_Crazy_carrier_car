@@ -7,7 +7,9 @@
 #define pi 3.1415926
 #define wheel_circumference 31.2 //轮子周长
 #define pulse_per_circle 3200 //每圈脉冲数
-#define spin_radius 21.37 //自转半径，数据不准确 // 21.37
+#define spin_radius_180 21.51 //自转半径，数据不准确 // 21.495 90 
+#define spin_radius_90 21.495 //自转半径，数据不准确 // 21.495 90
+#define spin_radius 21.495 //自转半径，数据不准确 // 21.495 90
 #define speed_ratio 0.47 //速度比例系数，0.47 cm/s 对应速度为1
 
 // 0.523 cm/s 对应速度为1
@@ -46,6 +48,7 @@ typedef enum {
 
 extern float x_velocity, y_velocity; // x、y轴速度
 
+void slight_spin_and_move(void);
 uint32_t get_clk(float distance);
 int get_distance_time(float distance, float velocity);
 // void PID_vel_Control(uint8_t addr,uint8_t acc, float target_vel);
@@ -58,10 +61,15 @@ void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count
 void spin_all_direction_tim(uint8_t acc, float spin_direction, int times_count);
 void stop(void);
 void stop_tim(int times_count);
+void Forward_move_with_yaw_adjust(uint16_t vel_left,uint16_t vel_right,uint8_t acc);
 void Forward_move_velocity(uint16_t vel,uint8_t acc);
 void Forward_move( uint16_t vel,uint8_t acc, uint32_t distance);
 void Backward_move_velocity(uint16_t vel,uint8_t acc);
 void Backward_move( uint16_t vel,uint8_t acc, uint32_t distance);
+void spin_right_180(uint16_t vel,uint8_t acc);
+void spin_left_180(uint16_t vel,uint8_t acc);
+void spin_right_90(uint16_t vel,uint8_t acc);
+void spin_left_90(uint16_t vel,uint8_t acc);
 void spin_left_velocity(uint16_t vel,uint8_t acc);
 void spin_left(uint16_t vel,uint8_t acc, uint32_t angle);
 void spin_right_velocity(uint16_t vel,uint8_t acc);
@@ -77,5 +85,6 @@ void Emm_V5_Stop_Now(uint8_t addr, uint8_t snF);
 void Emm_V5_Reset_CurPos_To_Zero(uint8_t addr);
 void Emm_V5_Synchronous_motion(uint8_t addr);
 void Emm_V5_Read_Sys_Params(uint8_t addr, SysParams_t s);
-
+void ZDT_X42_V2_Traj_Position_Control(uint8_t addr, uint8_t dir, uint16_t acc, uint16_t dec, float velocity, float position, uint8_t raf, uint8_t snF);
+void ZDT_X42_V2_Velocity_Control(uint8_t addr, uint8_t dir, uint16_t v_ramp, float velocity, uint8_t snF);
 #endif

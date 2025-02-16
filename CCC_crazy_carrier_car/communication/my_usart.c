@@ -6,6 +6,7 @@ uchar rxflag_u2,rxflag_u3,rxflag_u1,rxflag_u4,rxflag_u5; // usart1,2,3接收到�
 
 extern float volatile gyro_z;
 
+extern int servo_adjust_status;
 
 /// @brief 串口屏速度控制时用到的速度变量
 int velocity = 30;
@@ -17,9 +18,13 @@ extern int is_motor_start_move;
 extern int is_slight_move,motor_state,is_slight_spin;
 
 extern int is_servo_adjust;
+extern int is_adjust_plate_servo;
+extern int is_get_empty ,start_judge_empty;
 extern volatile int x_camera_error , y_camera_error ;
 extern volatile int  r_servo_now ; // 机械臂伸缩舵机的位置
 extern volatile int  theta_servo_now ; // 机械臂中板旋转舵机的位置
+
+extern volatile int x_plate_error , y_plate_error;
 
 extern int seeking_for_circle;
 extern int is_find_circle;
@@ -40,10 +45,27 @@ float y_err_1 = 0;
 float y_err_2 = 0;
 float y_err_3 = 0;
 
+float pos_motor_1 = 0, pos_motor_2 = 0, pos_motor_3 = 0, pos_motor_4 = 0;
+float angle_motor_1 = 0, angle_motor_2 = 0, angle_motor_3 = 0, angle_motor_4 = 0;
+float vel_1 = 0, vel_2 = 0, vel_3 = 0, vel_4 = 0;
+float motor_vel_1 = 0, motor_vel_2 = 0, motor_vel_3 = 0, motor_vel_4 = 0;
 
-#define Kp_slight_move 0.4  // 0.6  2025.1.3
-#define Ki_slight_move 0.01 // 0.05
-#define Kd_slight_move 0.01
+extern int is_start_judge_move_before_slight_adjust; // 是否开始判断在微调前是否需要移动
+extern int is_move_before_slight_adjust ; // 在微调前是否需要移动
+extern int x_move_before_slight_move ;
+
+extern int is_slight_spin_and_move;
+
+float line_spin_error_1 = 0, line_spin_error_2 = 0;
+int Kp_line_spin = 1.5;  //1.5
+int Ki_line_spin = 0.3;  //0.3
+int Kd_line_spin = 0.1;  //0.1
+
+int temp_spin_which_direction = 0;
+
+#define Kp_slight_move 0.4  // 0.4  2025.2.13
+#define Ki_slight_move 0.01 // 0.01
+#define Kd_slight_move 0.1  // 0.1
 
 
 
@@ -131,12 +153,13 @@ void UART_handle_function_4(void)
 {
     if(rxflag_u4 != 0)
     {
-        int temp = rxflag_u4;
+        // int temp = rxflag_u4;
         // HAL_Delay(1); // 如果是在main中使用可以加入延时，在定时器中断中调用则不能加
-        if(temp == rxflag_u4) 
-        {
-            UART_receive_process_4(); 
-        }
+        // if(temp == rxflag_u4) 
+        // {
+        //     UART_receive_process_4(); 
+        // }
+        UART_receive_process_4(); 
     }
 }
 
@@ -324,6 +347,95 @@ void UART_receive_process_1(void)
         //         Motor_Cur_Pos_4 = -Motor_Cur_Pos_4;
         //     }
         // }
+        if(rxdata_u1[0] == 1 && rxdata_u1[1] == 0x35)
+        {
+            vel_1 = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
+                             ((uint16_t)rxdata_u1[4] << 0));
+            motor_vel_1 = vel_1;
+            if(rxdata_u1[2])
+            {
+                motor_vel_1 = -motor_vel_1;
+            }
+        }
+        if(rxdata_u1[0] == 2 && rxdata_u1[1] == 0x35)
+        {
+            vel_2 = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
+                             ((uint16_t)rxdata_u1[4] << 0));
+            motor_vel_2 = vel_2;
+            if(rxdata_u1[2])
+            {
+                motor_vel_2 = -motor_vel_2;
+            }
+        }
+        if(rxdata_u1[0] == 3 && rxdata_u1[1] == 0x35)
+        {
+            vel_3 = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
+                             ((uint16_t)rxdata_u1[4] << 0));
+            motor_vel_3 = vel_3;
+            if(rxdata_u1[2])
+            {
+                motor_vel_3 = -motor_vel_3;
+            }
+        }
+        if(rxdata_u1[0] == 4 && rxdata_u1[1] == 0x35)
+        {
+            vel_4 = (uint16_t)(((uint16_t)rxdata_u1[3] << 8) |
+                             ((uint16_t)rxdata_u1[4] << 0));
+            motor_vel_4 = vel_4;
+            if(rxdata_u1[2])
+            {
+                motor_vel_4 = -motor_vel_4;
+            }
+        }
+
+        if(rxdata_u1[0] == 1 && rxdata_u1[1] == 0x36)
+        {
+            pos_motor_1 = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
+            ((uint32_t)rxdata_u1[4] << 16) |
+            ((uint32_t)rxdata_u1[5] << 8) |
+                             ((uint32_t)rxdata_u1[6] << 0));
+            angle_motor_1 = (float)pos_motor_1 * 360.0f / 65536.0f;
+            if(rxdata_u1[2])
+            {
+                angle_motor_1 = -angle_motor_1;
+            }
+        }
+        if(rxdata_u1[0] == 2 && rxdata_u1[1] == 0x36)
+        {
+            pos_motor_2 = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
+            ((uint32_t)rxdata_u1[4] << 16) |
+            ((uint32_t)rxdata_u1[5] << 8) |
+                             ((uint32_t)rxdata_u1[6] << 0));
+            angle_motor_2 = (float)pos_motor_2 * 360.0f / 65536.0f;
+            if(rxdata_u1[2])
+            {
+                angle_motor_2 = -angle_motor_2;
+            }
+        }
+        if(rxdata_u1[0] == 3 && rxdata_u1[1] == 0x36)
+        {
+            pos_motor_3 = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
+            ((uint32_t)rxdata_u1[4] << 16) |
+            ((uint32_t)rxdata_u1[5] << 8) |
+                             ((uint32_t)rxdata_u1[6] << 0));
+            angle_motor_3 = (float)pos_motor_3 * 360.0f / 65536.0f;
+            if(rxdata_u1[2])
+            {
+                angle_motor_3 = -angle_motor_3;
+            }
+        }
+        if(rxdata_u1[0] == 4 && rxdata_u1[1] == 0x36)
+        {
+            pos_motor_4 = (uint32_t)(((uint32_t)rxdata_u1[3] << 24) |
+            ((uint32_t)rxdata_u1[4] << 16) |
+            ((uint32_t)rxdata_u1[5] << 8) |
+                             ((uint32_t)rxdata_u1[6] << 0));
+            angle_motor_4 = (float)pos_motor_4 * 360.0f / 65536.0f;
+            if(rxdata_u1[2])
+            {
+                angle_motor_4 = -angle_motor_4;
+            }
+        }
         rxflag_u1 = 0;
         memset(rxdata_u1, 0, 128);
     }
@@ -338,7 +450,7 @@ void UART_receive_process_3(void)
     if (rxflag_u3 > 0)
     {
         // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
-        // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, rxflag_u3, 50);
+        // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, rxflag_u3, 50);  // 阻塞式，会造成串口阻塞
 
 
         is_motor_start_move = 1;
@@ -360,6 +472,43 @@ void UART_receive_process_3(void)
             }
         }
 
+        if(is_adjust_plate_servo == 1)
+        {
+            if(rxdata_u3[0] == 0x01)
+            {
+                x_plate_error = (int) rxdata_u3[1];
+                x_plate_error *= 1;
+                
+
+            }
+            else if(rxdata_u3[0] == 0x02)
+            {
+                x_plate_error = - (int) rxdata_u3[1];
+                x_plate_error *= 1;
+
+            }
+            if(rxdata_u3[2] == 0x01)
+            {
+                y_plate_error = (int) rxdata_u3[3];
+                y_plate_error *= 5;
+                is_adjust_plate_servo = 0;
+
+            }
+            else if(rxdata_u3[2] == 0x02)
+            {
+                y_plate_error = - (int) rxdata_u3[3];
+                y_plate_error *= 5;
+                is_adjust_plate_servo = 0;
+            }
+        }
+        if(start_judge_empty == 1)
+        {
+            if(rxdata_u3[0] == 0x03)
+            {
+                is_get_empty = 1;
+            }
+        }
+
         // 在从转盘抓取
         if (is_start_get_plate == 1) 
         {
@@ -378,44 +527,196 @@ void UART_receive_process_3(void)
                 get_plate = 3;
                 rxdata_u3[0] = 0x00;
             }
-            // 将get_plate数值发送给树莓派
-            // HAL_UART_Transmit(&huart3, (uint8_t*)&get_plate, 1, 50);
-            // HAL_UART_Transmit(&huart3, (uint8_t*), strlen("get_plate"), 50);
+        }
+
+        if(is_start_judge_move_before_slight_adjust == 1)
+        {
+            if(rxdata_u3[0] == 0x66)
+            {
+                is_move_before_slight_adjust = 1;
+                if(rxdata_u3[1]== 0x01)
+                {
+                    x_move_before_slight_move = (int )rxdata_u3[2];
+                }
+                else if(rxdata_u3[1] == 0x02)
+                {
+                    x_move_before_slight_move = - (int )rxdata_u3[2];
+                }
+                is_start_judge_move_before_slight_adjust = 0;
+            }
         }
 
 
+        // 直线和圆一起调
+        if(is_slight_spin_and_move == 1)
+        {
+            if(rxdata_u3[0] == 0x01)
+            {
+                temp_spin_which_direction = Kp_line_spin * (float)rxdata_u3[1] + Ki_line_spin * ((float)rxdata_u3[1] +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(float)rxdata_u3[1]+ line_spin_error_2);
+                if(temp_spin_which_direction > 6)
+                {
+                    spin_which_direction = 6;
+                }
+                else if(temp_spin_which_direction < 0.4)
+                {
+                    spin_which_direction = 0.4;
+                }
+                else
+                {
+                    spin_which_direction = temp_spin_which_direction;
+                }
+                line_spin_error_1 = (float)rxdata_u3[1];
+                line_spin_error_2 = line_spin_error_1;
+            }
+            else if(rxdata_u3[0] == 0x02)
+            {
+                temp_spin_which_direction = Kp_line_spin * (-(float)rxdata_u3[1]) + Ki_line_spin * ((-(float)rxdata_u3[1]) +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(-(float)rxdata_u3[1])+ line_spin_error_2);
+                if(temp_spin_which_direction < -6)
+                {
+                    spin_which_direction = -6;
+                }
+                else if(temp_spin_which_direction > -0.4)
+                {
+                    spin_which_direction = -0.4;
+                }
+                else
+                {
+                    spin_which_direction = temp_spin_which_direction;
+                }
+
+                line_spin_error_1 = -(float)rxdata_u3[1];
+                line_spin_error_2 = line_spin_error_1;
+            }
+            if(rxdata_u3[2] == 0x01)
+            {
+                x_move_position = (float) rxdata_u3[3];
+            }
+            else if(rxdata_u3[2] == 0x02)
+            {
+                x_move_position = - (float) rxdata_u3[3];
+            }
+            if(rxdata_u3[4] == 0x01)
+            {
+                y_move_position = (float) rxdata_u3[5];
+            }
+            else if(rxdata_u3[4] == 0x02)
+            {
+                y_move_position = - (float) rxdata_u3[5];
+            }
+
+            x_move_position *= 0.2;  //TODO magic number 原先是0.1
+            y_move_position *= 0.2;
+            x_err_1 = x_move_position;
+            y_err_1 = y_move_position;
+            x_err_2 = x_err_1;
+            y_err_2 = y_err_1;
+            x_err_3 = x_err_2;
+            y_err_3 = y_err_2;
+            x_move_position = Kp_slight_move * (x_err_1) + Ki_slight_move * (x_err_1+x_err_2 + x_err_3) + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2)/2.0;
+            y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + x_err_2 + x_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2.0 ;
+            if(x_move_position > 15)
+            {
+                x_move_position = 15;
+            }
+            if(y_move_position > 15)
+            {
+                y_move_position = 15;
+            }
+            if(x_move_position < -15)
+            {
+                x_move_position = -15;
+            }
+            if(y_move_position < -15)
+            {
+                y_move_position = -15;
+            }
+            if(x_move_position < 0.5 && x_move_position >0)
+            {
+                x_move_position = 0.5;
+            }
+            if(y_move_position < 0.5 && y_move_position >0)
+            {
+                y_move_position = 0.5;
+            }
+            if(x_move_position > -0.5 && x_move_position <0)
+            {
+                x_move_position = -0.5;
+            }
+            if(y_move_position > -0.5 && y_move_position <0)
+            {
+                y_move_position = -0.5;
+            }
+        }
+
+        if(rxdata_u3[0] == 0x44 && is_slight_spin_and_move == 1)
+        {
+            is_slight_spin_and_move = 0;
+            x_move_position = 0;
+            y_move_position = 0;
+            spin_which_direction = 0;          
+        }
 
         // 进行直线微调
         if(is_slight_spin == 1)
         {
             if(rxdata_u3[0] == 0x01)
             {
-                if((float)rxdata_u3[1] > 10)
+                // if((float)rxdata_u3[1] > 10)
+                // {
+                //     spin_which_direction = 10;
+                // }
+                // else if((float)rxdata_u3[1] < 0.5)
+                // {
+                //     spin_which_direction = 0.5;
+                // }
+                // else{
+                //     spin_which_direction =(float)rxdata_u3[1];
+                // }
+                temp_spin_which_direction = Kp_line_spin * (float)rxdata_u3[1] + Ki_line_spin * ((float)rxdata_u3[1] +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(float)rxdata_u3[1]+ line_spin_error_2);
+                if(temp_spin_which_direction > 5)
                 {
-                    spin_which_direction = 10;
+                    spin_which_direction = 5;
                 }
-                else if((float)rxdata_u3[1] < 0.5)
+                else if(temp_spin_which_direction< 1)
                 {
-                    spin_which_direction = 0.5;
+                    spin_which_direction = 1;
                 }
-                else{
-                    spin_which_direction =(float)rxdata_u3[1];
+                else
+                {
+                    spin_which_direction = temp_spin_which_direction;
                 }
+                line_spin_error_1 = (float)rxdata_u3[1];
+                line_spin_error_2 = line_spin_error_1;
                 
             }
             else if(rxdata_u3[0] == 0x02)
             {
-                if((float)rxdata_u3[1] >10)
+                // if((float)rxdata_u3[1] >10)
+                // {
+                //     spin_which_direction = -10;
+                // }
+                // else if((float)rxdata_u3[1] < 0.5)
+                // {
+                //     spin_which_direction = -0.5;
+                // }
+                // else{
+                //     spin_which_direction = -(float)rxdata_u3[1];
+                // }
+                temp_spin_which_direction = Kp_line_spin * (-(float)rxdata_u3[1]) + Ki_line_spin * ((-(float)rxdata_u3[1]) +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(-(float)rxdata_u3[1])+ line_spin_error_2);
+                if(temp_spin_which_direction < -5)
                 {
-                    spin_which_direction = -10;
+                    spin_which_direction = -5;
                 }
-                else if((float)rxdata_u3[1] < 0.5)
+                else if(temp_spin_which_direction > -1)
                 {
-                    spin_which_direction = -0.5;
+                    spin_which_direction = -1;
                 }
-                else{
-                    spin_which_direction = -(float)rxdata_u3[1];
+                else
+                {
+                    spin_which_direction = temp_spin_which_direction;
                 }
+                line_spin_error_1 = -(float)rxdata_u3[1];
+                line_spin_error_2 = line_spin_error_1;
             }
             
         }
@@ -424,6 +725,7 @@ void UART_receive_process_3(void)
         if( rxdata_u3[0] == 0x27 )
         {
             spin_which_direction = 0;
+            is_slight_spin_and_move = 0;
         }
 
         // 直线微调结束
@@ -467,8 +769,8 @@ void UART_receive_process_3(void)
                 y_move_position = - (float) rxdata_u3[3];
                 // y_move_position = -10;
             }
-            x_move_position *= 0.1;  //! magic number
-            y_move_position *= 0.1;
+            x_move_position *= 0.2;  //TODO magic number 原先是0.1
+            y_move_position *= 0.2;
 
             // 对位置微调进行PID控制
             x_err_1 = x_move_position;
@@ -478,28 +780,28 @@ void UART_receive_process_3(void)
             x_err_3 = x_err_2;
             y_err_3 = y_err_2;
 
-            x_move_position = Kp_slight_move * (x_err_1) + Ki_slight_move * (x_err_1+x_err_2 + x_err_3) + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2)/2;
-            y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + x_err_2 + x_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2    ;
+            x_move_position = Kp_slight_move * (x_err_1) + Ki_slight_move * (x_err_1+x_err_2 + x_err_3) + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2)/2.0;
+            y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + x_err_2 + x_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2.0 ;
 
 
 
 
 
-            if(x_move_position > 5)
+            if(x_move_position > 10)
             {
-                x_move_position = 5;
+                x_move_position = 10;
             }
-            if(y_move_position > 5)
+            if(y_move_position > 10)
             {
-                y_move_position = 5;
+                y_move_position = 10;
             }
-            if(x_move_position < -5)
+            if(x_move_position < -10)
             {
-                x_move_position = -5;
+                x_move_position = -10;
             }
-            if(y_move_position < -5)
+            if(y_move_position < -10)
             {
-                y_move_position = -5;
+                y_move_position = -10;
             }
             if(x_move_position < 0.5 && x_move_position >0)
             {
@@ -555,7 +857,20 @@ void UART_receive_process_3(void)
         //     y_camera_error = 0;
         // }
         // 结束
-        if(rxdata_u3[0] == 0x39)
+        
+        if(rxdata_u3[0] == 0x39 && servo_adjust_status == 1)
+        {
+            is_servo_adjust = 0;
+            x_camera_error = 0;
+            y_camera_error = 0;
+        }
+        if(rxdata_u3[0] == 0x40 && servo_adjust_status == 2)
+        {
+            is_servo_adjust = 0;
+            x_camera_error = 0;
+            y_camera_error = 0;
+        }
+        if(rxdata_u3[0] == 0x41 && servo_adjust_status == 3)
         {
             is_servo_adjust = 0;
             x_camera_error = 0;
@@ -594,7 +909,7 @@ void UART_receive_process_3(void)
 
 
 
-
+        // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, rxflag_u3, 50);
         rxflag_u3 = 0;
         memset(rxdata_u3, 0, 50); //
     }

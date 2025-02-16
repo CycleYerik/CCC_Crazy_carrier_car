@@ -21,7 +21,8 @@
 // float x_bias_limit = 1, y_bias_limit = 1; // x、y偏差限制,单位cm,待根据视觉情况调整
 
 /// 所有运动情况下的加速度
-float acceleration = 100;  //!一直用的150
+float acceleration = 180;  //180
+float acceleration_spin = 180; // 180
 
 
 /// @brief x、y轴移动速度（根据树莓派发送的偏差值进行调整）
@@ -30,19 +31,20 @@ float volatile x_move_position = 0, y_move_position = 0;
 /// @brief 顺逆时针旋转速度（0为不旋转）
 float volatile spin_which_direction = 0; 
 
-/// @brief 单次位置移动速度（树莓派视觉联调时的移动速度）
+/// @brief （废弃）单次位置移动速度（树莓派视觉联调时的移动速度）
 float position_move_velocity = 30; 
 
-/// @brief 旋转速度（树莓派视觉联调时的旋转速度）
+/// @brief （废弃）旋转速度（树莓派视觉联调时的旋转速度）
 float spin_move_velocity = 8; 
 
+int motor_vel_adjust_with_spin = 20;
 
 // 暂时不用
 float x_move_time=0; // x轴移动时间,ms
 float y_move_time = 0; // y轴移动时间,ms
 float all_move_time = 0; // 视觉联调时总移动时间(根据所需的移动时间取最大值)
 
-
+volatile int motor_vel_target_1 = 0, motor_vel_target_2 = 0, motor_vel_target_3 = 0, motor_vel_target_4 = 0;
 
 
 // /// @brief （废弃）根据树莓派发送的x、y偏差值进行PID位置控制
@@ -80,6 +82,68 @@ float all_move_time = 0; // 视觉联调时总移动时间(根据所需的移动
 //         return 0;
 //     }
 // }
+void slight_spin_plate_line(void)
+{
+
+}
+
+
+void slight_spin_and_move(void)
+{
+    motor_vel_target_1 = spin_which_direction - x_move_position - y_move_position;
+    motor_vel_target_2 = spin_which_direction - x_move_position + y_move_position;
+    motor_vel_target_3 = spin_which_direction + x_move_position - y_move_position;
+    motor_vel_target_4 = spin_which_direction + x_move_position + y_move_position;
+        if(motor_vel_target_1 > motor_vel_adjust_with_spin) motor_vel_target_1 = motor_vel_adjust_with_spin;
+        if(motor_vel_target_2 > motor_vel_adjust_with_spin) motor_vel_target_2 = motor_vel_adjust_with_spin;
+        if(motor_vel_target_3 > motor_vel_adjust_with_spin) motor_vel_target_3 = motor_vel_adjust_with_spin;
+        if(motor_vel_target_4 > motor_vel_adjust_with_spin) motor_vel_target_4 = motor_vel_adjust_with_spin;
+        if(motor_vel_target_1 < -motor_vel_adjust_with_spin) motor_vel_target_1 = -motor_vel_adjust_with_spin;
+        if(motor_vel_target_2 < -motor_vel_adjust_with_spin) motor_vel_target_2 = -motor_vel_adjust_with_spin;
+        if(motor_vel_target_3 < -motor_vel_adjust_with_spin) motor_vel_target_3 = -motor_vel_adjust_with_spin;
+        if(motor_vel_target_4 < -motor_vel_adjust_with_spin) motor_vel_target_4 = -motor_vel_adjust_with_spin;
+
+
+
+        if(motor_vel_target_1 >= 0)
+        {
+            Emm_V5_Vel_Control(1,1,motor_vel_target_1,0,1);
+        }
+        else
+        {
+            Emm_V5_Vel_Control(1,0,-motor_vel_target_1,0,1);
+        }
+        HAL_Delay(10);
+        if(motor_vel_target_2 >= 0)
+        {
+            Emm_V5_Vel_Control(2,1,motor_vel_target_2,0,1);
+        }
+        else
+        {
+            Emm_V5_Vel_Control(2,0,-motor_vel_target_2,0,1);
+        }
+        HAL_Delay(10);
+        if(motor_vel_target_3 >= 0)
+        {
+            Emm_V5_Vel_Control(3,1,motor_vel_target_3,0,1);
+        }
+        else
+        {
+            Emm_V5_Vel_Control(3,0,-motor_vel_target_3,0,1);
+        }
+        HAL_Delay(10);
+        if(motor_vel_target_4 >= 0)
+        {
+            Emm_V5_Vel_Control(4,1,motor_vel_target_4,0,1);
+        }
+        else
+        {
+            Emm_V5_Vel_Control(4,0,-motor_vel_target_4,0,1);
+        }
+        HAL_Delay(10);
+        Emm_V5_Synchronous_motion(0);
+        HAL_Delay(10);
+}
 
 /// @brief 根据移动的距离计算需要的脉冲数
 /// @param distance 
@@ -282,7 +346,7 @@ void stop_tim(int times_count)
 
 void spin_all_direction_tim(uint8_t acc, float spin_direction, int times_count)
 {
-    if(spin_direction >0) // 左转
+    if(spin_direction >=0) // 左转
     {
         switch(times_count)
         {
@@ -992,6 +1056,22 @@ void move_all_direction(uint8_t acc,float x_move_velocity,float y_move_velocity)
 //     HAL_Delay(10);
 // }
 
+void Forward_move_with_yaw_adjust(uint16_t vel_left,uint16_t vel_right,uint8_t acc)
+{
+    
+    Emm_V5_Vel_Control(1, 0, vel_left, acc, 1);
+    HAL_Delay(10);
+    Emm_V5_Vel_Control(2, 1, vel_right, acc, 1);
+    HAL_Delay(10);
+    Emm_V5_Vel_Control(3, 0, vel_left, acc, 1);
+    HAL_Delay(10);
+    Emm_V5_Vel_Control(4, 1, vel_right, acc, 1);
+    HAL_Delay(10);
+    Emm_V5_Synchronous_motion(0);
+    HAL_Delay(10);
+}
+
+
 /// @brief 以速度模式前进
 /// @param vel 
 /// @param acc 
@@ -1210,6 +1290,66 @@ void spin_right(uint16_t vel,uint8_t acc, uint32_t angle)
     HAL_Delay(10);
 }
 
+void spin_right_180(uint16_t vel,uint8_t acc)
+{
+    uint32_t clk = (uint32_t)((float)180 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
+    Emm_V5_Pos_Control(1, 0, vel, acc,clk, 0,1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(2, 0, vel, acc, clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(3, 0, vel, acc,clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(4, 0, vel, acc, clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Synchronous_motion(0);
+    HAL_Delay(10);
+}
+
+void spin_left_180(uint16_t vel,uint8_t acc)
+{
+    uint32_t clk = (uint32_t)((float)180 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
+    Emm_V5_Pos_Control(1, 1, vel, acc,clk, 0,1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(2, 1, vel, acc, clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(3, 1, vel, acc,clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(4, 1, vel, acc, clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Synchronous_motion(0);
+    HAL_Delay(10);
+}
+
+void spin_right_90(uint16_t vel,uint8_t acc)
+{
+    uint32_t clk = (uint32_t)((float)90 / 360 * spin_radius_90 * 2 * pi / wheel_circumference * pulse_per_circle);
+    Emm_V5_Pos_Control(1, 0, vel, acc,clk, 0,1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(2, 0, vel, acc, clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(3, 0, vel, acc,clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(4, 0, vel, acc, clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Synchronous_motion(0);
+    HAL_Delay(10);
+}
+
+void spin_left_90(uint16_t vel,uint8_t acc)
+{
+    uint32_t clk = (uint32_t)((float)90 / 360 * spin_radius_90 * 2 * pi / wheel_circumference * pulse_per_circle);
+    Emm_V5_Pos_Control(1, 1, vel, acc,clk, 0,1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(2, 1, vel, acc, clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(3, 1, vel, acc,clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Pos_Control(4, 1, vel, acc, clk, 0, 1);
+    HAL_Delay(10);
+    Emm_V5_Synchronous_motion(0);
+    HAL_Delay(10);
+}
+
 
 /// @brief 整车立即停车
 void stop(void)
@@ -1255,7 +1395,7 @@ void Emm_V5_Vel_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, ui
 /**
   * @brief    位置模式
   * @param    addr：电机地址
-  * @param    dir ：方向        ，0为CW，其余值为CCW
+  * @param    dir ：方向        ，0为顺时针，其余值为逆时针
   * @param    vel ：速度(RPM)   ，范围0 - 5000RPM
   * @param    acc ：加速度      ，范围0 - 255，注意：0是直接启动
   * @param    clk ：脉冲数      ，范围0- (2^32 - 1)个
@@ -1384,3 +1524,75 @@ void Emm_V5_Read_Sys_Params(uint8_t addr, SysParams_t s)
   usart_SendCmd_u1(cmd, i);
 }
 
+/**
+  * @brief    梯形曲线位置模式
+  * @param    addr  	：电机地址
+  * @param    dir     ：方向										，0为CW，其余值为CCW
+  * @param    acc     ：加速加速度(RPM/s)			，0为CW，其余值为CCW
+  * @param    dec     ：减速加速度(RPM/s)			，0为CW，其余值为CCW
+  * @param    velocity：最大速度(RPM)					，范围0.0 - 4000.0RPM
+  * @param    position：位置(°)								，范围0.0°- (2^32 - 1)°
+  * @param    raf     ：相位位置/绝对位置标志	，0为相对位置，其余值为绝对位置
+  * @param    snF     ：多机同步标志						，0为不启用，其余值启用
+  * @retval   地址 + 功能码 + 命令状态 + 校验字节
+  */
+void ZDT_X42_V2_Traj_Position_Control(uint8_t addr, uint8_t dir, uint16_t acc, uint16_t dec, float velocity, float position, uint8_t raf, uint8_t snF)
+{
+  uint8_t cmd[32] = {0}; uint16_t vel = 0; uint32_t pos = 0;
+
+  // 将速度和位置放大10倍发送过去
+  vel = (uint16_t)ABS(velocity * 10.0f); pos = (uint32_t)ABS(position * 10.0f);
+
+  // 装载命令
+  cmd[0]  =  addr;                      // 地址
+  cmd[1]  =  0xFD;                      // 功能码
+  cmd[2]  =  dir;                       // 符号（方向）
+  cmd[3]  =  (uint8_t)(acc >> 8);       // 加速加速度(RPM/s)高8位字节
+  cmd[4]  =  (uint8_t)(acc >> 0);       // 加速加速度(RPM/s)低8位字节  
+  cmd[5]  =  (uint8_t)(dec >> 8);       // 减速加速度(RPM/s)高8位字节
+  cmd[6]  =  (uint8_t)(dec >> 0);       // 减速加速度(RPM/s)低8位字节  
+  cmd[7]  =  (uint8_t)(vel >> 8);       // 最大速度(RPM)高8位字节
+  cmd[8]  =  (uint8_t)(vel >> 0);       // 最大速度(RPM)低8位字节 
+  cmd[9]  =  (uint8_t)(pos >> 24);      // 位置(bit24 - bit31)
+  cmd[10] =  (uint8_t)(pos >> 16);      // 位置(bit16 - bit23)
+  cmd[11] =  (uint8_t)(pos >> 8);       // 位置(bit8  - bit15)
+  cmd[12] =  (uint8_t)(pos >> 0);       // 位置(bit0  - bit7 )
+  cmd[13] =  raf;                       // 相位位置/绝对位置标志
+  cmd[14] =  snF;                       // 多机同步运动标志
+  cmd[15] =  0x6B;                      // 校验字节
+  
+  // 发送命令
+  usart_SendCmd_u1(cmd, 16);
+}
+
+
+/**
+  * @brief    速度模式
+  * @param    addr  	：电机地址
+  * @param    dir     ：方向         ，0为CW，其余值为CCW
+  * @param    v_ramp  ：斜率(RPM/s)  ，范围0 - 65535RPM/s
+  * @param    velocity：速度(RPM)    ，范围0.0 - 4000.0RPM
+  * @param    snF     ：多机同步标志 ，0为不启用，其余值启用
+  * @retval   地址 + 功能码 + 命令状态 + 校验字节
+  */
+void ZDT_X42_V2_Velocity_Control(uint8_t addr, uint8_t dir, uint16_t v_ramp, float velocity, uint8_t snF)
+{
+  uint8_t cmd[16] = {0}; uint16_t vel = 0;
+
+  // 将速度放大10倍发送过去
+  vel = (uint16_t)ABS(velocity * 10.0f);
+
+  // 装载命令
+  cmd[0] =  addr;                       // 地址
+  cmd[1] =  0xF6;                       // 功能码
+  cmd[2] =  dir;                        // 符号（方向）
+  cmd[3] =  (uint8_t)(v_ramp >> 8);     // 速度斜率(RPM/s)高8位字节
+  cmd[4] =  (uint8_t)(v_ramp >> 0);     // 速度斜率(RPM/s)低8位字节
+  cmd[5] =  (uint8_t)(vel >> 8);        // 速度(RPM)高8位字节
+  cmd[6] =  (uint8_t)(vel >> 0);        // 速度(RPM)低8位字节
+  cmd[7] =  snF;                        // 多机同步运动标志
+  cmd[8] =  0x6B;                       // 校验字节
+  
+  // 发送命令
+  usart_SendCmd_u1(cmd, 9);
+}
