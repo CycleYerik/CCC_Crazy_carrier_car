@@ -6,12 +6,13 @@
 #include "SCServo.h"
 #include "uart.h"
 
-#define Kp_theta 0.14  //0.22
-#define Ki_theta 0.01 //0.1
-#define Kd_theta 0.02 //0.01
-#define Kp_r 0.42  //0.45
-#define Ki_r 0.012  //0.12
-#define Kd_r 0.018  //0.01
+//50ms
+#define Kp_theta 0.6  //0.22
+#define Ki_theta 0.15 //0.1
+#define Kd_theta 0.25 //0.01
+#define Kp_r 1.0  //0.45
+#define Ki_r 0.15  //0.12
+#define Kd_r 0.35  //0.01
 void adjust_plate(void);
 void get_and_load_ground(int position);
 void get_and_load(int position);

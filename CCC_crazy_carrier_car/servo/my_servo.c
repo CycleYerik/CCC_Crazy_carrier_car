@@ -35,22 +35,22 @@ int feet_acc_claw_up_down = 240;
 
 int put_claw_down_pile_position = 1644; //1819
 int put_claw_down_state_position = 575 ; //从车的载物盘上  737
-int put_claw_down_position = 1556;  // 从转盘上取物料  1625
-int put_claw_down_ground_position = 2719; // 放在地上 2899
+int put_claw_down_position = 1500;  // 从转盘上取物料  1625
+int put_claw_down_ground_position = 2637; // 放在地上 2899
 int put_claw_up_top_position = 30; // 最高点  360
 int put_claw_up_position =1051; //  
-int claw_spin_position_front = 3328; // 2号精密舵机回到前方
-int claw_spin_position_state = 1605; // 2号精密舵机回到载物盘//! 233
+int claw_spin_position_front = 3329 ; // 2号精密舵机回到前方
+int claw_spin_position_state = 1628; // 2号精密舵机回到载物盘//! 233
 int claw_spin_without_claw_position_state = 1605; //与上面一样
-int put_claw_down_near_ground_position = 2637; //2800 -220
+int put_claw_down_near_ground_position = 2550; //2800 -220
 
 
 // 机械臂位置限制 
 // 2280左 3400右
 // 2000后 4050前
 //TODO 待测量
-int theta_left_position_limit = 1900;
-int theta_right_position_limit = 3800;
+int theta_left_position_limit = 1750;
+int theta_right_position_limit = 3900;
 int theta_right_position_rlimit = 2350;
 int theta_left_position_rlimit = 3350;
 int r_front_position_limit = 4090;
@@ -60,7 +60,7 @@ int r_back_position_rlimit = 3590; // 当theta超过rlimit，r的限制值不能
 // left 3 2350超过就得限制r  3590
 // right 3 3350 超过就得限制r  3590
 
-int shrink_arm = 4080; //原先为1925
+int shrink_arm = 3674; //原先为1925
 int stretch_arm_longgest = 2704; //原先为2102
 int stretch_camera = 2704;  //原先为413
 int shrink_arm_all = 2704;   //原先为500
@@ -70,11 +70,11 @@ int init_plate = 2632;// 初始抓转盘
 
 int left_2 = 3929; //1620
 int left_3 = 2000;  //2337
-int left_4 =  3880; //1680
+int left_4 =  3800; //1680
 
 int right_2 = 3929;  //2260
-int right_3 = 3650;  //3375
-int right_4 =  3750;  //1870
+int right_3 = 3700;  //3375
+int right_4 =  3810;  //1870
 
 int middle_2 = 3929; //1937
 int middle_3 = 2865; //2865
@@ -121,9 +121,33 @@ void adjust_plate(void)
                 feetech_servo_move(4,r_servo_now,4000,feet_acc);
                 y_plate_error = 0;
             }
+            else if (r_servo_now+y_plate_error > r_front_position_limit)
+            {
+                r_servo_now = r_front_position_limit;
+                feetech_servo_move(4,r_servo_now,4000,feet_acc);
+                y_plate_error = 0;
+            }
+            else if (r_servo_now+y_plate_error < r_back_position_limit)
+            {
+                r_servo_now = r_back_position_limit;
+                feetech_servo_move(4,r_servo_now,4000,feet_acc);
+                y_plate_error = 0;
+            }
             if(theta_servo_now+x_plate_error < theta_right_position_limit && theta_servo_now+x_plate_error > theta_left_position_limit)
             {
                 theta_servo_now += x_plate_error;
+                feetech_servo_move(3,theta_servo_now,4000,feet_acc);
+                x_plate_error = 0;
+            }
+            else if (theta_servo_now+x_plate_error > theta_right_position_limit)
+            {
+                theta_servo_now = theta_right_position_limit;
+                feetech_servo_move(3,theta_servo_now,4000,feet_acc);
+                x_plate_error = 0;
+            }
+            else if (theta_servo_now+x_plate_error < theta_left_position_limit)
+            {
+                theta_servo_now = theta_left_position_limit;
                 feetech_servo_move(3,theta_servo_now,4000,feet_acc);
                 x_plate_error = 0;
             }
@@ -216,6 +240,22 @@ int adjust_position_with_camera(int x_error, int y_error )
     //     r_adjust_values = -1;
     //     is_r_ok = 1;
     // }
+    if(theta_adjust_values <1 && theta_adjust_values >=0)
+    {
+        theta_adjust_values = 1;
+    }
+    if(theta_adjust_values >-1 && theta_adjust_values <0)
+    {
+        theta_adjust_values = -1;
+    }
+    if(r_adjust_values <1 && r_adjust_values >=0)
+    {
+        r_adjust_values = 1;
+    }
+    if(r_adjust_values >-1 && r_adjust_values <0)
+    {
+        r_adjust_values = -1;
+    }
     if((theta_servo_now + theta_adjust_values < theta_right_position_limit) && (theta_servo_now + theta_adjust_values > theta_left_position_limit) && (r_servo_now + r_adjust_values < r_front_position_limit) && (r_servo_now + r_adjust_values > r_back_position_limit))
     {
         feetech_servo_move(4,r_servo_now + r_adjust_values,3000,50);
@@ -658,7 +698,7 @@ void close_claw(void)
 void arm_stretch(void)
 {
     // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_stretch_position);
-    if(ReadPos(4) < shrink_arm && ReadPos(4) >1500)
+    if( ReadPos(4) >1500)
     {
         feetech_servo_move(4,stretch_arm_longgest,4095,feet_acc);
         r_servo_now = stretch_arm_longgest;
@@ -671,7 +711,7 @@ void arm_stretch(void)
 void arm_shrink(void)
 {
     // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_position);
-    if(ReadPos(4) < shrink_arm && ReadPos(4) >1500)
+    if( ReadPos(4) >1500)
     {
         feetech_servo_move(4,shrink_arm,4095,feet_acc);
         r_servo_now = shrink_arm;

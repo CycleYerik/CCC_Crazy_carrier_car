@@ -153,6 +153,11 @@ uint32_t get_clk(float distance)
     return (uint32_t)(distance / wheel_circumference * pulse_per_circle);
 }
 
+float get_angle(float distance)
+{
+    return (float)distance / wheel_circumference * 360.0;
+}
+
 /// @brief 根据移动的距离和速度计算需要的时间（ms）
 int get_distance_time(float distance, float velocity)
 {
@@ -673,6 +678,101 @@ void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_len
     // uint32_t timey = get_distance_time(abs(y_move_length), velocity);
     // HAL_Delay(timex > timey ? timex : timey);
 
+}
+
+
+void move_all_direction_position_y42(uint16_t acc_start,uint16_t acc_stop, float vel,float x_move_length,float y_move_length)
+{
+    if(x_move_length >= 0 && y_move_length >= 0)
+    {
+        float delta_xy = x_move_length - y_move_length;
+        ZDT_X42_V2_Traj_Position_Control(1,0,acc_start,acc_stop,vel,  get_angle(x_move_length + y_move_length),0,1);
+        HAL_Delay(10);
+        ZDT_X42_V2_Traj_Position_Control(4,1,acc_start,acc_stop,vel,  get_angle(x_move_length + y_move_length),0,1);
+        HAL_Delay(10);
+        if(delta_xy >= 0)
+        {
+            ZDT_X42_V2_Traj_Position_Control(2,0,acc_start,acc_stop,vel,  get_angle(delta_xy),0,1);
+            HAL_Delay(10);
+            ZDT_X42_V2_Traj_Position_Control(3,1,acc_start,acc_stop,vel,  get_angle(delta_xy),0,1);
+            HAL_Delay(10);
+        }
+        else
+        {
+            ZDT_X42_V2_Traj_Position_Control(2,1,acc_start,acc_stop,vel,  get_angle(-delta_xy),0,1);
+            HAL_Delay(10);
+            ZDT_X42_V2_Traj_Position_Control(3,0,acc_start,acc_stop,vel,  get_angle(-delta_xy),0,1);
+            HAL_Delay(10);
+        }
+    }
+    else if (x_move_length >= 0 && y_move_length < 0)
+    {
+        float delta_xy = x_move_length + y_move_length;
+        ZDT_X42_V2_Traj_Position_Control(2,0,acc_start,acc_stop,vel,  get_angle(x_move_length - y_move_length),0,1);
+        HAL_Delay(10);
+        ZDT_X42_V2_Traj_Position_Control(3,1,acc_start,acc_stop,vel,  get_angle(x_move_length - y_move_length),0,1);
+        HAL_Delay(10);
+        if(delta_xy >= 0)
+        {
+            ZDT_X42_V2_Traj_Position_Control(1,0,acc_start,acc_stop,vel,  get_angle(delta_xy),0,1);
+            HAL_Delay(10);
+            ZDT_X42_V2_Traj_Position_Control(4,1,acc_start,acc_stop,vel,  get_angle(delta_xy),0,1);
+            HAL_Delay(10);
+        }
+        else
+        {
+            ZDT_X42_V2_Traj_Position_Control(1,1,acc_start,acc_stop,vel,  get_angle(-delta_xy),0,1);
+            HAL_Delay(10);
+            ZDT_X42_V2_Traj_Position_Control(4,0,acc_start,acc_stop,vel,  get_angle(-delta_xy),0,1);
+            HAL_Delay(10);
+        }
+    }
+    else if (x_move_length < 0 && y_move_length >= 0)
+    {
+        float delta_xy = y_move_length + x_move_length;
+        ZDT_X42_V2_Traj_Position_Control(2,1,acc_start,acc_stop,vel,  get_angle(x_move_length - y_move_length),0,1);
+        HAL_Delay(10);
+        ZDT_X42_V2_Traj_Position_Control(3,0,acc_start,acc_stop,vel,  get_angle(x_move_length - y_move_length),0,1);
+        HAL_Delay(10);
+        if(delta_xy >= 0)
+        {
+            ZDT_X42_V2_Traj_Position_Control(1,0,acc_start,acc_stop,vel,  get_angle(delta_xy),0,1);
+            HAL_Delay(10);
+            ZDT_X42_V2_Traj_Position_Control(4,1,acc_start,acc_stop,vel,  get_angle(delta_xy),0,1);
+            HAL_Delay(10);
+        }
+        else
+        {
+            ZDT_X42_V2_Traj_Position_Control(1,1,acc_start,acc_stop,vel,  get_angle(-delta_xy),0,1);
+            HAL_Delay(10);
+            ZDT_X42_V2_Traj_Position_Control(4,0,acc_start,acc_stop,vel,  get_angle(-delta_xy),0,1);
+            HAL_Delay(10);
+        }
+    }
+    else if (x_move_length < 0 && y_move_length < 0)
+    {
+        float delta_xy = y_move_length - x_move_length;
+        ZDT_X42_V2_Traj_Position_Control(1,1,acc_start,acc_stop,vel,  get_angle(-x_move_length - y_move_length),0,1);
+        HAL_Delay(10);
+        ZDT_X42_V2_Traj_Position_Control(4,0,acc_start,acc_stop,vel,  get_angle(-x_move_length - y_move_length),0,1);
+        HAL_Delay(10);
+        if(delta_xy >= 0)
+        {
+            ZDT_X42_V2_Traj_Position_Control(2,1,acc_start,acc_stop,vel,  get_angle(delta_xy),0,1);
+            HAL_Delay(10);
+            ZDT_X42_V2_Traj_Position_Control(3,0,acc_start,acc_stop,vel,  get_angle(delta_xy),0,1);
+            HAL_Delay(10);
+        }
+        else
+        {
+            ZDT_X42_V2_Traj_Position_Control(2,0,acc_start,acc_stop,vel,  get_angle(-delta_xy),0,1);
+            HAL_Delay(10);
+            ZDT_X42_V2_Traj_Position_Control(3,1,acc_start,acc_stop,vel,  get_angle(-delta_xy),0,1);
+            HAL_Delay(10);
+        }
+    }
+    ZDT_X42_V2_Synchronous_motion(0);
+    HAL_Delay(10);
 }
 
 // /// @brief （未实现）全向速度移动，自带PID控制,调用PID_vel_Control函数
@@ -1305,6 +1405,21 @@ void spin_right_180(uint16_t vel,uint8_t acc)
     HAL_Delay(10);
 }
 
+void spin_right_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop)
+{
+    float clk = 180;
+    ZDT_X42_V2_Traj_Position_Control(1,0,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(2,0,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(3,0,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(4,0,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Synchronous_motion(0);
+    HAL_Delay(10);
+}
+
 void spin_left_180(uint16_t vel,uint8_t acc)
 {
     uint32_t clk = (uint32_t)((float)180 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
@@ -1317,6 +1432,21 @@ void spin_left_180(uint16_t vel,uint8_t acc)
     Emm_V5_Pos_Control(4, 1, vel, acc, clk, 0, 1);
     HAL_Delay(10);
     Emm_V5_Synchronous_motion(0);
+    HAL_Delay(10);
+}
+
+void spin_left_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop)
+{
+    float clk = 180;
+    ZDT_X42_V2_Traj_Position_Control(1,1,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(2,1,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(3,1,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(4,1,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Synchronous_motion(0);
     HAL_Delay(10);
 }
 
@@ -1335,6 +1465,21 @@ void spin_right_90(uint16_t vel,uint8_t acc)
     HAL_Delay(10);
 }
 
+void spin_right_90_y42(float vel, uint16_t acc_start,uint16_t acc_stop)
+{
+    float clk = 90;
+    ZDT_X42_V2_Traj_Position_Control(1,0,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(2,0,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(3,0,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(4,0,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Synchronous_motion(0);
+    HAL_Delay(10);
+}
+
 void spin_left_90(uint16_t vel,uint8_t acc)
 {
     uint32_t clk = (uint32_t)((float)90 / 360 * spin_radius_90 * 2 * pi / wheel_circumference * pulse_per_circle);
@@ -1350,6 +1495,20 @@ void spin_left_90(uint16_t vel,uint8_t acc)
     HAL_Delay(10);
 }
 
+void spin_left_90_y42(float vel, uint16_t acc_start,uint16_t acc_stop)
+{
+    float clk = 90;
+    ZDT_X42_V2_Traj_Position_Control(1,1,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(2,1,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(3,1,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Traj_Position_Control(4,1,acc_start,acc_stop,vel,clk,0,1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Synchronous_motion(0);
+    HAL_Delay(10);
+}
 
 /// @brief 整车立即停车
 void stop(void)
@@ -1361,6 +1520,20 @@ void stop(void)
     Emm_V5_Stop_Now((uint8_t)3,0);
     HAL_Delay(10);
     Emm_V5_Stop_Now((uint8_t)4, 0);
+    HAL_Delay(10);
+}
+
+void stop_y42(void)
+{
+    ZDT_X42_V2_Stop_Now((uint8_t)1, (uint8_t)1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Stop_Now((uint8_t)2,(uint8_t)1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Stop_Now((uint8_t)3,(uint8_t)1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Stop_Now((uint8_t)4, (uint8_t)1);
+    HAL_Delay(10);
+    ZDT_X42_V2_Synchronous_motion(0);
     HAL_Delay(10);
 }
 
@@ -1566,6 +1739,42 @@ void ZDT_X42_V2_Traj_Position_Control(uint8_t addr, uint8_t dir, uint16_t acc, u
 }
 
 
+
+/**
+  * @brief    直通限速位置模式
+  * @param    addr  	：电机地址
+  * @param    dir     ：方向										，0为CW，其余值为CCW
+  * @param    velocity：最大速度(RPM)					，范围0.0 - 4000.0RPM
+  * @param    position：位置(°)								，范围0.0°- (2^32 - 1)°
+  * @param    raf     ：相位位置/绝对位置标志	，0为相对位置，其余值为绝对位置
+  * @param    snF     ：多机同步标志						，0为不启用，其余值启用
+  * @retval   地址 + 功能码 + 命令状态 + 校验字节
+  */
+void ZDT_X42_V2_Bypass_Position_LV_Control(uint8_t addr, uint8_t dir, float velocity, float position, uint8_t raf, uint8_t snF)
+{
+  uint8_t cmd[16] = {0}; uint16_t vel = 0; uint32_t pos = 0;
+
+  // 将速度和位置放大10倍发送过去
+  vel = (uint16_t)ABS(velocity * 10.0f); pos = (uint32_t)ABS(position * 10.0f);
+
+  // 装载命令
+  cmd[0]  =  addr;                      // 地址
+  cmd[1]  =  0xFB;                      // 功能码
+  cmd[2]  =  dir;                       // 符号（方向）
+  cmd[3]  =  (uint8_t)(vel >> 8);       // 最大速度(RPM)高8位字节
+  cmd[4]  =  (uint8_t)(vel >> 0);       // 最大速度(RPM)低8位字节 
+  cmd[5]  =  (uint8_t)(pos >> 24);      // 位置(bit24 - bit31)
+  cmd[6]  =  (uint8_t)(pos >> 16);      // 位置(bit16 - bit23)
+  cmd[7]  =  (uint8_t)(pos >> 8);       // 位置(bit8  - bit15)
+  cmd[8]  =  (uint8_t)(pos >> 0);       // 位置(bit0  - bit7 )
+  cmd[9]  =  raf;                       // 相位位置/绝对位置标志
+  cmd[10] =  snF;                       // 多机同步运动标志
+  cmd[11] =  0x6B;                      // 校验字节
+  
+  // 发送命令
+  usart_SendCmd_u1(cmd, 12);
+}
+
 /**
   * @brief    速度模式
   * @param    addr  	：电机地址
@@ -1595,4 +1804,45 @@ void ZDT_X42_V2_Velocity_Control(uint8_t addr, uint8_t dir, uint16_t v_ramp, flo
   
   // 发送命令
   usart_SendCmd_u1(cmd, 9);
+}
+
+
+/**
+  * @brief    立即停止（所有控制模式都通用）
+  * @param    addr  ：电机地址
+  * @param    snF   ：多机同步标志，0为不启用，其余值启用
+  * @retval   地址 + 功能码 + 命令状态 + 校验字节
+  */
+void ZDT_X42_V2_Stop_Now(uint8_t addr, uint8_t snF)
+{
+  uint8_t cmd[16] = {0};
+  
+  // 装载命令
+  cmd[0] =  addr;                       // 地址
+  cmd[1] =  0xFE;                       // 功能码
+  cmd[2] =  0x98;                       // 辅助码
+  cmd[3] =  snF;                        // 多机同步运动标志
+  cmd[4] =  0x6B;                       // 校验字节
+  
+  // 发送命令
+  usart_SendCmd_u1(cmd, 5);
+}
+
+/**
+  * @brief    多机同步运动
+  * @param    addr  ：电机地址
+  * @retval   地址 + 功能码 + 命令状态 + 校验字节
+  */
+void ZDT_X42_V2_Synchronous_motion(uint8_t addr)
+{
+  uint8_t cmd[16] = {0};
+  
+  // 装载命令
+  cmd[0] =  addr;                       // 地址
+  cmd[1] =  0xFF;                       // 功能码
+  cmd[2] =  0x66;                       // 辅助码
+  cmd[3] =  0x6B;                       // 校验字节
+  
+  // 发送命令
+  usart_SendCmd_u1(cmd, 4);
 }

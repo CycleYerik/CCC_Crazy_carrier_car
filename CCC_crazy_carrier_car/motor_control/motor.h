@@ -5,7 +5,7 @@
 
 
 #define pi 3.1415926
-#define wheel_circumference 31.2 //轮子周长
+#define wheel_circumference 31.4 //轮子周长
 #define pulse_per_circle 3200 //每圈脉冲数
 #define spin_radius_180 21.51 //自转半径，数据不准确 // 21.495 90 
 #define spin_radius_90 21.495 //自转半径，数据不准确 // 21.495 90
@@ -50,12 +50,14 @@ extern float x_velocity, y_velocity; // x、y轴速度
 
 void slight_spin_and_move(void);
 uint32_t get_clk(float distance);
+float get_angle(float distance);
 int get_distance_time(float distance, float velocity);
 // void PID_vel_Control(uint8_t addr,uint8_t acc, float target_vel);
 // int PID_motor_control(float x_bias, float y_bias);
 void move_all_direction(uint8_t acc,float x_move_velocity,float y_move_velocity);
 // void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_velocity);
 void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length);
+void move_all_direction_position_y42(uint16_t acc_start,uint16_t acc_stop, float vel,float x_move_length,float y_move_length);
 void move_all_direction_position_tim(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int times_count);
 void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count);
 void spin_all_direction_tim(uint8_t acc, float spin_direction, int times_count);
@@ -87,4 +89,11 @@ void Emm_V5_Synchronous_motion(uint8_t addr);
 void Emm_V5_Read_Sys_Params(uint8_t addr, SysParams_t s);
 void ZDT_X42_V2_Traj_Position_Control(uint8_t addr, uint8_t dir, uint16_t acc, uint16_t dec, float velocity, float position, uint8_t raf, uint8_t snF);
 void ZDT_X42_V2_Velocity_Control(uint8_t addr, uint8_t dir, uint16_t v_ramp, float velocity, uint8_t snF);
+void ZDT_X42_V2_Stop_Now(uint8_t addr, uint8_t snF);
+void ZDT_X42_V2_Synchronous_motion(uint8_t addr);
+void stop_y42(void);
+void spin_right_90_y42(float vel, uint16_t acc_start,uint16_t acc_stop);
+void spin_left_90_y42(float vel, uint16_t acc_start,uint16_t acc_stop);
+void spin_right_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop);
+void spin_left_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop);
 #endif

@@ -63,8 +63,8 @@ int Kd_line_spin = 0.1;  //0.1
 
 int temp_spin_which_direction = 0;
 
-#define Kp_slight_move 0.4  // 0.4  2025.2.13
-#define Ki_slight_move 0.01 // 0.01
+#define Kp_slight_move 0.5  // 0.4  2025.2.19
+#define Ki_slight_move 0.1 // 0.01 
 #define Kd_slight_move 0.1  // 0.1
 
 
@@ -604,7 +604,7 @@ void UART_receive_process_3(void)
                 y_move_position = - (float) rxdata_u3[5];
             }
 
-            x_move_position *= 0.2;  //TODO magic number 原先是0.1
+            x_move_position *= 0.2;  //TODO magic number
             y_move_position *= 0.2;
             x_err_1 = x_move_position;
             y_err_1 = y_move_position;
@@ -769,8 +769,8 @@ void UART_receive_process_3(void)
                 y_move_position = - (float) rxdata_u3[3];
                 // y_move_position = -10;
             }
-            x_move_position *= 0.2;  //TODO magic number 原先是0.1
-            y_move_position *= 0.2;
+            x_move_position *= 0.4;  //TODO magic number 原先是0.1
+            y_move_position *= 0.4;
 
             // 对位置微调进行PID控制
             x_err_1 = x_move_position;
@@ -879,6 +879,8 @@ void UART_receive_process_3(void)
 
         if(is_servo_adjust == 1)
         {
+            // x_camera_error = 0;
+            // y_camera_error = 0;
             if(rxdata_u3[0] == 0x01)
             {
                 x_camera_error = (int) rxdata_u3[1];
@@ -890,6 +892,14 @@ void UART_receive_process_3(void)
             {
                 x_camera_error = - (int) rxdata_u3[1];
                 is_find_circle = 1;
+                // if(x_camera_error == -10)
+                // {
+                //     x_camera_error = -11;
+                // }
+                // if(x_camera_error == -8)
+                // {
+                //     x_camera_error = -9;
+                // }
                 // x_move_position = -10;
                 // HAL_UART_Transmit(&huart3, (uint8_t*)"left front", strlen("left front"), 50);
             }
