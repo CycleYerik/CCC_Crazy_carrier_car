@@ -34,15 +34,15 @@ int feet_acc = 180; //180
 int feet_acc_claw_up_down = 240;
 
 int put_claw_down_pile_position = 1644; //1819
-int put_claw_down_state_position = 575 ; //从车的载物盘上  737
+int put_claw_down_state_position = 560 ; //从车的载物盘上  737
 int put_claw_down_position = 1500;  // 从转盘上取物料  1625
-int put_claw_down_ground_position = 2637; // 放在地上 2899
+int put_claw_down_ground_position = 2702; // 放在地上 2899
 int put_claw_up_top_position = 30; // 最高点  360
 int put_claw_up_position =1051; //  
 int claw_spin_position_front = 3329 ; // 2号精密舵机回到前方
 int claw_spin_position_state = 1628; // 2号精密舵机回到载物盘//! 233
 int claw_spin_without_claw_position_state = 1605; //与上面一样
-int put_claw_down_near_ground_position = 2550; //2800 -220
+int put_claw_down_near_ground_position = 2540; //2800 -220
 
 
 // 机械臂位置限制 
@@ -256,10 +256,13 @@ int adjust_position_with_camera(int x_error, int y_error )
     {
         r_adjust_values = -1;
     }
+    x_camera_error = 0;
+    y_camera_error = 0;
     if((theta_servo_now + theta_adjust_values < theta_right_position_limit) && (theta_servo_now + theta_adjust_values > theta_left_position_limit) && (r_servo_now + r_adjust_values < r_front_position_limit) && (r_servo_now + r_adjust_values > r_back_position_limit))
     {
         feetech_servo_move(4,r_servo_now + r_adjust_values,3000,50);
         r_servo_now += r_adjust_values;
+        HAL_Delay(10);
         feetech_servo_move(3,theta_servo_now + theta_adjust_values,3000,50);
          theta_servo_now += theta_adjust_values;
     }
@@ -267,7 +270,6 @@ int adjust_position_with_camera(int x_error, int y_error )
     {
         // HAL_UART_Transmit(&huart3, (uint8_t*)"limit", strlen("limit"), 50);
     }
-    HAL_Delay(20);
 
     if(is_r_ok == 1 && is_theta_ok == 1)
     {
@@ -520,8 +522,9 @@ void get_and_pre_put(int position,int is_pile_up)
     }
     HAL_Delay(700);
     put_claw_down_state();
-    HAL_Delay(600); //400
+    HAL_Delay(700); //400
     close_claw();
+    HAL_Delay(200);
     put_claw_up_top();
     HAL_Delay(500); //200
     claw_spin_front(); //TODO 是否可能撞到
@@ -547,12 +550,13 @@ void get_and_pre_put(int position,int is_pile_up)
     if(is_pile_up == 1)
     {
         put_claw_down_pile();
+        HAL_Delay(500);
     }
     else
     {
         put_claw_down_near_ground();
+        HAL_Delay(900);
     }
-    HAL_Delay(900);
     if(is_pile_up != 1)
     {
     HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正

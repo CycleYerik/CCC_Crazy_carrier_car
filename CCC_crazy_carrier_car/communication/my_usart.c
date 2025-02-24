@@ -603,8 +603,18 @@ void UART_receive_process_3(void)
             {
                 y_move_position = - (float) rxdata_u3[5];
             }
+						
 
-            x_move_position *= 0.2;  //TODO magic number
+  
+
+
+
+
+
+
+
+
+						x_move_position *= 0.2;  //TODO magic number
             y_move_position *= 0.2;
             x_err_1 = x_move_position;
             y_err_1 = y_move_position;
