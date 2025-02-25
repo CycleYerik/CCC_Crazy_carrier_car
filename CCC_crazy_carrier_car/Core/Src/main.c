@@ -81,7 +81,7 @@ int open_loop_move_velocity = 180; //200
 int open_loop_spin_velocity = 150; //150 
 
 // 目标颜色数组
-volatile int target_colour[6] = {1,3,2,1,2,3}; 
+volatile int target_colour[6] = {3,2,1,1,2,3}; 
 int move_sequence_bias = 0; // 根2不同顺序移动带来的位置相对色环位置的偏差，如中-左-右，则偏差为0、-x、+x 
 
 /// @brief 用于判断当前是第几个case,
@@ -137,6 +137,8 @@ int acc_front_start = 200,acc_front_stop = 200;
 int acc_x_same_start = 150,acc_x_same_stop = 150;
 int acc_spin_start = 130,acc_spin_stop = 130;
 float velocity_front_y42 = 120,velocity_x_y42 = 80,velocity_spin_y42 = 80;
+
+int is_get_massage = 0;
 
 /* USER CODE END PV */
 
@@ -291,40 +293,143 @@ int main(void)
     HAL_Delay(900); // TODO等待电机初始化完成，本该是4000ms,目前暂时减少时间
 
     /*****************单独调试程序***********************/
-    //? 单独舵机闭环放置调试（旧）
-    // HAL_UART_Transmit(&huart3, (uint8_t*)"GG", strlen("GG"), 50); 
+
+
+    // 圆台
+    // int tai_ground = 2850;
+    // feetech_servo_move(1,tai_ground,4095,240);
+    // // put_claw_down_ground();
+    // HAL_Delay(1000);
+    // while(1)
+    // {
+		
+        
+    //     close_claw();
+    //     HAL_Delay(3000);
+    //     // feetech_servo_move(1,2600,4095,240);
+    //     put_claw_up_top();
+    //     HAL_Delay(1500);
+    //     claw_spin_state();
+    //     HAL_Delay(1500);
+    //     claw_spin_front();
+    //     HAL_Delay(1500);
+    //     // claw_spin_state();
+    //     // HAL_Delay(1500);
+    //     // claw_spin_front();
+    //     // HAL_Delay(1500);
+    //     // claw_spin_state();
+    //     // HAL_Delay(1500);
+    //     // claw_spin_front();
+    //     // HAL_Delay(1500);
+    //     feetech_servo_move(1,tai_ground,4095,240);
+    //     // put_claw_down_ground();
+    //     HAL_Delay(3000);
+    //     open_claw();
+    //     HAL_Delay(3000);
+    // }
+    // while(1)
+    // {
+    //     feetech_servo_move(1,tai_ground,4095,240);
+    //     state_spin_without_claw(1);
+    //     HAL_Delay(1000);
+    //     close_claw();
+    //     HAL_Delay(1500);
+    //     arm_shrink();
+    //     put_claw_up_top();
+    //     HAL_Delay(1000);
+    //     claw_spin_state();
+    //     HAL_Delay(1000);
+    //     // feetech_servo_move(1,566,4095,240);
+    //     HAL_Delay(1000);
+    //     open_claw();
+    //     HAL_Delay(1000);
+    //     state_spin_without_claw(2);
+    //     HAL_Delay(1000);
+    //     close_claw();
+    //     HAL_Delay(1500);
+    //     put_claw_up_top();
+    //     HAL_Delay(500);
+    //     claw_spin_front();
+    //     arm_stretch();
+    //     HAL_Delay(1000);
+    //     feetech_servo_move(1,tai_ground,4095,240);
+    //     HAL_Delay(2000);
+    //     open_claw();
+    //     HAL_Delay(3000);
+
+    // }
+
+
+    //? 福建省物料抓取测试
+    // while(1)
+    // {
+    //     put_claw_down_ground();
+    // HAL_Delay(1000);
+    // close_claw();
+    // HAL_Delay(1500);
+    // put_claw_up_top();
+    // HAL_Delay(1000);
+    // put_claw_down_ground();
+    // HAL_Delay(1000);
+    // open_claw();
     // HAL_Delay(1000);
 
-    
-    // for (int i = 0; i < 3; i++)
-    // {
-        
-    //     get_and_pre_put(target_colour[i], 0);
-    //     servo_adjust_status = target_colour[i];
-    //     is_servo_adjust = 1;
-    //     tim3_count = 0;
-    //     x_camera_error = 0;
-    //     y_camera_error = 0;
-    //     // HAL_Delay(700);
-    //     while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
-    //     // while (is_servo_adjust != 0 ) // TODO 超时处理
-    //     {
-    //         adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
-    //         HAL_Delay(10);  //80
-    //     }
-    //     // HAL_UART_Transmit(&huart3, (uint8_t*)"adjust_end", strlen("adjust_end"), 50); // 通知树莓派结束
-    //     // if (tim3_count >= timeout_limit)
-    //     // {
-    //     //     HAL_Delay(20);
-    //     // }
-    //     is_servo_adjust = 0;
-    //     put_claw_down_ground();
-    //     HAL_Delay(500);
-    //     open_claw();
-    //     HAL_Delay(500);
     // }
+
+    
+
+    //? 开机自启动测试程序
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"ZZ", strlen("ZZ"), 50); // 通知树莓派开始
+    // while(is_get_massage != 1)
+    // {
+    //     HAL_Delay(100);
+    // }
+    // move_all_direction_position(100,100,0,5);
+
+
+    //? 糖葫芦物料测试
+    // while(1)
+    // {
+    //     HAL_Delay(100);
+    // }
+    // int state_tanghulu_1 = 45;
+    // int state_tanghulu_2 = 89;
+    // int state_tanghulu_3 = 134;
+    // put_claw_down_ground();
+    // HAL_Delay(1000);
+    // close_claw();
+    // HAL_Delay(500);
+    // put_claw_up_top();
+    // HAL_Delay(1000);
+    // feetech_servo_move(4,3690,4095,180);
+    // HAL_Delay(500);
+    // feetech_servo_move(2,1600,4000,180);
+    // HAL_Delay(1000);
+
+    // feetech_servo_move(1,806,1000,180);
+    // HAL_Delay(1000);
+    // open_claw();
+    // HAL_Delay(1000);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_3, state_tanghulu_1);
+    // feetech_servo_move(4,4050,1000,180);
+    // HAL_Delay(2000);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 108);
+    // feetech_servo_move(2,3329,1000,180);
+    // HAL_Delay(2000);
+
+    // feetech_servo_move(2,1600,1000,180);
+    // HAL_Delay(1500);
+    // state_spin_without_claw(2);
+    // HAL_Delay(100);
+    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 98);
+    // HAL_Delay(2000);
+    // close_claw();
+    // HAL_Delay(500);
     // put_claw_up_top();
     // HAL_Delay(500);
+    // claw_spin_front();
+    // put_claw_down_ground();
+    // HAL_Delay(2000);
     // open_claw();
     // while(1)
     // {
@@ -364,7 +469,7 @@ int main(void)
             // x_camera_error *= 0.1;
             // y_camera_error *= 0.1;
             //TODO 加入变量的互斥锁机制
-            HAL_Delay(50);  //30
+            HAL_Delay(50);  //100
         }
         // HAL_UART_Transmit(&huart3, (uint8_t*)"adjust_end", strlen("adjust_end"), 50); // 通知树莓派结束
         // if (tim3_count >= timeout_limit)

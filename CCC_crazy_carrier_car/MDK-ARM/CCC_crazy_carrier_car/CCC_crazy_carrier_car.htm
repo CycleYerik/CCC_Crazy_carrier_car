@@ -3,7 +3,7 @@
 <title>Static Call Graph - [CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Fri Feb 21 20:10:57 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Tue Feb 25 20:27:47 2025
 <BR><P>
 <H3>Maximum Stack Usage =        248 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1220,7 +1220,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[94]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PeriodElapsedCallback
 </UL>
 
-<P><STRONG><a name="[ce]"></a>UART_receive_process_3</STRONG> (Thumb, 2424 bytes, Stack size 104 bytes, my_usart.o(i.UART_receive_process_3))
+<P><STRONG><a name="[ce]"></a>UART_receive_process_3</STRONG> (Thumb, 2436 bytes, Stack size 104 bytes, my_usart.o(i.UART_receive_process_3))
 <BR><BR>[Stack]<UL><LI>Max Depth = 192<LI>Call Chain = UART_receive_process_3 &rArr; __aeabi_dmul &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
@@ -1303,7 +1303,7 @@ Global Symbols
 
 <P><STRONG><a name="[108]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
 
-<P><STRONG><a name="[d8]"></a>adjust_position_with_camera</STRONG> (Thumb, 352 bytes, Stack size 56 bytes, my_servo.o(i.adjust_position_with_camera))
+<P><STRONG><a name="[d8]"></a>adjust_position_with_camera</STRONG> (Thumb, 364 bytes, Stack size 56 bytes, my_servo.o(i.adjust_position_with_camera))
 <BR><BR>[Stack]<UL><LI>Max Depth = 216<LI>Call Chain = adjust_position_with_camera &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move

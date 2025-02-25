@@ -28,15 +28,45 @@ Project File Date:  11/19/2024
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
 compiling my_servo.c...
-..\servo\my_servo.c(877): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\servo\my_servo.c(884): warning:  #1035-D: single-precision operand implicitly converted to double-precision
       int position = (int)(50 + (200* (float)angle / 270.0));
-..\servo\my_servo.c(992): warning:  #1-D: last line of file ends without a newline
+..\servo\my_servo.c(999): warning:  #1-D: last line of file ends without a newline
    */
 ..\servo\my_servo.c: 2 warnings, 0 errors
+compiling main.c...
+../Core/Src/main.c(690): warning:  #111-D: statement is unreachable
+      is_adjust_motor_in_tim = 0;
+../Core/Src/main.c(1231): warning:  #128-D: loop is not reachable
+      while(1)
+../Core/Src/main.c(1237): warning:  #111-D: statement is unreachable
+      motor_state = 1;
+../Core/Src/main.c(1302): warning:  #111-D: statement is unreachable
+      HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正直�?
+../Core/Src/main.c(1423): warning:  #111-D: statement is unreachable
+      HAL_UART_Transmit(&huart3, (uint8_t*)"GG", strlen("GG"), 50); //发给树莓派，开始校�?
+../Core/Src/main.c(1501): warning:  #111-D: statement is unreachable
+      arm_stretch();
+../Core/Src/main.c(1741): warning:  #111-D: statement is unreachable
+      start_and_come_to_turntable(); // 从起点前往转盘
+../Core/Src/main.c(698): warning:  #177-D: variable "little_back_1"  was declared but never referenced
+      int little_back_1 = 2;
+../Core/Src/main.c(3121): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,1,status);
+../Core/Src/main.c(3180): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,2,status);
+../Core/Src/main.c(3217): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,3,status);
+../Core/Src/main.c(3263): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,1,status);
+../Core/Src/main.c(3276): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,2,status);
+../Core/Src/main.c(3289): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,3,status);
+../Core/Src/main.c: 14 warnings, 0 errors
 linking...
-Program Size: Code=17368 RO-data=448 RW-data=580 ZI-data=2148  
+Program Size: Code=17392 RO-data=448 RW-data=584 ZI-data=2144  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 2 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 16 Warning(s).
 
 <h2>Software Packages used:</h2>
 

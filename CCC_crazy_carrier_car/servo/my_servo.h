@@ -7,6 +7,8 @@
 #include "uart.h"
 
 //50ms
+#define pixel_to_distance_r 0.8
+#define pixel_to_distance_theta 0.6
 #define Kp_theta 0.6  //0.22
 #define Ki_theta 0.15 //0.1
 #define Kd_theta 0.25 //0.01

@@ -68,7 +68,7 @@ int temp_spin_which_direction = 0;
 #define Kd_slight_move 0.1  // 0.1
 
 
-
+extern int is_get_massage;
 
 
 /**
@@ -455,6 +455,11 @@ void UART_receive_process_3(void)
 
         is_motor_start_move = 1;
 
+        if(rxdata_u3[0] == 0x88)
+        {
+            is_get_massage = 1;
+        }
+
 
         // 得到任务
         if (is_get_qrcode_target < 2) //! 此处还可以加入更复杂的校验位，避免误操作
@@ -603,18 +608,7 @@ void UART_receive_process_3(void)
             {
                 y_move_position = - (float) rxdata_u3[5];
             }
-						
-
-  
-
-
-
-
-
-
-
-
-						x_move_position *= 0.2;  //TODO magic number
+		    x_move_position *= 0.2;  //TODO magic number
             y_move_position *= 0.2;
             x_err_1 = x_move_position;
             y_err_1 = y_move_position;

@@ -164,8 +164,10 @@ int adjust_position_with_camera(int x_error, int y_error )
     
 
     //TODO 加入x、yerror的PID
-    theta_adjust_values = Kp_theta * x_error + Ki_theta * (x_error + x_error_last + x_error_long_last) + Kd_theta * (x_error_long_last +  - 2*x_error_last)/2;
-    r_adjust_values = Kp_r * y_error + Ki_r * (y_error + y_error_last + y_error_long_last) + Kd_r * ( y_error_long_last +  - 2*y_error_last)/2;
+    theta_adjust_values = Kp_theta * x_error + Ki_theta * (x_error + x_error_last + x_error_long_last) + Kd_theta * (x_error - x_error_last);
+    r_adjust_values = Kp_r * y_error + Ki_r * (y_error + y_error_last + y_error_long_last) + Kd_r * ( y_error - y_error_last);
+    theta_adjust_values = theta_adjust_values * pixel_to_distance_theta;
+    r_adjust_values = r_adjust_values * pixel_to_distance_r;
     x_error_long_last = x_error_last;
     x_error_last = x_error;
     y_error_long_last = y_error_last;
@@ -240,6 +242,11 @@ int adjust_position_with_camera(int x_error, int y_error )
     //     r_adjust_values = -1;
     //     is_r_ok = 1;
     // }
+
+    // theta_adjust_values = Kp_theta * (x_error-x_error_last) + Ki_theta * (x_error ) + Kd_theta * (x_error_long_last + x_error - 2*x_error_last);
+    // r_adjust_values = Kp_r * (y_error - y_error_last) + Ki_r * (y_error) + Kd_r * ( y_error_long_last + y_error - 2*y_error_last);
+    // theta_adjust_values = theta_adjust_values * pixel_to_distance_theta;
+    // r_adjust_values = r_adjust_values * pixel_to_distance_r;
     if(theta_adjust_values <1 && theta_adjust_values >=0)
     {
         theta_adjust_values = 1;
@@ -260,11 +267,11 @@ int adjust_position_with_camera(int x_error, int y_error )
     y_camera_error = 0;
     if((theta_servo_now + theta_adjust_values < theta_right_position_limit) && (theta_servo_now + theta_adjust_values > theta_left_position_limit) && (r_servo_now + r_adjust_values < r_front_position_limit) && (r_servo_now + r_adjust_values > r_back_position_limit))
     {
-        feetech_servo_move(4,r_servo_now + r_adjust_values,3000,50);
+        feetech_servo_move(4,r_servo_now + r_adjust_values,4000,100);
         r_servo_now += r_adjust_values;
         HAL_Delay(10);
-        feetech_servo_move(3,theta_servo_now + theta_adjust_values,3000,50);
-         theta_servo_now += theta_adjust_values;
+        feetech_servo_move(3,theta_servo_now + theta_adjust_values,4000,100);
+        theta_servo_now += theta_adjust_values;
     }
     else
     {
