@@ -140,6 +140,17 @@ float velocity_front_y42 = 120,velocity_x_y42 = 80,velocity_spin_y42 = 80;
 
 int is_get_massage = 0;
 
+int x_plate_error_with_put = 0, y_plate_error_with_put = 0;
+int is_adjust_plate_with_put = 0;
+int is_plate_with_put_ok_1 = 0; //红，树莓派认为到位时置1
+int is_plate_with_put_ok_2 = 0; //绿，树莓派认为到位时置1
+int is_plate_with_put_ok_3 = 0; //蓝，树莓派认为到位时置1
+int is_get_plate_put_1 = 0,is_get_plate_put_2 = 0,is_get_plate_put_3 = 0;
+
+int temp_r_servo_position =0;
+int temp_theta_servo_position = 0;
+int adjust_plate_with_put_count = 0;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -200,6 +211,13 @@ int main(void)
 {
 
   /* USER CODE BEGIN 1 */
+
+    /**********************************main函数说明****************************************/
+    //!  本程序中包含各种测试流程和比赛流程，因为调试阶段各种动作和指令的耦合性比较强，故放弃了一些常用动作流程的封装，所以整体较为混乱
+    //!  主要的程序即全流程代码
+    //! 
+    //! 
+    //! 
 
   /* USER CODE END 1 */
 
@@ -295,7 +313,81 @@ int main(void)
     /*****************单独调试程序***********************/
 
 
-    // 圆台
+    //? 将物料放置在转盘上（测试）
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"HH", strlen("HH"), 50); 
+    // put_claw_down();
+    // HAL_Delay(100);
+
+    // is_adjust_plate_with_put = 1;
+    // while(is_adjust_plate_with_put != 0)
+    // {
+    //     adjust_position_with_camera(x_plate_error_with_put,y_plate_error_with_put,0);
+    //     x_plate_error_with_put = 0;
+    //     y_plate_error_with_put = 0;
+    //     temp_r_servo_position = r_servo_now;
+    //     temp_theta_servo_position = theta_servo_now;
+    //     HAL_Delay(50);
+    // }
+    // is_adjust_plate_with_put = 2;
+    // printf("t0.txt=\"ok\"\xff\xff\xff");
+    // while(adjust_plate_with_put_count < 3)
+    // {
+    //     if((is_plate_with_put_ok_1 == 1 && is_get_plate_put_1 == 0) || (is_plate_with_put_ok_2 == 1 && is_get_plate_put_2 == 0)||( is_plate_with_put_ok_3 == 1 && is_get_plate_put_3 == 0))
+    //     {
+    //         adjust_plate_with_put_count++;
+    //         if(is_plate_with_put_ok_1 == 1)
+    //         {
+    //             state_spin_without_claw(1);
+    //             is_get_plate_put_1 = 1;
+    //         }
+    //         else if(is_plate_with_put_ok_2 == 1)
+    //         {
+    //             state_spin_without_claw(2);
+    //             is_get_plate_put_2 = 1;
+    //         }
+    //         else if(is_plate_with_put_ok_3 == 1)
+    //         {
+    //             state_spin_without_claw(3);
+    //             is_get_plate_put_3 = 1;
+    //         }
+    //         is_plate_with_put_ok_1 = 0;
+    //         is_plate_with_put_ok_2 = 0;
+    //         is_plate_with_put_ok_3 = 0;
+    //         put_claw_up_top();
+    //         arm_shrink();
+    //         HAL_Delay(200);
+    //         claw_spin_state();
+    //         HAL_Delay(500);
+    //         put_claw_down_state();
+    //         HAL_Delay(500); 
+    //         close_claw();
+    //         HAL_Delay(300);
+    //         put_claw_up_top();
+    //         HAL_Delay(500); 
+    //         claw_spin_front(); 
+    //         feetech_servo_move(4,temp_r_servo_position,4000,180);
+    //         feetech_servo_move(3,temp_theta_servo_position,4000,180);
+    //         HAL_Delay(200);
+    //         put_claw_down();
+    //         HAL_Delay(700);
+    //         open_claw_180();
+    //         HAL_Delay(300);
+    //         // put_claw_up_top();
+    //         // HAL_Delay(500);
+    //     }
+    // }
+
+    // while(1)
+    // {
+    //     HAL_Delay(100);
+    // }
+
+
+
+
+
+
+    //?圆台
     // int tai_ground = 2850;
     // feetech_servo_move(1,tai_ground,4095,240);
     // // put_claw_down_ground();
@@ -438,57 +530,57 @@ int main(void)
 
 
     // //? 最新色环定位和放置
-    HAL_Delay(1000);
-    put_claw_up();
-    HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); 
-    motor_state = 1;
-    is_slight_spin_and_move = 1;
-    tim3_count = 0;
-    while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
-    {
-        slight_spin_and_move(); // 直线和圆环一起调整
-        HAL_Delay(50);
-    }
-    is_slight_spin_and_move = 0;
-    stop();
-    HAL_Delay(50);
-    for (int i = 0; i < 3; i++)
-    {
+    // HAL_Delay(1000);
+    // put_claw_up();
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); 
+    // motor_state = 1;
+    // is_slight_spin_and_move = 1;
+    // tim3_count = 0;
+    // while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+    // {
+    //     slight_spin_and_move(); // 直线和圆环一起调整
+    //     HAL_Delay(50);
+    // }
+    // is_slight_spin_and_move = 0;
+    // stop();
+    // HAL_Delay(50);
+    // for (int i = 0; i < 3; i++)
+    // {
         
-        get_and_pre_put(target_colour[i], 0);
-        servo_adjust_status = target_colour[i];
-        is_servo_adjust = 1;
-        tim3_count = 0;
-        HAL_Delay(700);
-        x_camera_error = 0;
-        y_camera_error = 0;
-        while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
-        // while (is_servo_adjust != 0 ) // TODO 超时处理
-        {
-            adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
-            // x_camera_error *= 0.1;
-            // y_camera_error *= 0.1;
-            //TODO 加入变量的互斥锁机制
-            HAL_Delay(50);  //100
-        }
-        // HAL_UART_Transmit(&huart3, (uint8_t*)"adjust_end", strlen("adjust_end"), 50); // 通知树莓派结束
-        // if (tim3_count >= timeout_limit)
-        // {
-        //     HAL_Delay(20);
-        // }
-        is_servo_adjust = 0;
-        put_claw_down_ground();
-        HAL_Delay(500);
-        open_claw();
-        HAL_Delay(500);
-    }
-    put_claw_up_top();
-    HAL_Delay(500);
-    open_claw();
-    while(1)
-    {
-        HAL_Delay(1000);
-    }
+    //     get_and_pre_put(target_colour[i], 0);
+    //     servo_adjust_status = target_colour[i];
+    //     is_servo_adjust = 1;
+    //     tim3_count = 0;
+    //     HAL_Delay(700);
+    //     x_camera_error = 0;
+    //     y_camera_error = 0;
+    //     while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
+    //     // while (is_servo_adjust != 0 ) // TODO 超时处理
+    //     {
+    //         adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
+    //         // x_camera_error *= 0.1;
+    //         // y_camera_error *= 0.1;
+    //         //TODO 加入变量的互斥锁机制
+    //         HAL_Delay(50);  //100
+    //     }
+    //     // HAL_UART_Transmit(&huart3, (uint8_t*)"adjust_end", strlen("adjust_end"), 50); // 通知树莓派结束
+    //     // if (tim3_count >= timeout_limit)
+    //     // {
+    //     //     HAL_Delay(20);
+    //     // }
+    //     is_servo_adjust = 0;
+    //     put_claw_down_ground();
+    //     HAL_Delay(500);
+    //     open_claw();
+    //     HAL_Delay(500);
+    // }
+    // put_claw_up_top();
+    // HAL_Delay(500);
+    // open_claw();
+    // while(1)
+    // {
+    //     HAL_Delay(1000);
+    // }
 
 
 
@@ -514,7 +606,9 @@ int main(void)
     //         temp_plate = get_plate;
     //         get_plate = 0;
     //         HAL_Delay(50);
-    //         adjust_plate();
+    //         adjust_plate(x_plate_error, y_plate_error);
+    //         x_plate_error = 0;
+    //         y_plate_error = 0;
 
 
     //         state_spin_without_claw(temp_plate);
@@ -551,7 +645,9 @@ int main(void)
     //             r_servo_now = r_servo_now_temp;
     //             x_plate_error = 0;
     //             y_plate_error = 0;
-    //             adjust_plate(); //new
+    //             adjust_plate(x_plate_error, y_plate_error);
+    //             x_plate_error = 0;
+    //             y_plate_error = 0;
     //             claw_spin_front();
     //             open_claw_180();
     //             HAL_Delay(500);
@@ -593,7 +689,7 @@ int main(void)
     // is_start_get_plate = 1;
     // while(get_plate_count < 3 ) // 从转盘抓取三个色环或者超时
     // {
-    //     // HAL_UART_Transmi t(&huart3, (uint8_t*)&get_plate, 1, 50);
+    //     // HAL_UART_Transmit(&huart3, (uint8_t*)&get_plate, 1, 50);
     //     is_adjust_plate_servo = 1;
     //     HAL_Delay(10);
     //     // while(is_adjust_plate_servo != 0)
@@ -608,7 +704,9 @@ int main(void)
     //         temp_plate = get_plate;
     //         get_plate = 0;
     //         HAL_Delay(50);
-    //         adjust_plate();
+    //         adjust_plate(x_plate_error, y_plate_error);
+    //         x_plate_error = 0;
+    //         y_plate_error = 0;
 
 
     //         state_spin_without_claw(temp_plate);
@@ -645,7 +743,9 @@ int main(void)
     //             r_servo_now = r_servo_now_temp;
     //             x_plate_error = 0;
     //             y_plate_error = 0;
-    //             adjust_plate(); //new
+    //             adjust_plate(x_plate_error, y_plate_error);
+    //             x_plate_error = 0;
+    //             y_plate_error = 0;
     //             claw_spin_front();
     //             open_claw_180();
     //             HAL_Delay(500);
@@ -731,7 +831,9 @@ int main(void)
             temp_plate = get_plate;
             get_plate = 0;
             HAL_Delay(50);
-            adjust_plate();
+            adjust_plate(x_plate_error, y_plate_error);
+            x_plate_error = 0;
+            y_plate_error = 0;
 
 
             state_spin_without_claw(temp_plate);
@@ -768,7 +870,9 @@ int main(void)
                 r_servo_now = r_servo_now_temp;
                 x_plate_error = 0;
                 y_plate_error = 0;
-                adjust_plate(); //new
+                adjust_plate(x_plate_error, y_plate_error);
+                x_plate_error = 0;
+                y_plate_error = 0;
                 claw_spin_front();
                 open_claw_180();
                 HAL_Delay(500);
@@ -854,7 +958,7 @@ int main(void)
         while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
         // while (is_servo_adjust != 0 ) // TODO 超时处理
         {
-            adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
+            adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
             x_camera_error = 0;
             y_camera_error = 0;
             HAL_Delay(50);  //30
@@ -920,7 +1024,7 @@ int main(void)
         while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
         // while (is_servo_adjust != 0 ) // TODO 超时处理
         {
-            adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
+            adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
             x_camera_error = 0;
             y_camera_error = 0;
             HAL_Delay(50);  //80
@@ -970,7 +1074,9 @@ int main(void)
             temp_plate = get_plate;
             get_plate = 0;
             HAL_Delay(50);
-            adjust_plate();
+            adjust_plate(x_plate_error, y_plate_error);
+            x_plate_error = 0;
+            y_plate_error = 0;
 
 
             state_spin_without_claw(temp_plate);
@@ -1007,7 +1113,9 @@ int main(void)
                 r_servo_now = r_servo_now_temp;
                 x_plate_error = 0;
                 y_plate_error = 0;
-                adjust_plate(); //new
+                adjust_plate(x_plate_error, y_plate_error);
+                x_plate_error = 0;
+                y_plate_error = 0;
                 claw_spin_front();
                 open_claw_180();
                 HAL_Delay(500);
@@ -1086,7 +1194,7 @@ int main(void)
         while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
         // while (is_servo_adjust != 0 ) // TODO 超时处理
         {
-            adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
+            adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
             x_camera_error = 0;
             y_camera_error = 0;
             HAL_Delay(50);  //30
@@ -1153,7 +1261,7 @@ int main(void)
         // while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
         // // while (is_servo_adjust != 0 ) // TODO 超时处理
         // {
-        //     adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
+        //     adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
         //     HAL_Delay(30);  //80
         // }
         // HAL_UART_Transmit(&huart3, (uint8_t*)"adjust_end", strlen("adjust_end"), 50); // 通知树莓派结束
@@ -1266,7 +1374,7 @@ int main(void)
         while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
         // while (is_servo_adjust != 0 ) // TODO 超时处理
         {
-            adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
+            adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
             HAL_Delay(100);  //80
         }
         HAL_UART_Transmit(&huart3, (uint8_t*)"adjust_end", strlen("adjust_end"), 50); // 通知树莓派结束
@@ -1373,7 +1481,7 @@ int main(void)
         tim3_count = 0;
         while (is_servo_adjust != 0 && tim3_count < timeout_limit -150) // TODO 超时处理
         {
-            adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
+            adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
             HAL_Delay(100);  //80
         }
         if (tim3_count >= timeout_limit-150)
@@ -1444,7 +1552,7 @@ int main(void)
         tim3_count = 0; 
         while(is_servo_adjust != 0 && tim3_count < timeout_limit) // TODO 超时处理
         {
-            adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
+            adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
             HAL_Delay(50);
         }
         if(tim3_count >= timeout_limit)
@@ -1577,11 +1685,11 @@ int main(void)
     {
         // if(is_find_circle == 0)
         // {
-        //     // adjust_position_with_camera(5,-5);
+        //     // adjust_position_with_camera(5,-5,1);
         // }
         // else
         // {
-        adjust_position_with_camera(x_camera_error, y_camera_error);
+        adjust_position_with_camera(x_camera_error, y_camera_error,1);
         // }
         // x_camera_error = 0;
         // y_camera_error = 0;
@@ -2015,7 +2123,9 @@ void all_process_main(void)
             //TODO 第一次抓取前移动底盘，然后稍微延时一下
             temp_plate = get_plate;
             get_plate = 0;
-            adjust_plate();
+            adjust_plate(x_plate_error, y_plate_error);
+            x_plate_error = 0;
+            y_plate_error = 0;
             state_spin_without_claw(temp_plate);
             close_claw();
             HAL_Delay(400);
@@ -2039,7 +2149,9 @@ void all_process_main(void)
                 HAL_Delay(300);
                 // arm_stretch();
                 r_servo_now = r_servo_now_temp;
-                adjust_plate(); //new
+                adjust_plate(x_plate_error, y_plate_error);
+                x_plate_error = 0;
+                y_plate_error = 0;
                 claw_spin_front();
                 open_claw_180();
                 HAL_Delay(500);
@@ -2148,7 +2260,7 @@ void all_process_main(void)
         tim3_count = 0; 
         while(is_servo_adjust != 0 && tim3_count < timeout_limit) // TODO 超时处理
         {
-            adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
+            adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
             HAL_Delay(100);
         }
         is_servo_adjust = 0;
@@ -2245,7 +2357,7 @@ void all_process_main(void)
         tim3_count = 0; 
         while(is_servo_adjust != 0 && tim3_count < timeout_limit) // TODO 超时处理
         {
-            adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
+            adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
             HAL_Delay(100);
         }
         is_servo_adjust = 0;
@@ -2399,7 +2511,7 @@ void all_process_main(void)
         tim3_count = 0; 
         while(is_servo_adjust != 0 && tim3_count < timeout_limit) // TODO 超时处理
         {
-            adjust_position_with_camera(x_camera_error, y_camera_error); // TODO 可以针对视觉调整的情况来进行方案的调整
+            adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
             HAL_Delay(100);
         }
         is_servo_adjust = 0;

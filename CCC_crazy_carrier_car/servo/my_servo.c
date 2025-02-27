@@ -113,50 +113,50 @@ int theta_pulse_servo_small = 5; // 精密舵机旋转位置步进（小）
 int previous_theta_error = 0,pre_previous_theta_error = 0;
 int previous_r_error = 0,pre_previous_r_error = 0;
 
-void adjust_plate(void)
+void adjust_plate(int x_plate_error_in,int y_plate_error_in)
 {
-    if(r_servo_now+y_plate_error < r_front_position_limit && r_servo_now+y_plate_error > r_back_position_limit)
+    if(r_servo_now+y_plate_error_in < r_front_position_limit && r_servo_now+y_plate_error_in > r_back_position_limit)
             {
-                r_servo_now += y_plate_error;
+                r_servo_now += y_plate_error_in;
                 feetech_servo_move(4,r_servo_now,4000,feet_acc);
-                y_plate_error = 0;
+                y_plate_error_in = 0;
             }
             else if (r_servo_now+y_plate_error > r_front_position_limit)
             {
                 r_servo_now = r_front_position_limit;
                 feetech_servo_move(4,r_servo_now,4000,feet_acc);
-                y_plate_error = 0;
+                y_plate_error_in = 0;
             }
             else if (r_servo_now+y_plate_error < r_back_position_limit)
             {
                 r_servo_now = r_back_position_limit;
                 feetech_servo_move(4,r_servo_now,4000,feet_acc);
-                y_plate_error = 0;
+                y_plate_error_in = 0;
             }
-            if(theta_servo_now+x_plate_error < theta_right_position_limit && theta_servo_now+x_plate_error > theta_left_position_limit)
+            if(theta_servo_now+x_plate_error_in < theta_right_position_limit && theta_servo_now+x_plate_error_in > theta_left_position_limit)
             {
-                theta_servo_now += x_plate_error;
+                theta_servo_now += x_plate_error_in;
                 feetech_servo_move(3,theta_servo_now,4000,feet_acc);
-                x_plate_error = 0;
+                x_plate_error_in = 0;
             }
-            else if (theta_servo_now+x_plate_error > theta_right_position_limit)
+            else if (theta_servo_now+x_plate_error_in > theta_right_position_limit)
             {
                 theta_servo_now = theta_right_position_limit;
                 feetech_servo_move(3,theta_servo_now,4000,feet_acc);
-                x_plate_error = 0;
+                x_plate_error_in = 0;
             }
-            else if (theta_servo_now+x_plate_error < theta_left_position_limit)
+            else if (theta_servo_now+x_plate_error_in < theta_left_position_limit)
             {
                 theta_servo_now = theta_left_position_limit;
                 feetech_servo_move(3,theta_servo_now,4000,feet_acc);
-                x_plate_error = 0;
+                x_plate_error_in = 0;
             }
 }
 
 /// @brief 根据视觉进行机械臂末端姿态校正
 /// @param x_error 
 /// @param y_error 
-int adjust_position_with_camera(int x_error, int y_error )
+int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
 {   
     //TODO 如果看不到，则xy传进来设置一个特殊值，然后开始转动
     int r_adjust_values = 0, theta_adjust_values = 0;
@@ -247,7 +247,9 @@ int adjust_position_with_camera(int x_error, int y_error )
     // r_adjust_values = Kp_r * (y_error - y_error_last) + Ki_r * (y_error) + Kd_r * ( y_error_long_last + y_error - 2*y_error_last);
     // theta_adjust_values = theta_adjust_values * pixel_to_distance_theta;
     // r_adjust_values = r_adjust_values * pixel_to_distance_r;
-    if(theta_adjust_values <1 && theta_adjust_values >=0)
+    if(is_min_1 == 1)
+    {
+    if(theta_adjust_values <1 && theta_adjust_values >0)
     {
         theta_adjust_values = 1;
     }
@@ -255,13 +257,14 @@ int adjust_position_with_camera(int x_error, int y_error )
     {
         theta_adjust_values = -1;
     }
-    if(r_adjust_values <1 && r_adjust_values >=0)
+    if(r_adjust_values <1 && r_adjust_values >0)
     {
         r_adjust_values = 1;
     }
     if(r_adjust_values >-1 && r_adjust_values <0)
     {
         r_adjust_values = -1;
+    }
     }
     x_camera_error = 0;
     y_camera_error = 0;

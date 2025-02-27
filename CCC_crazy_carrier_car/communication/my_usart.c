@@ -70,6 +70,10 @@ int temp_spin_which_direction = 0;
 
 extern int is_get_massage;
 
+extern int is_adjust_plate_with_put;
+extern int x_plate_error_with_put,y_plate_error_with_put;
+extern int is_plate_with_put_ok_1,is_plate_with_put_ok_2,
+is_plate_with_put_ok_3; 
 
 /**
 	* @brief   USART1中断函数
@@ -452,9 +456,56 @@ void UART_receive_process_3(void)
         // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
         // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, rxflag_u3, 50);  // 阻塞式，会造成串口阻塞
 
+        // 将物料放置在转盘上
+        if(is_adjust_plate_with_put == 1)
+        {
+            if(rxdata_u3[0] == 0x01)
+            {
+                x_plate_error_with_put = (int) rxdata_u3[1];
+            }
+            else if(rxdata_u3[0] == 0x02)
+            {
+                x_plate_error_with_put = - (int) rxdata_u3[1];
+            }
+            if(rxdata_u3[2] == 0x01)
+            {
+                y_plate_error_with_put = (int) rxdata_u3[3];
+            }
+            else if(rxdata_u3[2] == 0x02)
+            {
+                y_plate_error_with_put = - (int) rxdata_u3[3];
+            }
+
+            if(rxdata_u3[0] == 0x10) //调整结束
+            {
+                is_adjust_plate_with_put = 0;
+            }
+
+        }
+
+        if(is_adjust_plate_with_put == 2)
+        {
+            if (rxdata_u3[0] == 0x07)
+            {
+                is_plate_with_put_ok_1 = 1;
+                rxdata_u3[0] = 0x00;
+            }
+            if (rxdata_u3[0] == 0x08) // 绿
+            {
+                is_plate_with_put_ok_2 = 1;
+                rxdata_u3[0] = 0x00;
+            }
+            if (rxdata_u3[0] == 0x09) // 蓝
+            {
+                is_plate_with_put_ok_3 = 1;
+                rxdata_u3[0] = 0x00;
+            }
+        }
+
 
         is_motor_start_move = 1;
 
+        // 测试用
         if(rxdata_u3[0] == 0x88)
         {
             is_get_massage = 1;
@@ -477,6 +528,7 @@ void UART_receive_process_3(void)
             }
         }
 
+        //转盘调整机械臂位置实现抓取
         if(is_adjust_plate_servo == 1)
         {
             if(rxdata_u3[0] == 0x01)

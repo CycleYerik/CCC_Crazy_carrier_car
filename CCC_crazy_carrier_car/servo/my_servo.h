@@ -15,7 +15,7 @@
 #define Kp_r 1.0  //0.45
 #define Ki_r 0.15  //0.12
 #define Kd_r 0.35  //0.01
-void adjust_plate(void);
+void adjust_plate(int x_plate_error_in,int y_plate_error_in);
 void get_and_load_ground(int position);
 void get_and_load(int position);
 void get_and_put_different_position(int position);
@@ -33,7 +33,7 @@ void arm_shrink_all(void);
 void state_spin(int state_position);
 void state_spin_without_claw(int state_position);
 
-int adjust_position_with_camera(int x_error, int y_error );
+int adjust_position_with_camera(int x_error, int y_error,int is_min_1 );
 
 void get_and_pre_put(int position,int is_pile_up);
 void get_and_put_different_position_pileup(int position);
