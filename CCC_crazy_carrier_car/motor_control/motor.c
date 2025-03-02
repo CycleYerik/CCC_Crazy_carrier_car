@@ -577,11 +577,11 @@ void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count
 
 
 
-/// @brief 全向位置移动,需自己给Delay延时，速度1对应0.47cm/s，delaytime(ms) = length /(0.47cm/s * velocity) *1000 
+/// @brief 全向位置移动,需自己给Delay延时，速度1对应0.47cm/s，delaytime(ms) = length /(0.47cm/s * velocity) *1000 （该公式不准，还是得自己计算）
 /// @param acc 
 /// @param velocity 
-/// @param x_move_length 
-/// @param y_move_length 
+/// @param x_move_length 面部朝向为车头前进方向，x轴正方向为右手方向
+/// @param y_move_length y轴正方向为车头前进方向
 void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length)
 {
     if(x_move_length >= 0 && y_move_length >= 0)

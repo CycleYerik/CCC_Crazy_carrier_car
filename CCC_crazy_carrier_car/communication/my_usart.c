@@ -75,6 +75,10 @@ extern int x_plate_error_with_put,y_plate_error_with_put;
 extern int is_plate_with_put_ok_1,is_plate_with_put_ok_2,
 is_plate_with_put_ok_3; 
 
+extern int is_plate_first_move;
+extern int is_plate_move_adjust;
+extern int is_third_preput;
+
 /**
 	* @brief   USART1中断函数
 	* @param   无
@@ -455,6 +459,22 @@ void UART_receive_process_3(void)
     {
         // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
         // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, rxflag_u3, 50);  // 阻塞式，会造成串口阻塞
+
+        // 将物料放置在转盘的带环的位置
+        if(is_plate_first_move == 2)
+        {
+            if(rxdata_u3[0] == 0x61)
+            {
+                is_plate_first_move = 1;
+            }
+        }
+        if(is_third_preput == 0)
+        {
+            if(rxdata_u3[0] == 0x62)
+            {
+                is_third_preput = 1;
+            }
+        }
 
         // 将物料放置在转盘上
         if(is_adjust_plate_with_put == 1)
