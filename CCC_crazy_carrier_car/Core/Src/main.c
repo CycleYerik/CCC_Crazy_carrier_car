@@ -133,11 +133,12 @@ extern float motor_vel_1,motor_vel_2,motor_vel_3,motor_vel_4;
 
 int servo_adjust_status = 5;
 
-
+// 飞特舵机相关加速度
 int acc_front_start = 200,acc_front_stop = 200;
 int acc_x_same_start = 150,acc_x_same_stop = 150;
 int acc_spin_start = 130,acc_spin_stop = 130;
-float velocity_front_y42 = 120,velocity_x_y42 = 80,velocity_spin_y42 = 80;
+
+float velocity_front_y42 = 120,velocity_x_y42 = 80,velocity_spin_y42 = 80; // 废弃
 
 int is_get_massage = 0;
 
@@ -755,107 +756,107 @@ int main(void)
 
 
     //? 最新的转盘
-    HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
-    HAL_Delay(100);
-    put_claw_down();
-    is_start_get_plate = 1;
-    while(get_plate_count < 3 ) // 从转盘抓取三个色环或者超时
-    {
-        // HAL_UART_Transmit(&huart3, (uint8_t*)&get_plate, 1, 50);
-        is_adjust_plate_servo = 1;
-        HAL_Delay(10);
-        // while(is_adjust_plate_servo != 0)
-        // {
-        //     HAL_Delay(10);
-        // }
-        int temp_plate=0;
-        if((get_plate == 1 && is_1_get == 0)|| (get_plate == 2 && is_2_get == 0) || (get_plate == 3 && is_3_get == 0))
-        {
-            is_adjust_plate_servo = 0;
-            //TODO 第一次抓取前移动底盘，然后稍微延时一下
-            temp_plate = get_plate;
-            get_plate = 0;
-            HAL_Delay(50);
-            adjust_plate(x_plate_error, y_plate_error);
-            x_plate_error = 0;
-            y_plate_error = 0;
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
+    // HAL_Delay(100);
+    // put_claw_down();
+    // is_start_get_plate = 1;
+    // while(get_plate_count < 3 ) // 从转盘抓取三个色环或者超时
+    // {
+    //     // HAL_UART_Transmit(&huart3, (uint8_t*)&get_plate, 1, 50);
+    //     is_adjust_plate_servo = 1;
+    //     HAL_Delay(10);
+    //     // while(is_adjust_plate_servo != 0)
+    //     // {
+    //     //     HAL_Delay(10);
+    //     // }
+    //     int temp_plate=0;
+    //     if((get_plate == 1 && is_1_get == 0)|| (get_plate == 2 && is_2_get == 0) || (get_plate == 3 && is_3_get == 0))
+    //     {
+    //         is_adjust_plate_servo = 0;
+    //         //TODO 第一次抓取前移动底盘，然后稍微延时一下
+    //         temp_plate = get_plate;
+    //         get_plate = 0;
+    //         HAL_Delay(50);
+    //         adjust_plate(x_plate_error, y_plate_error);
+    //         x_plate_error = 0;
+    //         y_plate_error = 0;
 
 
-            state_spin_without_claw(temp_plate);
-            close_claw();
-            if(is_get_empty_finish == 0)
-            {
-                start_judge_empty = 1;
-            }
-            HAL_Delay(400);
-            put_claw_up_top();
-            HAL_Delay(10); //delate
-            if(is_get_empty_finish == 0)
-            {
-                HAL_Delay(1500);
-            }
-            start_judge_empty = 0;
-            if(is_get_empty == 1)
-            {
-                open_claw_180();
-                put_claw_down();
-                get_plate = 0;
-            }
-            else
-            {
-                int r_servo_now_temp = r_servo_now;
-                is_get_empty_finish = 1;
-                arm_shrink();
-                HAL_Delay(300);
-                claw_spin_state_without_claw();
-                HAL_Delay(700);
-                open_claw();
-                HAL_Delay(300);
-                // arm_stretch();
-                r_servo_now = r_servo_now_temp;
-                x_plate_error = 0;
-                y_plate_error = 0;
-                adjust_plate(x_plate_error, y_plate_error);
-                x_plate_error = 0;
-                y_plate_error = 0;
-                claw_spin_front();
-                open_claw_180();
-                HAL_Delay(500);
-                get_plate_count++;
-                // if(temp_plate == 1)
-                // {
-                //     HAL_UART_Transmit(&huart3, (uint8_t*)"red", strlen("red"), 50); 
-                //     is_1_get = 1;
-                // }
-                // else if(temp_plate == 2)
-                // {
-                //     HAL_UART_Transmit(&huart3, (uint8_t*)"green", strlen("green"), 50);
-                //     is_2_get = 1;
-                // }
-                // else if(temp_plate == 3)
-                // {
-                //     HAL_UART_Transmit(&huart3, (uint8_t*)"blue", strlen("blue"), 50); 
-                //     is_3_get = 1;
-                // }
-                get_plate = 0;
-                put_claw_down();
-            }
-            is_get_empty = 0;
-        }
-        // get_plate = 0; //TODO ？
-        HAL_Delay(10);
-    }
-    get_plate_count = 0;
-    is_1_get = 0;
-    is_2_get = 0;
-    is_3_get = 0;
-    is_get_empty_finish = 0;
-    is_get_empty = 0;
-    get_plate = 0;
-    while(1)
-    {
-        HAL_Delay(1000);
-    }
+    //         state_spin_without_claw(temp_plate);
+    //         close_claw();
+    //         if(is_get_empty_finish == 0)
+    //         {
+    //             start_judge_empty = 1;
+    //         }
+    //         HAL_Delay(400);
+    //         put_claw_up_top();
+    //         HAL_Delay(10); //delate
+    //         if(is_get_empty_finish == 0)
+    //         {
+    //             HAL_Delay(1500);
+    //         }
+    //         start_judge_empty = 0;
+    //         if(is_get_empty == 1)
+    //         {
+    //             open_claw_180();
+    //             put_claw_down();
+    //             get_plate = 0;
+    //         }
+    //         else
+    //         {
+    //             int r_servo_now_temp = r_servo_now;
+    //             is_get_empty_finish = 1;
+    //             arm_shrink();
+    //             HAL_Delay(300);
+    //             claw_spin_state_without_claw();
+    //             HAL_Delay(700);
+    //             open_claw();
+    //             HAL_Delay(300);
+    //             // arm_stretch();
+    //             r_servo_now = r_servo_now_temp;
+    //             x_plate_error = 0;
+    //             y_plate_error = 0;
+    //             adjust_plate(x_plate_error, y_plate_error);
+    //             x_plate_error = 0;
+    //             y_plate_error = 0;
+    //             claw_spin_front();
+    //             open_claw_180();
+    //             HAL_Delay(500);
+    //             get_plate_count++;
+    //             // if(temp_plate == 1)
+    //             // {
+    //             //     HAL_UART_Transmit(&huart3, (uint8_t*)"red", strlen("red"), 50); 
+    //             //     is_1_get = 1;
+    //             // }
+    //             // else if(temp_plate == 2)
+    //             // {
+    //             //     HAL_UART_Transmit(&huart3, (uint8_t*)"green", strlen("green"), 50);
+    //             //     is_2_get = 1;
+    //             // }
+    //             // else if(temp_plate == 3)
+    //             // {
+    //             //     HAL_UART_Transmit(&huart3, (uint8_t*)"blue", strlen("blue"), 50); 
+    //             //     is_3_get = 1;
+    //             // }
+    //             get_plate = 0;
+    //             put_claw_down();
+    //         }
+    //         is_get_empty = 0;
+    //     }
+    //     // get_plate = 0; //TODO ？
+    //     HAL_Delay(10);
+    // }
+    // get_plate_count = 0;
+    // is_1_get = 0;
+    // is_2_get = 0;
+    // is_3_get = 0;
+    // is_get_empty_finish = 0;
+    // is_get_empty = 0;
+    // get_plate = 0;
+    // while(1)
+    // {
+    //     HAL_Delay(1000);
+    // }
 
     //? 旧版本转盘
     // HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 

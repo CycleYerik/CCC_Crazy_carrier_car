@@ -155,27 +155,8 @@ void adjust_plate(int x_plate_error_in,int y_plate_error_in)
             }
 }
 
-/// @brief 根据视觉进行机械臂末端姿态校正
-/// @param x_error 
-/// @param y_error 
-int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
-{   
-    //TODO 如果看不到，则xy传进来设置一个特殊值，然后开始转动
-    int r_adjust_values = 0, theta_adjust_values = 0;
-    int is_theta_ok = 0, is_r_ok = 0;
-    
-
-    //TODO 加入x、yerror的PID
-    theta_adjust_values = Kp_theta * x_error + Ki_theta * (x_error + x_error_last + x_error_long_last) + Kd_theta * (x_error - x_error_last);
-    r_adjust_values = Kp_r * y_error + Ki_r * (y_error + y_error_last + y_error_long_last) + Kd_r * ( y_error - y_error_last);
-    theta_adjust_values = theta_adjust_values * pixel_to_distance_theta;
-    r_adjust_values = r_adjust_values * pixel_to_distance_r;
-    x_error_long_last = x_error_last;
-    x_error_last = x_error;
-    y_error_long_last = y_error_last;
-    y_error_last = y_error;
-
-    // if(x_error > theta_big_limit) // 应该向右转动
+//? 机械臂控制中舍弃的部分
+// if(x_error > theta_big_limit) // 应该向右转动
     // {
     //     theta_adjust_values = theta_pulse_servo_big;
     // }
@@ -249,6 +230,28 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
     // r_adjust_values = Kp_r * (y_error - y_error_last) + Ki_r * (y_error) + Kd_r * ( y_error_long_last + y_error - 2*y_error_last);
     // theta_adjust_values = theta_adjust_values * pixel_to_distance_theta;
     // r_adjust_values = r_adjust_values * pixel_to_distance_r;
+
+/// @brief 根据视觉进行机械臂末端姿态校正
+/// @param x_error 
+/// @param y_error 
+int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
+{   
+    //TODO 如果看不到，则xy传进来设置一个特殊值，然后开始转动
+    int r_adjust_values = 0, theta_adjust_values = 0;
+    int is_theta_ok = 0, is_r_ok = 0;
+    
+
+    //TODO 加入x、yerror的PID
+    theta_adjust_values = Kp_theta * x_error + Ki_theta * (x_error + x_error_last + x_error_long_last) + Kd_theta * (x_error - x_error_last);
+    r_adjust_values = Kp_r * y_error + Ki_r * (y_error + y_error_last + y_error_long_last) + Kd_r * ( y_error - y_error_last);
+    theta_adjust_values = theta_adjust_values * pixel_to_distance_theta;
+    r_adjust_values = r_adjust_values * pixel_to_distance_r;
+    x_error_long_last = x_error_last;
+    x_error_last = x_error;
+    y_error_long_last = y_error_last;
+    y_error_last = y_error;
+
+    
     if(is_min_1 == 1)
     {
         if(theta_adjust_values <1 && theta_adjust_values >0)

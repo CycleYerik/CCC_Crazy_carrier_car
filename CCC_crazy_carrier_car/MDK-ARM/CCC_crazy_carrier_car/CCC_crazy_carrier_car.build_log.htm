@@ -27,16 +27,66 @@ Project File Date:  11/19/2024
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
+compiling my_timer.c...
+..\communication\my_timer.c(224): warning:  #1-D: last line of file ends without a newline
+  }
+..\communication\my_timer.c: 1 warning, 0 errors
 compiling my_servo.c...
-..\servo\my_servo.c(1209): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+..\servo\my_servo.c(1212): warning:  #1035-D: single-precision operand implicitly converted to double-precision
       int position = (int)(50 + (200* (float)angle / 270.0));
-..\servo\my_servo.c(1324): warning:  #1-D: last line of file ends without a newline
+..\servo\my_servo.c(1327): warning:  #1-D: last line of file ends without a newline
    */
 ..\servo\my_servo.c: 2 warnings, 0 errors
+compiling motor.c...
+..\motor_control\motor.c(155): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      return (uint32_t)(distance / wheel_circumference * pulse_per_circle);
+..\motor_control\motor.c(160): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      return (float)distance / wheel_circumference * 360.0;
+..\motor_control\motor.c(166): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      return (int)(1000* distance /(float)(speed_ratio * velocity ));
+..\motor_control\motor.c(1355): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      uint32_t clk = (uint32_t)((float)angle / 360 * spin_radius * 2 * pi / wheel_circumference * pulse_per_circle);
+..\motor_control\motor.c(1391): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      uint32_t clk = (uint32_t)((float)angle / 360 * spin_radius * 2 * pi / wheel_circumference * pulse_per_circle);
+..\motor_control\motor.c(1406): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      uint32_t clk = (uint32_t)((float)180 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
+..\motor_control\motor.c(1436): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      uint32_t clk = (uint32_t)((float)180 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
+..\motor_control\motor.c(1466): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      uint32_t clk = (uint32_t)((float)90 / 360 * spin_radius_90 * 2 * pi / wheel_circumference * pulse_per_circle);
+..\motor_control\motor.c(1496): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      uint32_t clk = (uint32_t)((float)90 / 360 * spin_radius_90 * 2 * pi / wheel_circumference * pulse_per_circle);
+..\motor_control\motor.c(1859): warning:  #1-D: last line of file ends without a newline
+  }
+..\motor_control\motor.c: 10 warnings, 0 errors
+compiling main.c...
+../Core/Src/main.c(1502): warning:  #111-D: statement is unreachable
+      motor_state = 1;
+../Core/Src/main.c(1567): warning:  #111-D: statement is unreachable
+      HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正直�?
+../Core/Src/main.c(1687): warning:  #111-D: statement is unreachable
+      HAL_UART_Transmit(&huart3, (uint8_t*)"GG", strlen("GG"), 50); //发给树莓派，开始校�?
+../Core/Src/main.c(1771): warning:  #111-D: statement is unreachable
+      arm_stretch();
+../Core/Src/main.c(976): warning:  #177-D: variable "little_back_1"  was declared but never referenced
+      int little_back_1 = 2;
+../Core/Src/main.c(3381): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,1,status);
+../Core/Src/main.c(3440): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,2,status);
+../Core/Src/main.c(3477): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,3,status);
+../Core/Src/main.c(3524): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,1,status);
+../Core/Src/main.c(3537): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,2,status);
+../Core/Src/main.c(3550): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,3,status);
+../Core/Src/main.c: 11 warnings, 0 errors
 linking...
-Program Size: Code=15788 RO-data=448 RW-data=624 ZI-data=2144  
+Program Size: Code=22952 RO-data=448 RW-data=644 ZI-data=2660  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 2 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 24 Warning(s).
 
 <h2>Software Packages used:</h2>
 

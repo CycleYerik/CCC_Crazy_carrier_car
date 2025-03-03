@@ -24,6 +24,8 @@
 float acceleration = 180;  //180
 float acceleration_spin = 180; // 180
 
+float adjust_spin_and_move_scale = 0.5; // 旋转和移动的比例
+
 
 /// @brief x、y轴移动速度（根据树莓派发送的偏差值进行调整）
 float volatile x_move_position = 0, y_move_position = 0; 
@@ -90,10 +92,10 @@ void slight_spin_plate_line(void)
 
 void slight_spin_and_move(void)
 {
-    motor_vel_target_1 = spin_which_direction - x_move_position - y_move_position;
-    motor_vel_target_2 = spin_which_direction - x_move_position + y_move_position;
-    motor_vel_target_3 = spin_which_direction + x_move_position - y_move_position;
-    motor_vel_target_4 = spin_which_direction + x_move_position + y_move_position;
+    motor_vel_target_1 = (int)(adjust_spin_and_move_scale *spin_which_direction - x_move_position - y_move_position);
+    motor_vel_target_2 = (int)(adjust_spin_and_move_scale *spin_which_direction - x_move_position + y_move_position);
+    motor_vel_target_3 = (int)(adjust_spin_and_move_scale *spin_which_direction + x_move_position - y_move_position);
+    motor_vel_target_4 = (int)(adjust_spin_and_move_scale *spin_which_direction + x_move_position + y_move_position);
         if(motor_vel_target_1 > motor_vel_adjust_with_spin) motor_vel_target_1 = motor_vel_adjust_with_spin;
         if(motor_vel_target_2 > motor_vel_adjust_with_spin) motor_vel_target_2 = motor_vel_adjust_with_spin;
         if(motor_vel_target_3 > motor_vel_adjust_with_spin) motor_vel_target_3 = motor_vel_adjust_with_spin;
@@ -349,6 +351,10 @@ void stop_tim(int times_count)
     }
 }
 
+/// @brief 废弃
+/// @param acc 
+/// @param spin_direction 
+/// @param times_count 
 void spin_all_direction_tim(uint8_t acc, float spin_direction, int times_count)
 {
     if(spin_direction >=0) // 左转
@@ -417,6 +423,11 @@ void spin_all_direction_tim(uint8_t acc, float spin_direction, int times_count)
     }
 }
 
+/// @brief 废弃
+/// @param acc 
+/// @param x_vel 
+/// @param y_vel 
+/// @param times_count 
 void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count)
 {
     if(x_vel >= 0 && y_vel >= 0)

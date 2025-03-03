@@ -103,7 +103,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         //     is_motor_start_move = 1;
         // }
     }
-    if (htim->Instance == TIM3) // 10ms
+    if (htim->Instance == TIM3) //! 目前在定时器里调整的方法已经全部废弃
     {
         tim3_count++;
         if(is_adjust_motor_in_tim == 1)
