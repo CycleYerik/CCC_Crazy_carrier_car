@@ -696,11 +696,65 @@ int main(void)
     // put_claw_down_near_ground();
     // HAL_Delay(4000);
     // open_claw_180();
-    // put_claw_up();
+    // // put_claw_up();
     // HAL_Delay(1000);
     // while(1)
     // {
     //     HAL_Delay(1000);
+    // }
+
+    //? 摄像头像素和底盘步进关系
+    //! 5前后对应188像素
+    //! 5左右对应像素181
+    //! 5控制量
+    // put_claw_up();
+    // HAL_Delay(1000);
+    // while(1)
+    // {
+        // move_all_direction_position(acceleration, open_loop_move_velocity,5,0);
+    //     HAL_Delay(18000);
+    //     move_all_direction_position(acceleration, open_loop_move_velocity,-5,0);
+    //     HAL_Delay(18000);
+    // }
+    // int clk = get_clk(5);
+    // while(1)
+    // {
+    //     Emm_V5_Pos_Control(1, 0, open_loop_move_velocity, acceleration,clk, 0,1);
+    //     HAL_Delay(10);
+    //     Emm_V5_Pos_Control(2, 0, open_loop_move_velocity, acceleration, clk, 0, 1);
+    //     HAL_Delay(10);
+    //     Emm_V5_Pos_Control(3, 0, open_loop_move_velocity, acceleration,clk, 0, 1);
+    //     HAL_Delay(10);
+    //     Emm_V5_Pos_Control(4, 0, open_loop_move_velocity, acceleration, clk, 0, 1);
+    //     HAL_Delay(10);
+    //     Emm_V5_Synchronous_motion(0);
+    //     HAL_Delay(10);
+    //     HAL_Delay(15000);
+    //     Emm_V5_Pos_Control(1, 1, open_loop_move_velocity, acceleration,clk, 0,1);
+    //     HAL_Delay(10);
+    //     Emm_V5_Pos_Control(2, 1, open_loop_move_velocity, acceleration, clk, 0, 1);
+    //     HAL_Delay(10);
+    //     Emm_V5_Pos_Control(3, 1, open_loop_move_velocity, acceleration,clk, 0, 1);
+    //     HAL_Delay(10);
+    //     Emm_V5_Pos_Control(4, 1, open_loop_move_velocity, acceleration, clk, 0, 1);
+    //     HAL_Delay(10);
+    //     Emm_V5_Synchronous_motion(0);
+    //     HAL_Delay(10);
+    //     HAL_Delay(15000);
+    // }
+
+    // //? 摄像头像素与实际步进的关系
+    //! 1000r步进对应像素值变化量为180
+    //! 100步进对应70
+    //! 旋转量5对应13°
+    // put_claw_down_near_ground();
+    // HAL_Delay(1000);
+    // while(1)
+    // {
+    //    feetech_servo_move(3,2865,1000,180);
+    // HAL_Delay(15000);
+    // feetech_servo_move(3,2965,1000,180);
+    // HAL_Delay(15000);
     // }
 
     // //? 最新色环定位和放置
@@ -734,11 +788,6 @@ int main(void)
     //         //TODO 加入变量的互斥锁机制
     //         HAL_Delay(50);  //100
     //     }
-    //     // HAL_UART_Transmit(&huart3, (uint8_t*)"adjust_end", strlen("adjust_end"), 50); // 通知树莓派结束
-    //     // if (tim3_count >= timeout_limit)
-    //     // {
-    //     //     HAL_Delay(20);
-    //     // }
     //     is_servo_adjust = 0;
     //     put_claw_down_ground();
     //     HAL_Delay(500);

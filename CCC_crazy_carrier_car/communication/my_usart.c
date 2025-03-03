@@ -63,8 +63,8 @@ int Kd_line_spin = 0.1;  //0.1
 
 int temp_spin_which_direction = 0;
 
-#define Kp_slight_move 0.5  // 0.4  2025.2.19
-#define Ki_slight_move 0.1 // 0.01 
+#define Kp_slight_move 0.5  // 0.5
+#define Ki_slight_move 0.1 // 0.1 
 #define Kd_slight_move 0.1  // 0.1
 
 
@@ -477,23 +477,23 @@ void UART_receive_process_3(void)
         }
 
         // 将物料放置在转盘上
-        if(is_adjust_plate_with_put == 1)
+        if(is_adjust_plate_with_put == 1 && rxdata_u3[6] == 0xff)
         {
             if(rxdata_u3[0] == 0x01)
             {
-                x_plate_error_with_put = (int) rxdata_u3[1];
+                x_plate_error_with_put = (int) (rxdata_u3[1] <<8 | rxdata_u3[2]);
             }
             else if(rxdata_u3[0] == 0x02)
             {
-                x_plate_error_with_put = - (int) rxdata_u3[1];
+                x_plate_error_with_put = - (int) (rxdata_u3[1] <<8 | rxdata_u3[2]);
             }
-            if(rxdata_u3[2] == 0x01)
+            if(rxdata_u3[3] == 0x01)
             {
-                y_plate_error_with_put = (int) rxdata_u3[3];
+                y_plate_error_with_put = (int) (rxdata_u3[4] <<8 | rxdata_u3[5]);
             }
-            else if(rxdata_u3[2] == 0x02)
+            else if(rxdata_u3[3] == 0x02)
             {
-                y_plate_error_with_put = - (int) rxdata_u3[3];
+                y_plate_error_with_put = - (int) (rxdata_u3[4] <<8 | rxdata_u3[5]);
             }
 
             if(rxdata_u3[0] == 0x10) //调整结束
@@ -549,32 +549,33 @@ void UART_receive_process_3(void)
         }
 
         //转盘调整机械臂位置实现抓取
-        if(is_adjust_plate_servo == 1)
+
+        if(is_adjust_plate_servo == 1 && rxdata_u3[6] == 0xff)
         {
             if(rxdata_u3[0] == 0x01)
             {
-                x_plate_error = (int) rxdata_u3[1];
-                x_plate_error *= 1;
+                x_plate_error = (int) (rxdata_u3[1] <<8 | rxdata_u3[2]);
+                x_plate_error *= 2;
                 
 
             }
             else if(rxdata_u3[0] == 0x02)
             {
-                x_plate_error = - (int) rxdata_u3[1];
-                x_plate_error *= 1;
+                x_plate_error = - (int) (rxdata_u3[1] <<8 | rxdata_u3[2]);
+                x_plate_error *= 2;
 
             }
-            if(rxdata_u3[2] == 0x01)
+            if(rxdata_u3[3] == 0x01)
             {
-                y_plate_error = (int) rxdata_u3[3];
-                y_plate_error *= 5;
+                y_plate_error = (int) (rxdata_u3[4] <<8 | rxdata_u3[5]);
+                y_plate_error *= 10;
                 is_adjust_plate_servo = 0;
 
             }
-            else if(rxdata_u3[2] == 0x02)
+            else if(rxdata_u3[3] == 0x02)
             {
-                y_plate_error = - (int) rxdata_u3[3];
-                y_plate_error *= 5;
+                y_plate_error = - (int) (rxdata_u3[4] <<8 | rxdata_u3[5]);
+                y_plate_error *= 10;
                 is_adjust_plate_servo = 0;
             }
         }
@@ -606,6 +607,7 @@ void UART_receive_process_3(void)
             }
         }
 
+        //? 未修改数据发送
         if(is_start_judge_move_before_slight_adjust == 1)
         {
             if(rxdata_u3[0] == 0x66)
@@ -625,14 +627,14 @@ void UART_receive_process_3(void)
 
 
         // 直线和圆一起调
-        if(is_slight_spin_and_move == 1)
+        if(is_slight_spin_and_move == 1 && rxdata_u3[8] == 0xff)
         {
             if(rxdata_u3[0] == 0x01)
             {
                 temp_spin_which_direction = Kp_line_spin * (float)rxdata_u3[1] + Ki_line_spin * ((float)rxdata_u3[1] +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(float)rxdata_u3[1]+ line_spin_error_2);
-                if(temp_spin_which_direction > 6)
+                if(temp_spin_which_direction > 10)
                 {
-                    spin_which_direction = 6;
+                    spin_which_direction = 10;
                 }
                 else if(temp_spin_which_direction < 0.4)
                 {
@@ -648,9 +650,9 @@ void UART_receive_process_3(void)
             else if(rxdata_u3[0] == 0x02)
             {
                 temp_spin_which_direction = Kp_line_spin * (-(float)rxdata_u3[1]) + Ki_line_spin * ((-(float)rxdata_u3[1]) +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(-(float)rxdata_u3[1])+ line_spin_error_2);
-                if(temp_spin_which_direction < -6)
+                if(temp_spin_which_direction < -10)
                 {
-                    spin_which_direction = -6;
+                    spin_which_direction = -10;
                 }
                 else if(temp_spin_which_direction > -0.4)
                 {
@@ -666,19 +668,19 @@ void UART_receive_process_3(void)
             }
             if(rxdata_u3[2] == 0x01)
             {
-                x_move_position = (float) rxdata_u3[3];
+                x_move_position = (float)( rxdata_u3[3]<<8 | rxdata_u3[4]);
             }
             else if(rxdata_u3[2] == 0x02)
             {
-                x_move_position = - (float) rxdata_u3[3];
+                x_move_position = - (float) ( rxdata_u3[3]<<8 | rxdata_u3[4]);
             }
-            if(rxdata_u3[4] == 0x01)
+            if(rxdata_u3[5] == 0x01)
             {
-                y_move_position = (float) rxdata_u3[5];
+                y_move_position = (float) ( rxdata_u3[6]<<8 | rxdata_u3[7]);
             }
-            else if(rxdata_u3[4] == 0x02)
+            else if(rxdata_u3[5] == 0x02)
             {
-                y_move_position = - (float) rxdata_u3[5];
+                y_move_position = - (float)  ( rxdata_u3[6]<<8 | rxdata_u3[7]);
             }
 		    x_move_position *= 0.2;  //TODO magic number
             y_move_position *= 0.2;
@@ -732,7 +734,7 @@ void UART_receive_process_3(void)
             spin_which_direction = 0;          
         }
 
-        // 进行直线微调
+        // 进行直线微调(废弃)
         if(is_slight_spin == 1)
         {
             if(rxdata_u3[0] == 0x01)
@@ -816,7 +818,7 @@ void UART_receive_process_3(void)
         // }
 
         
-        // 进行位置微调
+        // 进行位置微调（废弃）
         if(is_slight_move == 1)  
         {
             //将原始的偏差数据转换为实际的移动方向
@@ -953,20 +955,20 @@ void UART_receive_process_3(void)
             y_camera_error = 0;
         }
 
-        if(is_servo_adjust == 1)
+        if(is_servo_adjust == 1 && rxdata_u3[6] == 0xff)
         {
             // x_camera_error = 0;
             // y_camera_error = 0;
             if(rxdata_u3[0] == 0x01)
             {
-                x_camera_error = (int) rxdata_u3[1];
+                x_camera_error = (int) (rxdata_u3[1] << 8 | rxdata_u3[2]);
                 is_find_circle = 1;
                 // x_move_position = 10;
                 // HAL_UART_Transmit(&huart3, (uint8_t*)"right front", strlen("right front"), 50);
             }
             else if(rxdata_u3[0] == 0x02)
             {
-                x_camera_error = - (int) rxdata_u3[1];
+                x_camera_error = - (int) (rxdata_u3[1] << 8 | rxdata_u3[2]);
                 is_find_circle = 1;
                 // if(x_camera_error == -10)
                 // {
@@ -979,15 +981,15 @@ void UART_receive_process_3(void)
                 // x_move_position = -10;
                 // HAL_UART_Transmit(&huart3, (uint8_t*)"left front", strlen("left front"), 50);
             }
-            if(rxdata_u3[2] == 0x01)
+            if(rxdata_u3[3] == 0x01)
             {
-                y_camera_error = (int) rxdata_u3[3];
+                y_camera_error = (int) (rxdata_u3[4] << 8 | rxdata_u3[5]);
                 is_find_circle = 1;
                 // y_move_position = 10;
             }
-            else if(rxdata_u3[2] == 0x02)
+            else if(rxdata_u3[3] == 0x02)
             {
-                y_camera_error = - (int) rxdata_u3[3];
+                y_camera_error = - (int) (rxdata_u3[4] << 8 | rxdata_u3[5]);
                 is_find_circle = 1;
                 // y_move_position = -10;
             }

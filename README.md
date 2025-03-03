@@ -1,6 +1,9 @@
 # 智能物流搬运小车
 本项目是中国大学生工程实践与创新能力大赛中“智能+”赛道的智能物流搬运赛项。  
 Collaborators:[CY](https://github.com/CycleYerik)
+Collaborators:[summersummer33](https://github.com/summersummer33)
+
+视觉部分代码见：[OpenCV](https://github.com/summersummer33/opencv)
 
 ## Contents
 <!-- - [CCC_crazy_carrier_car](./CCC_crazy_carrier_car): 项目的主程序代码工程，基于CubeMX生成，使用HAL库函数和Keil5

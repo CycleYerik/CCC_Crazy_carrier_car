@@ -27,6 +27,7 @@ float acceleration_spin = 180; // 180
 float adjust_spin_and_move_scale = 0.5; // 旋转和移动的比例
 
 
+
 /// @brief x、y轴移动速度（根据树莓派发送的偏差值进行调整）
 float volatile x_move_position = 0, y_move_position = 0; 
 
@@ -90,6 +91,8 @@ void slight_spin_plate_line(void)
 }
 
 
+/// @brief 直线和圆一起调
+/// @param  调参的思路：x/y_move_position乘了一个偏差量，最后直线的参数也乘了一个偏差量，通过修改这两个偏差量使得直线和圆的调整比例合适，同时也控制各自的数值不会过大
 void slight_spin_and_move(void)
 {
     motor_vel_target_1 = (int)(adjust_spin_and_move_scale *spin_which_direction - x_move_position - y_move_position);

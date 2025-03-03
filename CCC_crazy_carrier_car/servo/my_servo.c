@@ -34,14 +34,14 @@ int state_spin_without_claw_position_3 = 112;
 int feet_acc = 180; //180
 int feet_acc_claw_up_down = 240;
 
-int put_claw_down_pile_position = 2703; //1819
-int put_claw_down_state_position = 1720 ; //从车的载物盘上  737
-int put_claw_down_position = 2530;  // 从转盘上取物料  1625
-int put_claw_down_ground_position = 3856; // 放在地上 2899
-int put_claw_up_top_position =1160; // 最高点  360
-int put_claw_up_position =2427; //  看粗调移动底盘的位置
-int put_claw_down_near_ground_position = 3702; //细调放置的位置
-int put_claw_down_near_plate_position = 2550; //转盘放置细调的位置
+int put_claw_down_pile_position = 2421; //1819
+int put_claw_down_state_position = 1438 ; //从车的载物盘上  737
+int put_claw_down_position = 2248;  // 从转盘上取物料  1625
+int put_claw_down_ground_position = 3570; // 放在地上 2899
+int put_claw_up_top_position =878; // 最高点  360
+int put_claw_up_position =2145; //  看粗调移动底盘的位置
+int put_claw_down_near_ground_position = 3420; //细调放置的位置
+int put_claw_down_near_plate_position = 2268; //转盘放置细调的位置
 int claw_spin_position_front = 3329 ; // 2号精密舵机回到前方
 int claw_spin_position_state = 1594; // 2号精密舵机回到载物盘//TODO 待测量
 int claw_spin_without_claw_position_state = 1605; //与上面一样
@@ -232,8 +232,7 @@ void adjust_plate(int x_plate_error_in,int y_plate_error_in)
     // r_adjust_values = r_adjust_values * pixel_to_distance_r;
 
 /// @brief 根据视觉进行机械臂末端姿态校正
-/// @param x_error 
-/// @param y_error 
+/// @param 调参思路： 调整pixel_to_distance
 int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
 {   
     //TODO 如果看不到，则xy传进来设置一个特殊值，然后开始转动
