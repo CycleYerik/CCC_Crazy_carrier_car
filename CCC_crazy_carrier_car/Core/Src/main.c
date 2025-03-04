@@ -318,7 +318,7 @@ int main(void)
 
     /*****************单独调试程序***********************/
 
-
+    HAL_Delay(2000);
     //? 抓福建三物料
     // get_and_pre_put(2,0);
     // HAL_Delay(1000);
@@ -706,7 +706,7 @@ int main(void)
     //? 摄像头像素和底盘步进关系
     //! 5前后对应188像素
     //! 5左右对应像素181
-    //! 5控制量
+    //! 旋转量5对应13°
     // put_claw_up();
     // HAL_Delay(1000);
     // while(1)
@@ -745,8 +745,7 @@ int main(void)
 
     // //? 摄像头像素与实际步进的关系
     //! 1000r步进对应像素值变化量为180
-    //! 100步进对应70
-    //! 旋转量5对应13°
+    //! 100步进对应70 旋转
     // put_claw_down_near_ground();
     // HAL_Delay(1000);
     // while(1)
@@ -780,6 +779,7 @@ int main(void)
     //     is_servo_adjust = 1;
     //     tim3_count = 0;
     //     HAL_Delay(700);
+    //     HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
     //     x_camera_error = 0;
     //     y_camera_error = 0;
     //     while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
@@ -865,28 +865,30 @@ int main(void)
     //             r_servo_now = r_servo_now_temp;
     //             x_plate_error = 0;
     //             y_plate_error = 0;
-    //             adjust_plate(x_plate_error, y_plate_error);
+    //             // adjust_plate(x_plate_error, y_plate_error);
     //             x_plate_error = 0;
     //             y_plate_error = 0;
     //             claw_spin_front();
     //             open_claw_180();
+    //             arm_stretch();
+
     //             HAL_Delay(500);
     //             get_plate_count++;
-    //             // if(temp_plate == 1)
-    //             // {
-    //             //     HAL_UART_Transmit(&huart3, (uint8_t*)"red", strlen("red"), 50); 
-    //             //     is_1_get = 1;
-    //             // }
-    //             // else if(temp_plate == 2)
-    //             // {
-    //             //     HAL_UART_Transmit(&huart3, (uint8_t*)"green", strlen("green"), 50);
-    //             //     is_2_get = 1;
-    //             // }
-    //             // else if(temp_plate == 3)
-    //             // {
-    //             //     HAL_UART_Transmit(&huart3, (uint8_t*)"blue", strlen("blue"), 50); 
-    //             //     is_3_get = 1;
-    //             // }
+    //             if(temp_plate == 1)
+    //             {
+    //                 // HAL_UART_Transmit(&huart3, (uint8_t*)"red", strlen("red"), 50); 
+    //                 is_1_get = 1;
+    //             }
+    //             else if(temp_plate == 2)
+    //             {
+    //                 // HAL_UART_Transmit(&huart3, (uint8_t*)"green", strlen("green"), 50);
+    //                 is_2_get = 1;
+    //             }
+    //             else if(temp_plate == 3)
+    //             {
+    //                 // HAL_UART_Transmit(&huart3, (uint8_t*)"blue", strlen("blue"), 50); 
+    //                 is_3_get = 1;
+    //             }
     //             get_plate = 0;
     //             put_claw_down();
     //         }
@@ -1026,7 +1028,7 @@ int main(void)
     move_all_direction_position(acceleration, open_loop_move_velocity, -start_move_x , start_move_y); 
     HAL_Delay(1000);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_to_qrcode); 
-    HAL_Delay(1000);
+    HAL_Delay(2000);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table); 
     HAL_Delay(2000);
     char* target_colour_str = (char*)malloc(6);
@@ -1089,16 +1091,32 @@ int main(void)
                 open_claw();
                 HAL_Delay(300);
                 // arm_stretch();
-                r_servo_now = r_servo_now_temp;
+                // r_servo_now = r_servo_now_temp;
                 x_plate_error = 0;
                 y_plate_error = 0;
-                adjust_plate(x_plate_error, y_plate_error);
+                // adjust_plate(x_plate_error, y_plate_error);
                 x_plate_error = 0;
                 y_plate_error = 0;
                 claw_spin_front();
                 open_claw_180();
+                arm_stretch();
                 HAL_Delay(500);
                 get_plate_count++;
+                if(temp_plate == 1)
+                {
+                    // HAL_UART_Transmit(&huart3, (uint8_t*)"red", strlen("red"), 50); 
+                    is_1_get = 1;
+                }
+                else if(temp_plate == 2)
+                {
+                    // HAL_UART_Transmit(&huart3, (uint8_t*)"green", strlen("green"), 50);
+                    is_2_get = 1;
+                }
+                else if(temp_plate == 3)
+                {
+                    // HAL_UART_Transmit(&huart3, (uint8_t*)"blue", strlen("blue"), 50); 
+                    is_3_get = 1;
+                }
                 get_plate = 0;
                 put_claw_down();
             }
@@ -1161,6 +1179,7 @@ int main(void)
         is_servo_adjust = 1;
         tim3_count = 0;
         HAL_Delay(700);
+        HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
         x_camera_error = 0;
         y_camera_error = 0;
         while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
@@ -1225,6 +1244,7 @@ int main(void)
         is_servo_adjust = 1;
         tim3_count = 0;
         HAL_Delay(700);
+        HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
         x_camera_error = 0;
         y_camera_error = 0;
         while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
@@ -1261,6 +1281,7 @@ int main(void)
     HAL_Delay(100);
     put_claw_down();
     is_start_get_plate = 1;
+    get_plate = 0;
     while(get_plate_count < 3 ) // 从转盘抓取三个色环或者超时
     {
         // HAL_UART_Transmi t(&huart3, (uint8_t*)&get_plate, 1, 50);
@@ -1314,31 +1335,32 @@ int main(void)
                 open_claw();
                 HAL_Delay(300);
                 // arm_stretch();
-                r_servo_now = r_servo_now_temp;
+                // r_servo_now = r_servo_now_temp;
                 x_plate_error = 0;
                 y_plate_error = 0;
-                adjust_plate(x_plate_error, y_plate_error);
+                // adjust_plate(x_plate_error, y_plate_error);
                 x_plate_error = 0;
                 y_plate_error = 0;
                 claw_spin_front();
                 open_claw_180();
+                arm_stretch();
                 HAL_Delay(500);
                 get_plate_count++;
-                // if(temp_plate == 1)
-                // {
-                //     HAL_UART_Transmit(&huart3, (uint8_t*)"red", strlen("red"), 50); 
-                //     is_1_get = 1;
-                // }
-                // else if(temp_plate == 2)
-                // {
-                //     HAL_UART_Transmit(&huart3, (uint8_t*)"green", strlen("green"), 50);
-                //     is_2_get = 1;
-                // }
-                // else if(temp_plate == 3)
-                // {
-                //     HAL_UART_Transmit(&huart3, (uint8_t*)"blue", strlen("blue"), 50); 
-                //     is_3_get = 1;
-                // }
+                if(temp_plate == 1)
+                {
+                    // HAL_UART_Transmit(&huart3, (uint8_t*)"red", strlen("red"), 50); 
+                    is_1_get = 1;
+                }
+                else if(temp_plate == 2)
+                {
+                    // HAL_UART_Transmit(&huart3, (uint8_t*)"green", strlen("green"), 50);
+                    is_2_get = 1;
+                }
+                else if(temp_plate == 3)
+                {
+                    // HAL_UART_Transmit(&huart3, (uint8_t*)"blue", strlen("blue"), 50); 
+                    is_3_get = 1;
+                }
                 get_plate = 0;
                 put_claw_down();
             }
@@ -1393,6 +1415,7 @@ int main(void)
         is_servo_adjust = 1;
         tim3_count = 0;
         HAL_Delay(700);
+        HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
         x_camera_error = 0;
         y_camera_error = 0;
         while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
@@ -1475,11 +1498,8 @@ int main(void)
         open_claw();
         HAL_Delay(500);
     }
-    put_claw_up();
+    put_claw_up_top();
     HAL_Delay(500);
-    open_claw_180();
-    whole_arm_spin(1); 
-    arm_stretch();
     HAL_Delay(10);
 
 // // HAL_Delay(3000); //? 延时
@@ -1492,6 +1512,9 @@ int main(void)
     HAL_Delay(900);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length_5);
     HAL_Delay(2500);
+    open_claw_180();
+    whole_arm_spin(1); 
+    arm_stretch();
     spin_right(open_loop_spin_velocity,acceleration_spin, 90);
     HAL_Delay(1000);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_5);

@@ -24,7 +24,7 @@
 float acceleration = 180;  //180
 float acceleration_spin = 180; // 180
 
-float adjust_spin_and_move_scale = 0.5; // 旋转和移动的比例
+float adjust_spin_and_move_scale = 1; // 旋转和移动的比例
 
 
 

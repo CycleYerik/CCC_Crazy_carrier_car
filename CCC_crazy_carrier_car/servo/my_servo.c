@@ -35,12 +35,12 @@ int feet_acc = 180; //180
 int feet_acc_claw_up_down = 240;
 
 int put_claw_down_pile_position = 2421; //1819
-int put_claw_down_state_position = 1438 ; //从车的载物盘上  737
+int put_claw_down_state_position = 1400 ; //从车的载物盘上  737
 int put_claw_down_position = 2248;  // 从转盘上取物料  1625
 int put_claw_down_ground_position = 3570; // 放在地上 2899
 int put_claw_up_top_position =878; // 最高点  360
 int put_claw_up_position =2145; //  看粗调移动底盘的位置
-int put_claw_down_near_ground_position = 3420; //细调放置的位置
+int put_claw_down_near_ground_position = 3390; //细调放置的位置
 int put_claw_down_near_plate_position = 2268; //转盘放置细调的位置
 int claw_spin_position_front = 3329 ; // 2号精密舵机回到前方
 int claw_spin_position_state = 1594; // 2号精密舵机回到载物盘//TODO 待测量
@@ -70,7 +70,7 @@ int init_plate = 2632;// 初始抓转盘
 
 
 int left_2 = 3929; //1620
-int left_3 = 2000;  //2337
+int left_3 = 2040;  //2337
 int left_4 =  3800; //1680
 
 int right_2 = 3929;  //2260
@@ -123,13 +123,13 @@ void adjust_plate(int x_plate_error_in,int y_plate_error_in)
                 feetech_servo_move(4,r_servo_now,4000,feet_acc);
                 y_plate_error_in = 0;
             }
-            else if (r_servo_now+y_plate_error > r_front_position_limit)
+            else if (r_servo_now+y_plate_error_in > r_front_position_limit)
             {
                 r_servo_now = r_front_position_limit;
                 feetech_servo_move(4,r_servo_now,4000,feet_acc);
                 y_plate_error_in = 0;
             }
-            else if (r_servo_now+y_plate_error < r_back_position_limit)
+            else if (r_servo_now+y_plate_error_in < r_back_position_limit)
             {
                 r_servo_now = r_back_position_limit;
                 feetech_servo_move(4,r_servo_now,4000,feet_acc);
@@ -238,6 +238,22 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
     //TODO 如果看不到，则xy传进来设置一个特殊值，然后开始转动
     int r_adjust_values = 0, theta_adjust_values = 0;
     int is_theta_ok = 0, is_r_ok = 0;
+    if(x_error > 300 )
+    {
+        x_error = 300;
+    }
+    if(y_error > 300)
+    {
+        y_error = 300;
+    }
+    if(x_error < -300)
+    {
+        x_error = -300;
+    }
+    if(y_error < -300)
+    {
+        y_error = -300;
+    }
     
 
     //TODO 加入x、yerror的PID
@@ -249,6 +265,22 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
     x_error_last = x_error;
     y_error_long_last = y_error_last;
     y_error_last = y_error;
+    if(theta_adjust_values > 100)
+    {
+        theta_adjust_values = 100;
+    }
+    if(r_adjust_values > 100)
+    {
+        r_adjust_values = 100;
+    }
+    if(theta_adjust_values < -100)
+    {
+        theta_adjust_values = -100;
+    }
+    if(r_adjust_values < -100)
+    {
+        r_adjust_values = -100;
+    }
 
     
     if(is_min_1 == 1)
@@ -861,7 +893,7 @@ void get_and_pre_put(int position,int is_pile_up)
     }
     if(is_pile_up != 1)
     {
-    HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
     }
 }
 

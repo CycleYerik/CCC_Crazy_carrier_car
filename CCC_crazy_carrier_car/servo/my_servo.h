@@ -7,14 +7,14 @@
 #include "uart.h"
 
 //50ms
-#define pixel_to_distance_r 0.8 // 根据摄像头实际距离和像素值的关系调整
-#define pixel_to_distance_theta 0.6 // 根据摄像头实际距离和像素值的关系调整
-#define Kp_theta 0.6  //0.22
-#define Ki_theta 0.15 //0.1
-#define Kd_theta 0.25 //0.01
-#define Kp_r 1.0  //0.45
-#define Ki_r 0.15  //0.12
-#define Kd_r 0.35  //0.01
+#define pixel_to_distance_r 5 // 根据摄像头实际距离和像素值的关系调整
+#define pixel_to_distance_theta 1.5 // 根据摄像头实际距离和像素值的关系调整
+#define Kp_theta 0.25  //0.22
+#define Ki_theta 0.012 //0.1
+#define Kd_theta 0.01 //0.01
+#define Kp_r 0.42  //0.45
+#define Ki_r 0.02  //0.12
+#define Kd_r 0.02  //0.01
 void adjust_plate(int x_plate_error_in,int y_plate_error_in);
 void get_and_load_ground(int position);
 void get_and_load(int position);

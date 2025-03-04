@@ -57,15 +57,15 @@ extern int x_move_before_slight_move ;
 extern int is_slight_spin_and_move;
 
 float line_spin_error_1 = 0, line_spin_error_2 = 0;
-int Kp_line_spin = 1.5;  //1.5
-int Ki_line_spin = 0.3;  //0.3
+int Kp_line_spin = 1;  //1.5
+int Ki_line_spin = 0.05;  //0.3
 int Kd_line_spin = 0.1;  //0.1
 
 int temp_spin_which_direction = 0;
 
-#define Kp_slight_move 0.5  // 0.5
-#define Ki_slight_move 0.1 // 0.1 
-#define Kd_slight_move 0.1  // 0.1
+#define Kp_slight_move 0.28  // 0.5
+#define Ki_slight_move 0.02 // 0.1 
+#define Kd_slight_move 0.08  // 0.1
 
 
 extern int is_get_massage;
@@ -555,27 +555,27 @@ void UART_receive_process_3(void)
             if(rxdata_u3[0] == 0x01)
             {
                 x_plate_error = (int) (rxdata_u3[1] <<8 | rxdata_u3[2]);
-                x_plate_error *= 2;
+                x_plate_error *= 1;
                 
 
             }
             else if(rxdata_u3[0] == 0x02)
             {
                 x_plate_error = - (int) (rxdata_u3[1] <<8 | rxdata_u3[2]);
-                x_plate_error *= 2;
+                x_plate_error *= 1;
 
             }
             if(rxdata_u3[3] == 0x01)
             {
                 y_plate_error = (int) (rxdata_u3[4] <<8 | rxdata_u3[5]);
-                y_plate_error *= 10;
+                y_plate_error *= 7;
                 is_adjust_plate_servo = 0;
 
             }
             else if(rxdata_u3[3] == 0x02)
             {
                 y_plate_error = - (int) (rxdata_u3[4] <<8 | rxdata_u3[5]);
-                y_plate_error *= 10;
+                y_plate_error *= 7;
                 is_adjust_plate_servo = 0;
             }
         }
@@ -626,7 +626,7 @@ void UART_receive_process_3(void)
         }
 
 
-        // 直线和圆一起调
+        //! 直线和圆一起调 
         if(is_slight_spin_and_move == 1 && rxdata_u3[8] == 0xff)
         {
             if(rxdata_u3[0] == 0x01)

@@ -28,39 +28,35 @@ Project File Date:  11/19/2024
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
 compiling main.c...
-../Core/Src/main.c(749): warning:  #111-D: statement is unreachable
-      put_claw_down_near_ground();
-../Core/Src/main.c(760): warning:  #111-D: statement is unreachable
-      HAL_Delay(1000);
-../Core/Src/main.c(1016): warning:  #111-D: statement is unreachable
+../Core/Src/main.c(1019): warning:  #111-D: statement is unreachable
       is_adjust_motor_in_tim = 0;
-../Core/Src/main.c(1550): warning:  #111-D: statement is unreachable
+../Core/Src/main.c(1574): warning:  #111-D: statement is unreachable
       motor_state = 1;
-../Core/Src/main.c(1615): warning:  #111-D: statement is unreachable
+../Core/Src/main.c(1639): warning:  #111-D: statement is unreachable
       HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); //发给树莓派，开始校正直�?
-../Core/Src/main.c(1735): warning:  #111-D: statement is unreachable
+../Core/Src/main.c(1759): warning:  #111-D: statement is unreachable
       HAL_UART_Transmit(&huart3, (uint8_t*)"GG", strlen("GG"), 50); //发给树莓派，开始校�?
-../Core/Src/main.c(1819): warning:  #111-D: statement is unreachable
+../Core/Src/main.c(1843): warning:  #111-D: statement is unreachable
       arm_stretch();
-../Core/Src/main.c(1024): warning:  #177-D: variable "little_back_1"  was declared but never referenced
+../Core/Src/main.c(1027): warning:  #177-D: variable "little_back_1"  was declared but never referenced
       int little_back_1 = 2;
-../Core/Src/main.c(3429): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+../Core/Src/main.c(3453): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
       move_follow_sequence(target_colour,1,status);
-../Core/Src/main.c(3488): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+../Core/Src/main.c(3512): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
       move_follow_sequence(target_colour,2,status);
-../Core/Src/main.c(3525): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+../Core/Src/main.c(3549): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
       move_follow_sequence(target_colour,3,status);
-../Core/Src/main.c(3572): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+../Core/Src/main.c(3596): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
       move_follow_sequence(target_colour,1,status);
-../Core/Src/main.c(3585): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+../Core/Src/main.c(3609): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
       move_follow_sequence(target_colour,2,status);
-../Core/Src/main.c(3598): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+../Core/Src/main.c(3622): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
       move_follow_sequence(target_colour,3,status);
-../Core/Src/main.c: 14 warnings, 0 errors
+../Core/Src/main.c: 12 warnings, 0 errors
 linking...
-Program Size: Code=16724 RO-data=448 RW-data=628 ZI-data=2148  
+Program Size: Code=17880 RO-data=448 RW-data=628 ZI-data=2148  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 14 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 12 Warning(s).
 
 <h2>Software Packages used:</h2>
 
