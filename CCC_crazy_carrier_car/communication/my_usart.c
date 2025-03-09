@@ -69,6 +69,7 @@ int temp_spin_which_direction = 0;
 
 
 extern int is_get_massage;
+extern int test_raspi_communication_start,test_raspi_communication_status;
 
 extern int is_adjust_plate_with_put;
 extern int x_plate_error_with_put,y_plate_error_with_put;
@@ -458,26 +459,56 @@ void UART_receive_process_3(void)
     if (rxflag_u3 > 0)
     {
         // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
-        // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, rxflag_u3, 50);  // 阻塞式，会造成串口阻塞
+        // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, rxflag_u3, 50);  //! 阻塞式，会造成串口阻塞
 
-        // 将物料放置在转盘的带环的位置
+        //? 通信单独测试
+        if(test_raspi_communication_start == 1)
+        {
+            if(rxdata_u3[0] == '?' && rxdata_u3[1] == 0x27)
+            {
+                // HAL_UART_Transmit(&huart3, (uint8_t*)"I get ///", strlen("I get ///"), 50);
+                test_raspi_communication_status = 1;
+            }
+            if(rxdata_u3[0] == '#')
+            {
+                // HAL_UART_Transmit(&huart3, (uint8_t*)"I get ###", strlen("I get ###"), 50);
+            }
+            if(rxdata_u3[0] == '!')
+            {
+                // HAL_UART_Transmit(&huart3, (uint8_t*)"I get !!!", strlen("I get !!!"), 50);
+            }
+            if(rxdata_u3[0] == '*')
+            {
+                // HAL_UART_Transmit(&huart3, (uint8_t*)"I get ***", strlen("I get ***"), 50);
+            }
+            if(rxdata_u3[0] == '%')
+            {
+                // HAL_UART_Transmit(&huart3, (uint8_t*)"I get %%", strlen("I get %%"), 50);
+            }
+            if(rxdata_u3[0] == '@')
+            {
+                // HAL_UART_Transmit(&huart3, (uint8_t*)"I get @@", strlen("I get @@"), 50);
+            }
+        }
+
+        //? 将物料放置在转盘的带环的位置
         if(is_plate_first_move == 2)
         {
-            if(rxdata_u3[0] == 0x61)
+            if(rxdata_u3[0] == '?' && rxdata_u3[1] == 0x61)
             {
                 is_plate_first_move = 1;
             }
         }
         if(is_third_preput == 0)
         {
-            if(rxdata_u3[0] == 0x62)
+            if( rxdata_u3[0] == '?' && rxdata_u3[1] == 0x62)
             {
                 is_third_preput = 1;
             }
         }
 
-        // 将物料放置在转盘上
-        if(is_adjust_plate_with_put == 1 && rxdata_u3[6] == 0xff)
+        //? 将物料放置在转盘上
+        if(is_adjust_plate_with_put == 1 && rxdata_u3[6] == '!')
         {
             if(rxdata_u3[0] == 0x01)
             {
@@ -496,7 +527,7 @@ void UART_receive_process_3(void)
                 y_plate_error_with_put = - (int) (rxdata_u3[4] <<8 | rxdata_u3[5]);
             }
 
-            if(rxdata_u3[0] == 0x10) //调整结束
+            if(rxdata_u3[1] == 0x10 && rxdata_u3[0] == '?') //调整结束
             {
                 is_adjust_plate_with_put = 0;
             }
@@ -505,20 +536,20 @@ void UART_receive_process_3(void)
 
         if(is_adjust_plate_with_put == 2)
         {
-            if (rxdata_u3[0] == 0x07)
+            if (rxdata_u3[1] == 0x07 && rxdata_u3[0] == '?')
             {
                 is_plate_with_put_ok_1 = 1;
-                rxdata_u3[0] = 0x00;
+                rxdata_u3[1] = 0x00;
             }
-            if (rxdata_u3[0] == 0x08) // 绿
+            if (rxdata_u3[1] == 0x08 && rxdata_u3[0] == '?') // 绿
             {
                 is_plate_with_put_ok_2 = 1;
-                rxdata_u3[0] = 0x00;
+                rxdata_u3[1] = 0x00;
             }
-            if (rxdata_u3[0] == 0x09) // 蓝
+            if (rxdata_u3[1] == 0x09 && rxdata_u3[0] == '?') // 蓝
             {
                 is_plate_with_put_ok_3 = 1;
-                rxdata_u3[0] = 0x00;
+                rxdata_u3[1] = 0x00;
             }
         }
 
@@ -526,7 +557,7 @@ void UART_receive_process_3(void)
         is_motor_start_move = 1;
 
         // 测试用
-        if(rxdata_u3[0] == 0x88)
+        if( rxdata_u3[1] == 0x88 && rxdata_u3[0] == '?') 
         {
             is_get_massage = 1;
         }
@@ -535,13 +566,13 @@ void UART_receive_process_3(void)
         // 得到任务
         if (is_get_qrcode_target < 2) //! 此处还可以加入更复杂的校验位，避免误操作
         {
-            if ((int)rxdata_u3[0] == 9 && (int)rxdata_u3[1] == 9)
+            if (rxdata_u3[0] == '*' )
             {
-                for (int i = 2; i < 8; i++)
+                for (int i = 1; i < 7; i++)
                 {
                     if ((int)rxdata_u3[i] == 1 || (int)rxdata_u3[i] == 2 || (int)rxdata_u3[i] == 3)
                     {
-                        target_colour[i-2] = (int)rxdata_u3[i];
+                        target_colour[i-1] = (int)rxdata_u3[i];
                     }
                 }
                 is_get_qrcode_target++;
@@ -550,7 +581,7 @@ void UART_receive_process_3(void)
 
         //转盘调整机械臂位置实现抓取
 
-        if(is_adjust_plate_servo == 1 && rxdata_u3[6] == 0xff)
+        if(is_adjust_plate_servo == 1 && rxdata_u3[6] == '!')
         {
             if(rxdata_u3[0] == 0x01)
             {
@@ -581,7 +612,7 @@ void UART_receive_process_3(void)
         }
         if(start_judge_empty == 1)
         {
-            if(rxdata_u3[0] == 0x03)
+            if(rxdata_u3[1] == 0x03 && rxdata_u3[0] == '?')
             {
                 is_get_empty = 1;
             }
@@ -590,44 +621,44 @@ void UART_receive_process_3(void)
         // 在从转盘抓取
         if (is_start_get_plate == 1) 
         {
-            if (rxdata_u3[0] == 0x07) //! 此处可以加入更复杂的校验位
+            if (rxdata_u3[1] == 0x07 && rxdata_u3[0] == '?') //! 此处可以加入更复杂的校验位
             {
                 get_plate = 1;
-                rxdata_u3[0] = 0x00;
+                rxdata_u3[1] = 0x00;
             }
-            if (rxdata_u3[0] == 0x08) // 绿
+            if (rxdata_u3[1] == 0x08 && rxdata_u3[0] == '?') // 绿
             {
                 get_plate = 2;
-                rxdata_u3[0] = 0x00;
+                rxdata_u3[1] = 0x00;
             }
-            if (rxdata_u3[0] == 0x09) // 蓝
+            if (rxdata_u3[1] == 0x09 && rxdata_u3[0] == '?') // 蓝
             {
                 get_plate = 3;
-                rxdata_u3[0] = 0x00;
+                rxdata_u3[1] = 0x00;
             }
         }
 
         //? 未修改数据发送
-        if(is_start_judge_move_before_slight_adjust == 1)
-        {
-            if(rxdata_u3[0] == 0x66)
-            {
-                is_move_before_slight_adjust = 1;
-                if(rxdata_u3[1]== 0x01)
-                {
-                    x_move_before_slight_move = (int )rxdata_u3[2];
-                }
-                else if(rxdata_u3[1] == 0x02)
-                {
-                    x_move_before_slight_move = - (int )rxdata_u3[2];
-                }
-                is_start_judge_move_before_slight_adjust = 0;
-            }
-        }
+        // if(is_start_judge_move_before_slight_adjust == 1)
+        // {
+        //     if(rxdata_u3[0] == 0x66)
+        //     {
+        //         is_move_before_slight_adjust = 1;
+        //         if(rxdata_u3[1]== 0x01)
+        //         {
+        //             x_move_before_slight_move = (int )rxdata_u3[2];
+        //         }
+        //         else if(rxdata_u3[1] == 0x02)
+        //         {
+        //             x_move_before_slight_move = - (int )rxdata_u3[2];
+        //         }
+        //         is_start_judge_move_before_slight_adjust = 0;
+        //     }
+        // }
 
 
         //! 直线和圆一起调 
-        if(is_slight_spin_and_move == 1 && rxdata_u3[8] == 0xff)
+        if(is_slight_spin_and_move == 1 && rxdata_u3[8] == '!')
         {
             if(rxdata_u3[0] == 0x01)
             {
@@ -726,7 +757,7 @@ void UART_receive_process_3(void)
             }
         }
 
-        if(rxdata_u3[0] == 0x44 && is_slight_spin_and_move == 1)
+        if(rxdata_u3[1] == 0x44 && is_slight_spin_and_move == 1 && rxdata_u3[0] == '?')
         {
             is_slight_spin_and_move = 0;
             x_move_position = 0;
@@ -800,14 +831,14 @@ void UART_receive_process_3(void)
         }
 
         // 直线微调停止
-        if( rxdata_u3[0] == 0x27 )
+        if( rxdata_u3[1] == 0x27 && rxdata_u3[0] == '?')
         {
             spin_which_direction = 0;
-            is_slight_spin_and_move = 0;
+            is_slight_spin = 0; //! 未知的
         }
 
         // 直线微调结束
-        if( rxdata_u3[0] == 0x28 )
+        if( rxdata_u3[1] == 0x28 && rxdata_u3[0] == '?')
         {
             is_slight_spin = 0;
         }
@@ -903,14 +934,14 @@ void UART_receive_process_3(void)
             
         }
 
-        if( rxdata_u3[0] == 0x17 ) // !停止移动
+        if( rxdata_u3[0] == 0x17 ) // !停止移动（废弃）
         {
             // is_slight_move = 0;
             // HAL_UART_Transmit(&huart3, (uint8_t*)"stop", strlen("stop"), 50);
             x_move_position = 0;
             y_move_position = 0;
         }
-        if(rxdata_u3[0] == 0x18 )  //结束微调
+        if(rxdata_u3[0] == 0x18 )  //结束微调（废弃）
         {
             // motor_state = 0;
             is_slight_move = 0;
@@ -936,26 +967,26 @@ void UART_receive_process_3(void)
         // }
         // 结束
         
-        if(rxdata_u3[0] == 0x39 && servo_adjust_status == 1)
+        if(rxdata_u3[1] == 0x39 && servo_adjust_status == 1 && rxdata_u3[0] == '?')
         {
             is_servo_adjust = 0;
             x_camera_error = 0;
             y_camera_error = 0;
         }
-        if(rxdata_u3[0] == 0x40 && servo_adjust_status == 2)
+        if(rxdata_u3[1] == 0x40 && servo_adjust_status == 2  && rxdata_u3[0] == '?')
         {
             is_servo_adjust = 0;
             x_camera_error = 0;
             y_camera_error = 0;
         }
-        if(rxdata_u3[0] == 0x41 && servo_adjust_status == 3)
+        if(rxdata_u3[1] == 0x41 && servo_adjust_status == 3 && rxdata_u3[0] == '?')
         {
             is_servo_adjust = 0;
             x_camera_error = 0;
             y_camera_error = 0;
         }
 
-        if(is_servo_adjust == 1 && rxdata_u3[6] == 0xff)
+        if(is_servo_adjust == 1 && rxdata_u3[6] == '!')
         {
             // x_camera_error = 0;
             // y_camera_error = 0;
