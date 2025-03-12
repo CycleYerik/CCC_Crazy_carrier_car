@@ -58,7 +58,9 @@
 
 /**************************************各种全局变量区*****************************************/
 
-int is_put_adjust_with_material = 0; //! 1则为夹着物料进行调整，0则为不夹着物料进行调整
+int is_put_adjust_with_material = 0 ; //! 1则为夹着物料进行调整，0则为不夹着物料进行调整
+
+int adjust_position_with_camera_time = 200;
 
 // 串口相关变量
 extern uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128],rxdata_u4[50],rxdata_u5[50]; // usart2,3接收缓冲区
@@ -163,6 +165,10 @@ int is_plate_first_move = 0; // 在将物料放置在圆盘带有色环时是否
 int is_plate_move_adjust = 0; // 在将物料放置在圆盘带有色环时是否开始调整
 int put_plate_count = 0; // 将物料放置在圆盘带有色环时的计数
 int is_third_preput = 0; // 是否可以进入第三次放置
+
+int is_get_material_from_temp_area = 0; // 是否从暂存取物料
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -331,7 +337,54 @@ int main(void)
 
     /*****************单独调试程序***********************/
 
-    
+    //? 在暂存区定位随机放置的物料并抓取
+    // is_get_material_from_temp_area = 1;
+    // put_claw_up();
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"II", strlen("II"), 50);
+    // //先调直线
+    // is_slight_spin_and_move =1;
+    // tim3_count = 0;
+    // while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit_line) 
+    // {
+    //     slight_spin_and_move(); //在转盘旁的直线处进行姿态的校正
+    //     HAL_Delay(50);
+    // }
+    // is_slight_spin_and_move = 0;
+    // stop();
+    // put_claw_down_near_ground();
+    // HAL_Delay(1000);
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50);
+    // //定位色块
+    // is_slight_spin_and_move =1;
+    // tim3_count = 0;
+    // while(is_slight_spin_and_move != 0) 
+    // {
+    //     slight_spin_and_move(); //根据色块定位
+    //     HAL_Delay(50);
+    // }
+    // is_slight_spin_and_move = 0;
+    // stop();
+    // is_get_material_from_temp_area = 2;
+    // is_slight_spin_and_move = 0;
+    // // 看另一个颜色
+    // get_and_pre_put_void(1,0);
+    // HAL_Delay(500);
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50);
+    // //等待树莓派返回识别结果
+    // while(is_get_material_from_temp_area != 3)
+    // {
+    //     HAL_Delay(100);
+    // }
+    // char temp[30];
+    // sprintf(temp, "%d,%d,%d",target_colour[0],target_colour[1],target_colour[2]);
+    // printf("t0.txt=\"%s\"\xff\xff\xff",temp);
+    // // //验证结果是不是对的
+    // while(1)
+    // {
+    //     HAL_Delay(1000);
+    // }
+
+
     //? 单纯路径移动测试 
     //TODO 待完善，将各个路程添加注释和说明
     // int start_move_x = 16; 
@@ -507,48 +560,62 @@ int main(void)
     // HAL_Delay(50);
     // for (int i = 0; i < 3; i++)
     // {
-    //     get_and_pre_put_void(target_colour[i], 0);//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //     if(is_put_adjust_with_material == 1)
+    //     {
+    //         get_and_pre_put(target_colour[i], 0); //夹着物料放置
+    //     }
+    //     else
+    //     {
+    //         get_and_pre_put_void(target_colour[i], 0); //夹着物料放置
+    //     }
     //     servo_adjust_status = target_colour[i];
     //     is_servo_adjust = 1;
     //     tim3_count = 0;
     //     HAL_Delay(700);
     //     HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
-    //     HAL_Delay(500); //! ???????????????????????
-    //     // char temp[10];
+    //     HAL_Delay(500); 
     //     while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
     //     {
-    //         // sprintf(temp, "    x:%d,y:%d    ", x_camera_error, y_camera_error);
-    //         // HAL_UART_Transmit(&huart3, (uint8_t*)temp, strlen(temp), 50); //发给树莓派，开始校正
-    //         adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 这里的1是否有必要
-    //         //TODO 加入变量的互斥锁机制
-    //         HAL_Delay(200);  //100
+    //         adjust_position_with_camera(x_camera_error, y_camera_error,1); 
+    //         HAL_Delay(adjust_position_with_camera_time);  //30
     //     }
     //     is_servo_adjust = 0;
-    //     //以下的动作为回去夹取物料然后转过来放置
-    //     int now_servo = r_servo_now;
-    //     open_claw();
-    //     put_claw_up_top();
-    //     arm_shrink(); 
-    //     HAL_Delay(300);
-    //     claw_spin_state();
-    //     HAL_Delay(500);
-    //     put_claw_down_state();
-    //     HAL_Delay(400); //400
-    //     close_claw();
-    //     HAL_Delay(400);
-    //     put_claw_up_top();
-    //     HAL_Delay(400); //200
-    //     feetech_servo_move(4,now_servo,4000,100);
-    //     claw_spin_front();
-    //     HAL_Delay(500);
-    //     put_claw_down_ground();
-    //     HAL_Delay(1100);
-    //     open_claw();
-    //     HAL_Delay(600);
+    //     if(is_put_adjust_with_material == 1)
+    //     {
+    //         //以下的动作为直接夹着物料放置
+    //         put_claw_down_ground();
+    //         HAL_Delay(500);
+    //         open_claw();
+    //         HAL_Delay(500);
+    //     }
+    //     else
+    //     {
+    //         //以下的动作为回去夹取物料然后转过来放置
+    //         int now_servo = r_servo_now;
+    //         open_claw();
+    //         put_claw_up_top();
+    //         arm_shrink(); 
+    //         HAL_Delay(500);
+    //         claw_spin_state();
+    //         HAL_Delay(700);
+    //         put_claw_down_state();
+    //         HAL_Delay(400); //400
+    //         close_claw();
+    //         HAL_Delay(400);
+    //         put_claw_up_top();
+    //         HAL_Delay(600); //200
+    //         feetech_servo_move(4,now_servo,4000,100);
+    //         claw_spin_front();
+    //         HAL_Delay(500);
+    //         put_claw_down_ground();
+    //         HAL_Delay(2000); //1100
+    //         open_claw();
+    //         HAL_Delay(600);
+    //     }
     // }
     // put_claw_up_top();
     // HAL_Delay(500);
-    // open_claw_bigger();
+    // open_claw_bigger(); //防止夹不到物料
     // while(1)
     // {
     //     HAL_Delay(1000);
@@ -572,7 +639,7 @@ int main(void)
     //     if((get_plate == 1 && is_1_get == 0)|| (get_plate == 2 && is_2_get == 0) || (get_plate == 3 && is_3_get == 0))
     //     {
     //         is_adjust_plate_servo = 0;
-    //         //TODO 第一次抓取前移动底盘，然后稍微延时一下
+    //          //TODO 第一次抓取前移动底盘，然后稍微延时一下
     //         temp_plate = get_plate;
     //         get_plate = 0;
     //         HAL_Delay(50);
@@ -995,6 +1062,10 @@ int main(void)
     //     HAL_Delay(1000);
     // }
 
+    //! 单独测试
+    
+
+
 
     /***********************比赛初赛所用的全流程***********************/
 
@@ -1077,7 +1148,10 @@ int main(void)
                 arm_shrink();
                 HAL_Delay(300);
                 claw_spin_state_without_claw();
-                HAL_Delay(700);
+                // HAL_Delay(700); //TODO 直接撇进去，以下带？的为新增的
+                HAL_Delay(600); //? 
+                put_claw_down_state(); //?
+                HAL_Delay(300);  //?
                 open_claw();
                 HAL_Delay(300);
                 // arm_stretch();
@@ -1087,6 +1161,8 @@ int main(void)
                 // adjust_plate(x_plate_error, y_plate_error);
                 x_plate_error = 0;
                 y_plate_error = 0;
+                put_claw_up_top(); 
+                HAL_Delay(400); //?
                 claw_spin_front();
                 open_claw_180();
                 arm_stretch();
@@ -1178,7 +1254,7 @@ int main(void)
         while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
         {
             adjust_position_with_camera(x_camera_error, y_camera_error,1); 
-            HAL_Delay(200);  //30
+            HAL_Delay(adjust_position_with_camera_time);  //30
         }
         is_servo_adjust = 0;
         if(is_put_adjust_with_material == 1)
@@ -1196,15 +1272,15 @@ int main(void)
             open_claw();
             put_claw_up_top();
             arm_shrink(); 
-            HAL_Delay(300);
-            claw_spin_state();
             HAL_Delay(500);
+            claw_spin_state();
+            HAL_Delay(700);
             put_claw_down_state();
             HAL_Delay(400); //400
             close_claw();
             HAL_Delay(400);
             put_claw_up_top();
-            HAL_Delay(400); //200
+            HAL_Delay(600); //200
             feetech_servo_move(4,now_servo,4000,100);
             claw_spin_front();
             HAL_Delay(500);
@@ -1270,7 +1346,7 @@ int main(void)
         while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
         {
             adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
-            HAL_Delay(200); 
+            HAL_Delay(adjust_position_with_camera_time); 
         }
         is_servo_adjust = 0;
         if(is_put_adjust_with_material == 1)
@@ -1287,15 +1363,15 @@ int main(void)
             open_claw();
             put_claw_up_top();
             arm_shrink(); 
-            HAL_Delay(300);
-            claw_spin_state();
             HAL_Delay(500);
+            claw_spin_state();
+            HAL_Delay(700);
             put_claw_down_state();
             HAL_Delay(400); //400
             close_claw();
             HAL_Delay(400);
             put_claw_up_top();
-            HAL_Delay(400); //200
+            HAL_Delay(600); //200
             feetech_servo_move(4,now_servo,4000,100);
             claw_spin_front();
             HAL_Delay(500);
@@ -1370,7 +1446,10 @@ int main(void)
                 arm_shrink();
                 HAL_Delay(300);
                 claw_spin_state_without_claw();
-                HAL_Delay(700);
+                // HAL_Delay(700); //TODO 直接撇进去，以下带？的为新增的
+                HAL_Delay(600); //? 
+                put_claw_down_state(); //?
+                HAL_Delay(300);  //?
                 open_claw();
                 HAL_Delay(300);
                 // arm_stretch();
@@ -1380,6 +1459,8 @@ int main(void)
                 // adjust_plate(x_plate_error, y_plate_error);
                 x_plate_error = 0;
                 y_plate_error = 0;
+                put_claw_up_top(); 
+                HAL_Delay(400); //?
                 claw_spin_front();
                 open_claw_180();
                 arm_stretch();
@@ -1471,7 +1552,7 @@ int main(void)
         while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
         {
             adjust_position_with_camera(x_camera_error, y_camera_error,1);
-            HAL_Delay(200);  //30
+            HAL_Delay(adjust_position_with_camera_time);  //30
         }
         is_servo_adjust = 0;
         if(is_put_adjust_with_material == 1)
@@ -1489,15 +1570,15 @@ int main(void)
             open_claw();
             put_claw_up_top();
             arm_shrink(); 
-            HAL_Delay(300);
-            claw_spin_state();
             HAL_Delay(500);
+            claw_spin_state();
+            HAL_Delay(700);
             put_claw_down_state();
             HAL_Delay(400); //400
             close_claw();
             HAL_Delay(400);
             put_claw_up_top();
-            HAL_Delay(400); //200
+            HAL_Delay(600); //200
             feetech_servo_move(4,now_servo,4000,100);
             claw_spin_front();
             HAL_Delay(500);

@@ -14,7 +14,8 @@
 #define Kd_theta 0.01 //0.01
 #define Kp_r 0.42  //0.42
 #define Ki_r 0.02  //0.02
-#define Kd_r 0.02  //0.02
+#define Kd_r 0.02 //0.02
+
 void adjust_plate(int x_plate_error_in,int y_plate_error_in);
 void get_and_load_ground(int position);
 void get_and_load(int position);

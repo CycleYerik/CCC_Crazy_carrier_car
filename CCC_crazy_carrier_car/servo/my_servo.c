@@ -35,29 +35,29 @@ int feet_acc = 180; //180
 int feet_acc_claw_up_down = 240;
 
 //? 以下为正常物料参数
-int put_claw_down_pile_position = 2224; //1819
-int put_claw_down_state_position = 1200 ; //从车的载物盘上  737
-int put_claw_down_position = 2085;  // 从转盘上取物料  1625
-int put_claw_down_ground_position = 3330; // 放在地上 2899
-int put_claw_up_top_position =700; // 最高点  360
-int put_claw_up_position =1915; //  看粗调移动底盘的位置
-int put_claw_down_near_ground_position = 3210; //细调放置的位置
-int put_claw_down_near_plate_position = 1895; //转盘放置细调的位置
+int put_claw_down_pile_position = 2180; //1819
+int put_claw_down_state_position = 1102 ; //从车的载物盘上  737
+int put_claw_down_position = 2040;  // 从转盘上取物料  1625
+int put_claw_down_ground_position = 3265; // 放在地上 2899
+int put_claw_up_top_position =536; // 最高点  360
+int put_claw_up_position =1845; //  看粗调移动底盘的位置
+int put_claw_down_near_ground_position = 3125; //细调放置的位置
+int put_claw_down_near_plate_position = 1772; //转盘放置细调的位置
 
 //? 以下为通用参数
 int claw_spin_position_front = 3329 ; // 2号精密舵机回到前方
 int claw_spin_position_state = 1590; // 2号精密舵机回到载物盘//TODO 待测量
 int claw_spin_without_claw_position_state = 1590; //与上面一样
 
-//? 以下为圆台物料参数
-// int put_claw_down_pile_position = 2337; //1819
-// int put_claw_down_state_position = 1315 ; //从车的载物盘上  737
-// int put_claw_down_position = 2200;  // 从转盘上取物料  1625
-// int put_claw_down_ground_position = 3440; // 放在地上 2899
-// int put_claw_up_top_position =700; // 最高点  360
-// int put_claw_up_position =1915; //  看粗调移动底盘的位置
-// int put_claw_down_near_ground_position = 3300; //细调放置的位置
-// int put_claw_down_near_plate_position = 1895; //转盘放置细调的位置
+//? 以下为圆台烟囱物料参数
+// int put_claw_down_pile_position = 2250; //1819
+// int put_claw_down_state_position = 1080 ; //从车的载物盘上  737
+// int put_claw_down_position = 2100;  // 从转盘上取物料  1625
+// int put_claw_down_ground_position = 3476; // 放在地上 2899
+// int put_claw_up_top_position =536; // 最高点  360
+// int put_claw_up_position =1845; //  看粗调移动底盘的位置
+// int put_claw_down_near_ground_position = 3265; //细调放置的位置
+// int put_claw_down_near_plate_position = 1772; //转盘放置细调的位置
 
 // 机械臂位置限制 
 // 2280左 3400右
@@ -85,7 +85,7 @@ int left_3 = 2020;
 int left_4 =  3800; 
 
 int right_2 = 3929; 
-int right_3 = 3700;  
+int right_3 = 3750;  
 int right_4 =  3810; 
 
 int middle_2 = 3929;
@@ -254,6 +254,11 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
     int is_theta_ok = 0, is_r_ok = 0;
     int x_origin = x_error;
     int y_origin = y_error;
+    int max_servo_movement = 50;
+    if(x_error == 0 && y_error == 0)
+    {
+        return 0;
+    }
     if(x_error > 300 )
     {
         x_error = 300;
@@ -283,21 +288,21 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
     x_error_last = x_error;
     y_error_long_last = y_error_last;
     y_error_last = y_error;
-    if(theta_adjust_values > 50)
+    if(theta_adjust_values > max_servo_movement)
     {
-        theta_adjust_values = 50;
+        theta_adjust_values = max_servo_movement;
     }
-    if(r_adjust_values > 50)
+    if(r_adjust_values > max_servo_movement)
     {
-        r_adjust_values = 50;
+        r_adjust_values = max_servo_movement;
     }
-    if(theta_adjust_values < -50)
+    if(theta_adjust_values < -max_servo_movement)
     {
-        theta_adjust_values = -50;
+        theta_adjust_values = -max_servo_movement;
     }
-    if(r_adjust_values < -50)
+    if(r_adjust_values < -max_servo_movement)
     {
-        r_adjust_values = -50;
+        r_adjust_values = -max_servo_movement;
     }
 
     
@@ -607,6 +612,7 @@ void get_and_load_openloop_v2(int position,int ground_position,int state_positio
 void get_and_load_openloop(int position)
 {
     state_spin_without_claw(position);
+    open_claw_bigger();
     switch(position)
     {
         case 1:
@@ -632,15 +638,19 @@ void get_and_load_openloop(int position)
     put_claw_down_ground();
     HAL_Delay(800);
     close_claw();
-    HAL_Delay(400);
+    HAL_Delay(600);
     put_claw_up_top();
     arm_shrink();
-    HAL_Delay(600); //300
+    HAL_Delay(300); //300
     claw_spin_state_without_claw();
-    HAL_Delay(700);
-    open_claw_bigger();
+    // HAL_Delay(700); //TODO 直接撇进去，以下带？为新增的
+    HAL_Delay(600); //? 
+    put_claw_down_state(); //?
+    HAL_Delay(300);  //?
+    open_claw();
     HAL_Delay(300);
     put_claw_up_top();
+    HAL_Delay(400); //?
     claw_spin_front();
 
 

@@ -57,15 +57,15 @@ extern int x_move_before_slight_move ;
 extern int is_slight_spin_and_move;
 
 float line_spin_error_1 = 0, line_spin_error_2 = 0;
-int Kp_line_spin = 1;  //1.5
-int Ki_line_spin = 0.05;  //0.3
+int Kp_line_spin = 1;  //1.0
+int Ki_line_spin = 0.05;  //0.05
 int Kd_line_spin = 0.1;  //0.1
 
 int temp_spin_which_direction = 0;
 
-#define Kp_slight_move 0.28  // 0.5
-#define Ki_slight_move 0.02 // 0.1 
-#define Kd_slight_move 0.08  // 0.1
+#define Kp_slight_move 0.28  // 0.28
+#define Ki_slight_move 0.02 // 0.02
+#define Kd_slight_move 0.08 // 0.08
 
 
 extern int is_get_massage;
@@ -79,6 +79,8 @@ is_plate_with_put_ok_3;
 extern int is_plate_first_move;
 extern int is_plate_move_adjust;
 extern int is_third_preput;
+
+extern int is_get_material_from_temp_area;
 
 /**
 	* @brief   USART1中断函数
@@ -460,6 +462,30 @@ void UART_receive_process_3(void)
     {
         // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
         // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, rxflag_u3, 50);  //! 阻塞式，会造成串口阻塞
+
+        //? 在暂存区定位随机放置的物料并抓取
+        if(is_get_material_from_temp_area == 1)
+        {
+            if(rxdata_u3[0] == '?' && rxdata_u3[1] == 0x44)
+            {
+                is_slight_spin_and_move = 0;
+            }   
+        }
+        // 等待树莓派返回识别结果
+        if(is_get_material_from_temp_area == 2)
+        {
+            if (rxdata_u3[0] == '*' )
+            {
+                for (int i = 1; i < 4; i++)
+                {
+                    if ((int)rxdata_u3[i] == 1 || (int)rxdata_u3[i] == 2 || (int)rxdata_u3[i] == 3)
+                    {
+                        target_colour[i-1] = (int)rxdata_u3[i];
+                    }
+                }
+                is_get_material_from_temp_area = 3;
+            }
+        }
 
         //? 通信单独测试
         if(test_raspi_communication_start == 1)
