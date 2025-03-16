@@ -591,7 +591,7 @@ void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count
 
 
 
-/// @brief 全向位置移动,需自己给Delay延时，速度1对应0.47cm/s，delaytime(ms) = length /(0.47cm/s * velocity) *1000 （该公式不准，还是得自己计算）
+/// @brief 横向位置*1.02  全向位置移动,需自己给Delay延时，速度1对应0.47cm/s，delaytime(ms) = length /(0.47cm/s * velocity) *1000 （该公式不准，还是得自己计算）
 /// @param acc 
 /// @param velocity 
 /// @param x_move_length 面部朝向为车头前进方向，x轴正方向为右手方向
@@ -1406,7 +1406,7 @@ void spin_right(uint16_t vel,uint8_t acc, uint32_t angle)
 
 void spin_right_180(uint16_t vel,uint8_t acc)
 {
-    uint32_t clk = (uint32_t)((float)180 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
+    uint32_t clk = (uint32_t)((float)181.5 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
     Emm_V5_Pos_Control(1, 0, vel, acc,clk, 0,1);
     HAL_Delay(10);
     Emm_V5_Pos_Control(2, 0, vel, acc, clk, 0, 1);
@@ -1436,7 +1436,7 @@ void spin_right_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop)
 
 void spin_left_180(uint16_t vel,uint8_t acc)
 {
-    uint32_t clk = (uint32_t)((float)180 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
+    uint32_t clk = (uint32_t)((float)181.5 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
     Emm_V5_Pos_Control(1, 1, vel, acc,clk, 0,1);
     HAL_Delay(10);
     Emm_V5_Pos_Control(2, 1, vel, acc, clk, 0, 1);
@@ -1466,7 +1466,7 @@ void spin_left_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop)
 
 void spin_right_90(uint16_t vel,uint8_t acc)
 {
-    uint32_t clk = (uint32_t)((float)90 / 360 * spin_radius_90 * 2 * pi / wheel_circumference * pulse_per_circle);
+    uint32_t clk = (uint32_t)((float)90.7 / 360 * spin_radius_90 * 2 * pi / wheel_circumference * pulse_per_circle);
     Emm_V5_Pos_Control(1, 0, vel, acc,clk, 0,1);
     HAL_Delay(10);
     Emm_V5_Pos_Control(2, 0, vel, acc, clk, 0, 1);
@@ -1496,7 +1496,7 @@ void spin_right_90_y42(float vel, uint16_t acc_start,uint16_t acc_stop)
 
 void spin_left_90(uint16_t vel,uint8_t acc)
 {
-    uint32_t clk = (uint32_t)((float)90 / 360 * spin_radius_90 * 2 * pi / wheel_circumference * pulse_per_circle);
+    uint32_t clk = (uint32_t)((float)90.27 / 360 * spin_radius_90 * 2 * pi / wheel_circumference * pulse_per_circle);
     Emm_V5_Pos_Control(1, 1, vel, acc,clk, 0,1);
     HAL_Delay(10);
     Emm_V5_Pos_Control(2, 1, vel, acc, clk, 0, 1);
