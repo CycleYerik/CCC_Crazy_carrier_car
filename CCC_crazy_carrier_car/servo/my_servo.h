@@ -52,6 +52,7 @@ void get_and_pre_put(int position,int is_pile_up);
 void get_and_pre_put_void(int position,int is_pile_up);
 void get_and_pre_put_different_color(int position,int is_pile_up);
 void get_and_put_different_position_pileup(int position);
+void get_and_pre_put_with_state_find_position(int position,int is_pile_up);
 void put_claw_down_pile(void);
 void get_from_state(int position);
 void put_from_state(void);

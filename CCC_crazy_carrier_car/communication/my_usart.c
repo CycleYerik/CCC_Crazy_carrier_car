@@ -167,8 +167,8 @@ void UART_handle_function_3(void)
 
 void UART_handle_function_4(void)
 {
-    if(rxflag_u4 != 0)
-    {
+    // if(rxflag_u4 != 0)
+    // {
         // int temp = rxflag_u4;
         // HAL_Delay(1); // 如果是在main中使用可以加入延时，在定时器中断中调用则不能加
         // if(temp == rxflag_u4) 
@@ -176,7 +176,7 @@ void UART_handle_function_4(void)
         //     UART_receive_process_4(); 
         // }
         UART_receive_process_4(); 
-    }
+    // }
 }
 
 void UART_handle_function_5(void)
@@ -194,55 +194,55 @@ void UART_handle_function_5(void)
 
 
 
-// /// @brief 串口中断回调函数
-// /// @param huart 
+/// @brief 串口中断回调函数
+/// @param huart 
 // void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 // {
-//     if(rxflag_u1 >= 128)
-//     {
-//         rxflag_u1 = 0;
-//     }
-//     if(rxflag_u2 >= 50)
-//     {
-//         rxflag_u2 = 0;
-//     }
-//     if(rxflag_u3 >= 50)
-//     {
-//         rxflag_u3 = 0;
-//     }
-//     if(rxflag_u4 >= 50)
-//     {
-//         rxflag_u4 = 0;
-//     }
-//     if(rxflag_u5 >= 50)
-//     {
-//         rxflag_u5 = 0;
-//     }
-//     rxdata_u1[rxflag_u1++] = received_rxdata_u1;
-//     rxdata_u2[rxflag_u2++] = received_rxdata_u2;
-//     rxdata_u3[rxflag_u3++] = received_rxdata_u3;
-//     rxdata_u4[rxflag_u4++] = received_rxdata_u4;
-//     rxdata_u5[rxflag_u5++] = received_rxdata_u5;  //! 顺序？
-//     if(huart->Instance == USART2)
-//     {
-//         HAL_UART_Receive_IT(huart, &received_rxdata_u2, 1); // 每次处理一个字符
-//     }
-//     else if(huart->Instance == USART3)
-//     {
-//         HAL_UART_Receive_IT(huart, &received_rxdata_u3, 1); // 每次处理一个字符
-//     }
-//     else if(huart->Instance == USART1)
-//     {
-//         HAL_UART_Receive_IT(huart, &received_rxdata_u1, 1); // 每次处理一个字符
-//     }
-//     else if(huart->Instance == UART4)
-//     {
-//         HAL_UART_Receive_IT(huart, &received_rxdata_u4, 1); // 每次处理一个字符
-//     }
-//     else if(huart->Instance == UART5)
-//     {
-//         HAL_UART_Receive_IT(huart, &received_rxdata_u5, 1); // 每次处理一个字符
-//     }
+    // if(rxflag_u1 >= 128)
+    // {
+    //     rxflag_u1 = 0;
+    // }
+    // if(rxflag_u2 >= 50)
+    // {
+    //     rxflag_u2 = 0;
+    // }
+    // if(rxflag_u3 >= 50)
+    // {
+    //     rxflag_u3 = 0;
+    // }
+    // if(rxflag_u4 >= 50)
+    // {
+    //     rxflag_u4 = 0;
+    // }
+    // if(rxflag_u5 >= 50)
+    // {
+    //     rxflag_u5 = 0;
+    // }
+    // rxdata_u1[rxflag_u1++] = received_rxdata_u1;
+    // rxdata_u2[rxflag_u2++] = received_rxdata_u2;
+    // rxdata_u3[rxflag_u3++] = received_rxdata_u3;
+    // rxdata_u4[rxflag_u4++] = received_rxdata_u4;
+    // rxdata_u5[rxflag_u5++] = received_rxdata_u5;  //! 顺序？
+    // if(huart->Instance == USART2)
+    // {
+    //     HAL_UART_Receive_IT(huart, &received_rxdata_u2, 1); // 每次处理一个字符
+    // }
+    // else if(huart->Instance == USART3)
+    // {
+    //     HAL_UART_Receive_IT(huart, &received_rxdata_u3, 1); // 每次处理一个字符
+    // }
+    // else if(huart->Instance == USART1)
+    // {
+    //     HAL_UART_Receive_IT(huart, &received_rxdata_u1, 1); // 每次处理一个字符
+    // }
+    // else if(huart->Instance == UART4)
+    // {
+    //     HAL_UART_Receive_IT(huart, &received_rxdata_u4, 1); // 每次处理一个字符
+    // }
+    // else if(huart->Instance == UART5)
+    // {
+    //     HAL_UART_Receive_IT(huart, &received_rxdata_u5, 1); // 每次处理一个字符
+    // }
 // }
 
 /// @brief 处理接收到的电机数据
@@ -466,7 +466,7 @@ void UART_receive_process_1(void)
 void UART_receive_process_3(void)
 {
     // if (rxflag_u3 > 0)
-    if(1) //! 由于使用了
+    if(1) //! 由于使用了空闲中断，故不需要原先中断的判断
     {
         // HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_2);
         // HAL_UART_Transmit(&huart3, (uint8_t*)rxdata_u3, rxflag_u3, 50);  //! 阻塞式，会造成串口阻塞
@@ -1089,34 +1089,34 @@ void UART_receive_process_2(void)
 /// @brief 处理陀螺仪数据
 void UART_receive_process_4(void) 
 {
-    if (rxflag_u4 > 0)
-    {
-        //! 校验位待加入
+    // if (rxflag_u4 > 0)
+    // {
+    //     //! 校验位待加入
         
-        //寻找帧头
-        int i = 0;
-        for(i = 0; i < rxflag_u4; i++)
-        {
-            if(rxdata_u4[i] == 0x55 && rxdata_u4[i+1] == 0x53)
-            {
-                break;
-            }
-        }
-        //如果找到帧头
-        if(i < rxflag_u4)
-        {
-            //提取数据
-            uint16_t temp = (uint16_t)((rxdata_u4[i+7] << 8 )| rxdata_u4[i+6]);
-            gyro_z = (float)(temp * 180.0/32768.0); // / 32768.0
-            if(gyro_z > 180)
-            {
-                gyro_z = gyro_z - 360;
-            }
-        }
-        // printf("t0.txt=\"%.3f\"\xff\xff\xff", gyro_z);
-        rxflag_u4 = 0;
-        memset(rxdata_u4, 0, 50);
-    }
+    //     //寻找帧头
+    //     int i = 0;
+    //     for(i = 0; i < rxflag_u4; i++)
+    //     {
+    //         if(rxdata_u4[i] == 0x55 && rxdata_u4[i+1] == 0x53)
+    //         {
+    //             break;
+    //         }
+    //     }
+    //     //如果找到帧头
+    //     if(i < rxflag_u4)
+    //     {
+    //         //提取数据
+    //         uint16_t temp = (uint16_t)((rxdata_u4[i+7] << 8 )| rxdata_u4[i+6]);
+    //         gyro_z = (float)(temp * 180.0/32768.0); // / 32768.0
+    //         if(gyro_z > 180)
+    //         {
+    //             gyro_z = gyro_z - 360;
+    //         }
+    //     }
+    //     // printf("t0.txt=\"%.3f\"\xff\xff\xff", gyro_z);
+    //     rxflag_u4 = 0;
+        // memset(rxdata_u4, 0, 50);
+    // }
 }
 
 

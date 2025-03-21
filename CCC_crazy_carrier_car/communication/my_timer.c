@@ -85,12 +85,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         //     }
         // if (tim2_count_2 >= 10) //! magic number 20
         // {
-        //     if (rxflag_u4 != 0)
-        //     {
+        //     // if (rxflag_u4 != 0)
+        //     // {
         //         UART_handle_function_4(); // 处理串口4接收到的数据
-        //     }
+        //     // }
         //     tim2_count_2 = 0;
         // }
+        UART_handle_function_4();
         if(tim2_count > 100000)
         {
             tim2_count = 0;
