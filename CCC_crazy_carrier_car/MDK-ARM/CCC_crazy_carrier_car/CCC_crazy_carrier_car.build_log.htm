@@ -27,28 +27,28 @@ Project File Date:  03/19/2025
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling main.c...
-../Core/Src/main.c(1722): warning:  #111-D: statement is unreachable
-      is_adjust_motor_in_tim = 0;
-../Core/Src/main.c(2515): warning:  #128-D: loop is not reachable
-      while (1)
-../Core/Src/main.c(1729): warning:  #177-D: variable "spin_right_angle"  was declared but never referenced
-      float spin_right_angle = 90; //TODO 可能根据各种情况出现变化
-../Core/Src/main.c(3800): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,1,status);
-../Core/Src/main.c(3859): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,2,status);
-../Core/Src/main.c(3896): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,3,status);
-../Core/Src/main.c(3943): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,1,status);
-../Core/Src/main.c(3956): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,2,status);
-../Core/Src/main.c(3969): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
-      move_follow_sequence(target_colour,3,status);
-../Core/Src/main.c: 9 warnings, 0 errors
+compiling my_servo.c...
+..\servo\my_servo.c(360): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      theta_adjust_values = theta_adjust_values * pixel_to_distance_theta;
+..\servo\my_servo.c(329): warning:  #177-D: variable "x_origin"  was declared but never referenced
+      int x_origin = x_error;
+..\servo\my_servo.c(330): warning:  #177-D: variable "y_origin"  was declared but never referenced
+      int y_origin = y_error;
+..\servo\my_servo.c(609): warning:  #175-D: subscript out of range
+              feetech_servo_move(3,theta_servo_value[3],2000,feet_acc);
+..\servo\my_servo.c(610): warning:  #175-D: subscript out of range
+              feetech_servo_move(4,r_servo_value[3],4095,feet_acc);
+..\servo\my_servo.c(808): warning:  #175-D: subscript out of range
+              feetech_servo_move(3,theta_servo_value[3],2000,feet_acc);
+..\servo\my_servo.c(809): warning:  #175-D: subscript out of range
+              feetech_servo_move(4,r_servo_value[3],4095,feet_acc);
+..\servo\my_servo.c(2042): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      int position = (int)(50 + (200* (float)angle / 270.0));
+..\servo\my_servo.c(2157): warning:  #1-D: last line of file ends without a newline
+   */
+..\servo\my_servo.c: 9 warnings, 0 errors
 linking...
-Program Size: Code=16848 RO-data=448 RW-data=700 ZI-data=2164  
+Program Size: Code=20628 RO-data=448 RW-data=708 ZI-data=2164  
 FromELF: creating hex file...
 "CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 9 Warning(s).
 
@@ -74,7 +74,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:05
+Build Time Elapsed:  00:00:03
 </pre>
 </body>
 </html>

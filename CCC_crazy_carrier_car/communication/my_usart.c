@@ -74,6 +74,7 @@ extern int is_get_massage;
 extern int test_raspi_communication_start,test_raspi_communication_status;
 
 extern int is_adjust_plate_with_put;
+extern int volatile start_check_plate_back_state;
 extern int x_plate_error_with_put,y_plate_error_with_put;
 extern int is_plate_with_put_ok_1,is_plate_with_put_ok_2,
 is_plate_with_put_ok_3; 
@@ -84,6 +85,8 @@ extern int is_third_preput;
 
 extern int is_get_material_from_temp_area;
 extern int test_is_uart_message_lost,uart_data;
+
+extern int is_put_material_in_plate;
 
 /**
 	* @brief   USART1中断函数
@@ -477,6 +480,14 @@ void UART_receive_process_3(void)
             uart_data = rxdata_u3[1];
         }
         
+        //? 返回车转盘后再判断是否空抓
+        if(start_check_plate_back_state == 1)
+        {
+            if(rxdata_u3[0] == '?' && rxdata_u3[1] == 0x03)
+            {
+                start_check_plate_back_state = 0;
+            }
+        }
 
         //? 在暂存区定位随机放置的物料并抓取
         if(is_get_material_from_temp_area == 1)
@@ -1064,6 +1075,14 @@ void UART_receive_process_3(void)
                 y_camera_error = - (int) (rxdata_u3[4] << 8 | rxdata_u3[5]);
                 is_find_circle = 1;
                 // y_move_position = -10;
+            }
+        }
+
+        if(is_put_material_in_plate == 0)
+        {
+            if(rxdata_u3[0] == '?' && rxdata_u3[1] == 0x33)
+            {
+                is_put_material_in_plate = 1;
             }
         }
 

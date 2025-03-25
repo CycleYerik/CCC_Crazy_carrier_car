@@ -37,21 +37,35 @@ int feet_acc = 180; //180
 int feet_acc_claw_up_down = 240;
 
 //? 以下为正常物料参数
-int put_claw_down_pile_position = 2012; 
-int put_claw_down_state_position = 982 ; //从车的载物盘上 982
-int put_claw_down_position = 1920;  // 从转盘上取物料  
-// int put_claw_down_ground_position = 3144; // 放在地上 3144
-int put_claw_down_ground_position = 3250; //! 夹取会滑的物料放在地上 
-int put_claw_up_top_position =376; // 最高点  
-int put_claw_up_position =1725; //  看粗调移动底盘的位置
-// int put_claw_down_near_ground_position = 3003; //!细调放置的位置
-int put_claw_down_near_ground_position = 2900; //夹取会滑的物料时的位置
-int put_claw_down_near_plate_position = 1652; //转盘放置细调的位置
+int put_claw_down_pile_position = 1945; 
+int put_claw_down_state_position = 780 ; //从车的载物盘上 982
+int put_claw_down_position = 1825;  // 从转盘上取物料  
+int put_claw_down_ground_position = 3050; // 放在地上 3144
+// int put_claw_down_ground_position = 3250; //! 夹取会滑的物料放在地上 
+int put_claw_up_top_position =290; // 最高点  
+int put_claw_up_position =1667; //  看粗调移动底盘的位置
+int put_claw_down_near_ground_position = 2881; //!细调放置的位置
+// int put_claw_down_near_ground_position = 2900; //夹取会滑的物料时的位置
+int put_claw_down_near_plate_position = 1600; //转盘放置细调的位置
 
 //? 以下为通用参数
 int claw_spin_position_front = 3329 ; // 2号精密舵机回到前方
 int claw_spin_position_state = 1590; // 2号精密舵机回到载物盘//TODO 待测量
 int claw_spin_without_claw_position_state = 1590; //与上面一样
+
+// //? 异形三棱柱
+// int put_claw_down_pile_position = 2012; 
+// int put_claw_down_state_position = 973 ; //从车的载物盘上 982
+// int put_claw_down_position = 1942;  // 从转盘上取物料  
+// int put_claw_down_ground_position = 3250; // 放在地上 3144
+// // int put_claw_down_ground_position = 3250; //! 夹取会滑的物料放在地上 
+// int put_claw_up_top_position =290; // 最高点  
+// int put_claw_up_position =1725; //  看粗调移动底盘的位置
+// int put_claw_down_near_ground_position = 3073; //!细调放置的位置
+// // int put_claw_down_near_ground_position = 2900; //夹取会滑的物料时的位置
+// int put_claw_down_near_plate_position = 1837; //转盘放置细调的位置
+
+
 
 //? 三棱柱
 // int put_claw_down_pile_position = 1896; 
@@ -125,7 +139,7 @@ int theta_right_position_limit = 3800;
 int theta_right_position_rlimit = 3300;
 int theta_left_position_rlimit = 2440;
 int r_front_position_limit = 4090;
-int r_back_position_limit = 2100;
+int r_back_position_limit = 1950;
 int r_back_position_rlimit = 3200; // 当theta超过rlimit，r的限制值不能小于这个值
 
 
@@ -386,8 +400,8 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
             r_adjust_values = -1;
         }
     }
-    sprintf(temp_function_char, "  No:%d,  x:%d,y:%d  theta:%.2f,r:%.2f    ", UART_count,x_origin, y_origin,theta_adjust_values,r_adjust_values);
-    HAL_UART_Transmit(&huart3, (uint8_t*)temp_function_char, strlen(temp_function_char), 50); //发给树莓派，开始校正
+    // sprintf(temp_function_char, "  No:%d,  x:%d,y:%d  theta:%.2f,r:%.2f    ", UART_count,x_origin, y_origin,theta_adjust_values,r_adjust_values);
+    // HAL_UART_Transmit(&huart3, (uint8_t*)temp_function_char, strlen(temp_function_char), 50); //发给树莓派，开始校正
     // HAL_Delay(50);
     UART_count++;
     if(UART_count > 1000000)
@@ -571,7 +585,7 @@ void put_from_state_pileup(void)
 }
 
 
-/// @brief 无视觉辅助的从圆环上抓取物料
+/// @brief avoid 动作  无视觉辅助的从圆环上抓取物料
 /// @param position 
 void get_and_load_openloop_v4(int position)
 {
@@ -867,6 +881,35 @@ void get_and_load_different_position(int position)
     HAL_Delay(500);
 }
 
+void get_and_pre_put_spin_plate_avoid_collide(int position)
+{
+    state_spin_without_claw_avoid_collide(position);
+    open_claw_avoid_collide();
+    put_claw_up_top();
+    // HAL_Delay(500); //TODO 可能会撞到物料
+    int temp_r_servo_position_plate = r_servo_now;
+    int temp_theta_servo_position_plate = theta_servo_now;
+    arm_shrink(); //TODO 待区分
+    HAL_Delay(500);
+    claw_spin_state_without_claw();
+    HAL_Delay(600);
+    put_claw_down_state();
+    state_spin_without_claw(position);
+    HAL_Delay(700); //400
+    close_claw();
+    HAL_Delay(600);
+    put_claw_up_top();
+    HAL_Delay(500); //200
+    claw_spin_front(); //TODO 是否可能撞到
+    feetech_servo_move(4,temp_r_servo_position_plate,4000,feet_acc);
+    feetech_servo_move(3,temp_theta_servo_position_plate,4000,feet_acc);
+    r_servo_now = temp_r_servo_position_plate;
+    theta_servo_now = temp_theta_servo_position_plate;
+    HAL_Delay(400);
+    put_claw_down_near_plate();
+    HAL_Delay(300);
+}
+
 /// @brief 
 /// @param position 
 void get_and_pre_put_spin_plate(int position)
@@ -878,14 +921,14 @@ void get_and_pre_put_spin_plate(int position)
     int temp_r_servo_position_plate = r_servo_now;
     int temp_theta_servo_position_plate = theta_servo_now;
     arm_shrink(); //TODO 待区分
-    HAL_Delay(300);
+    HAL_Delay(500);
     claw_spin_state();
     // feetech_servo_move(3,middle_3,2000,feet_acc);    
     HAL_Delay(700);
     put_claw_down_state();
     HAL_Delay(700); //400
     close_claw();
-    HAL_Delay(200);
+    HAL_Delay(400);
     put_claw_up_top();
     HAL_Delay(500); //200
     claw_spin_front(); //TODO 是否可能撞到
@@ -983,13 +1026,82 @@ void get_and_pre_put_v3(int position,int near_ground_position,int state_position
 }
 
 
-/// @brief 圆台 凸 夹取底部放置
+/// @brief 通用的函数，适用于从物料上面无法通过的情况
 /// @param position 
 /// @param near_ground_position 
 /// @param state_position 
 /// @param pile_up_position 
 /// @param is_pile_up 
-void get_and_pre_put_v4(int position,int is_pile_up)
+void get_and_pre_put_avoid(int position,int is_pile_up)
+{
+    state_spin_without_claw_avoid_collide(position);
+    open_claw_avoid_collide();
+    put_claw_up_top();
+    HAL_Delay(500); //TODO 可能会撞到物料
+    arm_shrink(); //TODO 待区分
+    HAL_Delay(300);
+    claw_spin_state();
+    if(position == 1) 
+    {
+        feetech_servo_move(3,right_3,2000,feet_acc);
+        theta_servo_now = right_3;
+    }
+    else if(position == 2)
+    {
+        feetech_servo_move(3,middle_3,2000,feet_acc);    
+        theta_servo_now = middle_3; 
+    }
+    else if(position == 3)
+    {
+        feetech_servo_move(3,left_3,2000,feet_acc);
+        theta_servo_now = left_3;
+        
+    }
+    HAL_Delay(600);
+    state_spin(position);
+    put_claw_down_state();
+    HAL_Delay(700); //400
+    close_claw();
+    HAL_Delay(700);
+    put_claw_up_top();
+    HAL_Delay(800); //! 不规则物料所用的识别
+    claw_spin_front(); //TODO 是否可能撞到
+    if(position == 1) 
+    {
+        
+        feetech_servo_move(4,right_4,4000,feet_acc);
+        r_servo_now = right_4;
+    }
+    else if(position == 2)
+    {
+        
+        feetech_servo_move(4,middle_4,4000,feet_acc);
+        r_servo_now = middle_4;
+    }
+    else if(position == 3)
+    {
+        
+        feetech_servo_move(4,left_4,4000,feet_acc);
+        r_servo_now = left_4;
+    }
+    HAL_Delay(400);
+    if(is_pile_up == 1)
+    {
+        feetech_servo_move(1,put_claw_down_pile_position,4095,feet_acc);
+        HAL_Delay(500);
+    }
+    else
+    {
+        feetech_servo_move(1,put_claw_down_near_ground_position,4095,feet_acc);
+        HAL_Delay(900);
+    }
+    if(is_pile_up != 1)
+    {
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
+    }
+}
+
+void get_and_pre_put_avoid_triangular(int position,int is_pile_up)
 {
     state_spin_without_claw_avoid_collide(position);
     open_claw_avoid_collide();
@@ -1135,6 +1247,114 @@ void get_and_pre_put_v2(int position,int near_ground_position,int state_position
     }
 }
 
+
+
+
+/// @brief 从地上抓物料
+/// @param position 
+void pre_put_to_get_ground_material(int position)
+{
+    state_spin(position);
+    open_claw();
+    put_claw_up_top();
+    HAL_Delay(500); //TODO 可能会撞到物料
+    // HAL_Delay(500); //TODO 可能会撞到物料
+    // arm_shrink(); //TODO 待区分
+    // HAL_Delay(300);
+    // claw_spin_state();
+    if(position == 1) 
+    {
+        feetech_servo_move(3,right_3,2000,feet_acc);
+        theta_servo_now = right_3;
+    }
+    else if(position == 2)
+    {
+        
+        
+            feetech_servo_move(3,middle_3,2000,feet_acc);    
+            theta_servo_now = middle_3; 
+        
+    }
+    else if(position == 3)
+    {
+        feetech_servo_move(3,left_3,2000,feet_acc);
+        theta_servo_now = left_3;
+        
+    }
+    if(position == 1) 
+    {
+        
+        feetech_servo_move(4,right_4,4000,feet_acc);
+        r_servo_now = right_4;
+    }
+    else if(position == 2)
+    {
+        
+        feetech_servo_move(4,middle_4,4000,feet_acc);
+        r_servo_now = middle_4;
+    }
+    else if(position == 3)
+    {
+        
+        feetech_servo_move(4,left_4,4000,feet_acc);
+        r_servo_now = left_4;
+    }
+    HAL_Delay(200);
+    
+    
+    put_claw_down_ground();
+    HAL_Delay(900);
+    
+    
+}
+
+/// @brief 从地上抓取物料，动作由close开始
+/// @param  
+void get_material_from_ground(int state_position)
+{
+    close_claw();
+    HAL_Delay(500);
+    put_claw_up_top();
+    arm_shrink();
+    state_spin_without_claw(state_position);
+    HAL_Delay(500);
+    claw_spin_state_without_claw();
+    HAL_Delay(600);
+    put_claw_down_state();
+    HAL_Delay(600);
+    open_claw_bigger();
+    HAL_Delay(300);
+    put_claw_up_top();
+    HAL_Delay(500);
+    claw_spin_front();
+    HAL_Delay(700);
+}
+
+void get_material_from_ground_void(int state_position)
+{
+    close_claw();
+    HAL_Delay(500);
+    put_claw_up_top();
+    arm_shrink();
+    state_spin_without_claw(state_position);
+    HAL_Delay(700);
+    claw_spin_state_without_claw();
+    HAL_Delay(600);
+    put_claw_down_state();
+    HAL_Delay(600);
+    open_claw_bigger();
+    HAL_Delay(300);
+    put_claw_up_top();
+    HAL_Delay(400);
+    state_spin_without_claw_avoid_collide(state_position);
+    HAL_Delay(800);
+    open_claw_avoid_collide();
+    claw_spin_front();
+    HAL_Delay(700);
+}
+
+
+
 /// @brief 不夹物料的放置
 void get_and_pre_put_void(int position,int is_pile_up)
 {
@@ -1214,7 +1434,7 @@ void get_and_pre_put(int position,int is_pile_up)
     put_claw_up_top();
     // HAL_Delay(500); //TODO 可能会撞到物料
     arm_shrink(); //TODO 待区分
-    HAL_Delay(300);
+    HAL_Delay(500);
     claw_spin_state();
     if(is_pile_up == 1)
     {
@@ -1254,7 +1474,7 @@ void get_and_pre_put(int position,int is_pile_up)
         
     }
     }
-    HAL_Delay(500);
+    HAL_Delay(700);
     put_claw_down_state();
     HAL_Delay(300); //400
     close_claw();
@@ -1305,8 +1525,10 @@ void get_and_pre_put_with_state_find_position(int position,int is_pile_up)
     state_spin(position);
     open_claw();
     put_claw_up_top();
-    // HAL_Delay(500); //TODO 可能会撞到物料
-    arm_shrink(); //TODO 待区分
+    HAL_Delay(500); 
+    // open_claw_avoid_collide();
+    arm_shrink(); 
+    // state_spin_without_claw_avoid_collide(target_colour[i]);
     HAL_Delay(600);
     claw_spin_state();
     if(is_pile_up == 1)
@@ -1349,9 +1571,9 @@ void get_and_pre_put_with_state_find_position(int position,int is_pile_up)
     }
     HAL_Delay(500);
     put_claw_down_state();
-    HAL_Delay(300); //400
+    HAL_Delay(500); //400
     close_claw();
-    HAL_Delay(200);
+    HAL_Delay(300);
     put_claw_up_top();
     HAL_UART_Transmit(&huart3, (uint8_t*)"update", strlen("update"), 50); //发给树莓派，开始校正
     HAL_Delay(800); //200
@@ -1391,6 +1613,9 @@ void get_and_pre_put_with_state_find_position(int position,int is_pile_up)
     // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
     }
 }
+
+
+
 
 /// @brief 根据物料放置到大致的位置，然后开始闭环调整
 void get_and_pre_put_different_color(int position,int is_pile_up)
