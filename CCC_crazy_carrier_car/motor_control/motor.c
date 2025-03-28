@@ -90,6 +90,144 @@ void slight_spin_plate_line(void)
 
 }
 
+/// @brief 差速移动给定角度和半径
+/// @param left_or_right 
+/// @param vel 
+/// @param R_spin 
+/// @param angles 
+void move_leftright_front_with_spin_position(int left_or_right, float vel  , float R_spin, float angles)
+{
+    float L = 24;
+    float r = 5;
+    float VL = 0, VR = 0;
+    int VL_motor = 0,VR_motor = 0;
+    uint32_t clk_L = 0, clk_R = 0;
+
+
+    if(left_or_right == 1) //右
+    {
+        VL = vel * (R_spin + L/2) / R_spin;
+        VR = vel * (R_spin - L/2) / R_spin;
+        float L_distance = angles  / 360.0 * 2 * pi * (R_spin + L/2);
+        float R_distance = angles  / 360.0 * 2 * pi * (R_spin - L/2);
+        if(L_distance < 0) L_distance = -L_distance;
+        if(R_distance < 0) R_distance = -R_distance;
+        clk_L = get_clk(L_distance);
+        clk_R = get_clk(R_distance);
+    }
+    else if(left_or_right == 0) //左
+    {
+        VL = vel * (R_spin - L/2) / R_spin;
+        VR = vel * (R_spin + L/2) / R_spin;
+        float L_distance = angles  / 360.0 * 2 * pi * (R_spin - L/2);
+        float R_distance = angles  / 360.0 * 2 * pi * (R_spin + L/2);
+        if(L_distance < 0) L_distance = -L_distance;
+        if(R_distance < 0) R_distance = -R_distance;
+        clk_L = get_clk(L_distance);
+        clk_R = get_clk(R_distance);
+    }
+    VL_motor = (VL );
+    VR_motor = (VR );
+    
+    // if(VL_motor > 200) VL_motor = 200;
+    // if(VR_motor > 200) VR_motor = 200;
+    // if(VL_motor < -200) VL_motor = -200;
+    // if(VR_motor < -200) VR_motor = -200;
+
+    
+        if(VL_motor >= 0)
+        {
+            Emm_V5_Pos_Control(1,0,VL_motor,acceleration,clk_L,0,1);
+            HAL_Delay(10);
+            Emm_V5_Pos_Control(3,0,VL_motor,acceleration,clk_L,0,1);
+            HAL_Delay(10);
+        }
+        else
+        {
+            Emm_V5_Pos_Control(1,1,-VL_motor,acceleration,clk_L,0,1);
+            HAL_Delay(10);
+            Emm_V5_Pos_Control(3,1,-VL_motor,acceleration,clk_L,0,1);
+            HAL_Delay(10);
+        }
+        if(VR_motor >= 0)
+        {
+            Emm_V5_Pos_Control(2,1,VR_motor,acceleration,clk_R,0,1);
+            HAL_Delay(10);
+            Emm_V5_Pos_Control(4,1,VR_motor,acceleration,clk_R,0,1);
+            HAL_Delay(10);
+        }
+        else
+        {
+            Emm_V5_Pos_Control(2,0,-VR_motor,acceleration,clk_R,0,1);
+            HAL_Delay(10);
+            Emm_V5_Pos_Control(4,0,-VR_motor,acceleration,clk_R,0,1);
+            HAL_Delay(10);
+        }
+        Emm_V5_Synchronous_motion(0);
+}
+
+
+/// @brief 差速移动
+/// @param left_or_right  1为右，0为左
+/// @param vel 车总体移动速度
+/// @param R_spin  旋转半径
+void move_leftright_front_with_spin(int left_or_right, float vel  , float R_spin)
+{
+    float L = 24;
+    float r = 5;
+    float VL = 0, VR = 0;
+    int VL_motor = 0,VR_motor = 0;
+
+    if(left_or_right == 1) //右
+    {
+        VL = vel * (R_spin + L/2) / R_spin;
+        VR = vel * (R_spin - L/2) / R_spin;
+    }
+    else if(left_or_right == 0) //左
+    {
+        VL = vel * (R_spin - L/2) / R_spin;
+        VR = vel * (R_spin + L/2) / R_spin;
+    }
+    VL_motor = (int)(VL / 5);
+    VR_motor = (int)(VR / 5);
+    
+    if(VL_motor > 200) VL_motor = 200;
+    if(VR_motor > 200) VR_motor = 200;
+    if(VL_motor < -200) VL_motor = -200;
+    if(VR_motor < -200) VR_motor = -200;
+
+    
+        if(VL_motor >= 0)
+        {
+            Emm_V5_Vel_Control(1,0,VL_motor,acceleration,1);
+            HAL_Delay(10);
+            Emm_V5_Vel_Control(3,0,VL_motor,acceleration,1);
+            HAL_Delay(10);
+        }
+        else
+        {
+            Emm_V5_Vel_Control(1,1,-VL_motor,acceleration,1);
+            HAL_Delay(10);
+            Emm_V5_Vel_Control(3,1,-VL_motor,acceleration,1);
+            HAL_Delay(10);
+        }
+        if(VR_motor >= 0)
+        {
+            Emm_V5_Vel_Control(2,1,VR_motor,acceleration,1);
+            HAL_Delay(10);
+            Emm_V5_Vel_Control(4,1,VR_motor,acceleration,1);
+            HAL_Delay(10);
+        }
+        else
+        {
+            Emm_V5_Vel_Control(2,0,-VR_motor,acceleration,1);
+            HAL_Delay(10);
+            Emm_V5_Vel_Control(4,0,-VR_motor,acceleration,1);
+            HAL_Delay(10);
+        }
+        Emm_V5_Synchronous_motion(0);
+
+}
 
 /// @brief 直线和圆一起调
 /// @param  调参的思路：x/y_move_position乘了一个偏差量，最后直线的参数也乘了一个偏差量，通过修改这两个偏差量使得直线和圆的调整比例合适，同时也控制各自的数值不会过大
@@ -1555,7 +1693,7 @@ void stop_y42(void)
 /**
   * @brief    速度模式
   * @param    addr：电机地址
-  * @param    dir ：方向       ，0为CW，其余值为CCW(逆时针)
+  * @param    dir ：方向       ，(此处有问题）1为顺时针，0为逆时针
   * @param    vel ：速度       ，范围0 - 5000RPM
   * @param    acc ：加速度     ，范围0 - 255，注意：0是直接启动
   * @param    snF ：多机同步标志，false为不启用，true为启用
@@ -1582,7 +1720,7 @@ void Emm_V5_Vel_Control(uint8_t addr, uint8_t dir, uint16_t vel, uint8_t acc, ui
 /**
   * @brief    位置模式
   * @param    addr：电机地址
-  * @param    dir ：方向        ，0为顺时针，其余值为逆时针
+  * @param    dir ：方向        ，(此处有问题）1为顺时针，0为逆时针
   * @param    vel ：速度(RPM)   ，范围0 - 5000RPM
   * @param    acc ：加速度      ，范围0 - 255，注意：0是直接启动
   * @param    clk ：脉冲数      ，范围0- (2^32 - 1)个

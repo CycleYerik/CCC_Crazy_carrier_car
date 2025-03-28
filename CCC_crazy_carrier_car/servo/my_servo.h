@@ -21,10 +21,10 @@ void get_and_load_ground(int position);
 void get_and_load(int position);
 void get_and_put_different_position(int position);
 void get_and_load_different_position(int position);
-void get_and_load_openloop(int position);
+void get_and_load_openloop(int position,int is_default_position);
 void get_and_load_openloop_v2(int position,int ground_position,int state_position);
 void get_and_load_openloop_with_temp_put(int position,int state_position);
-void get_and_load_openloop_v4(int position);
+void get_and_load_openloop_avoid(int position,int is_default_position);
 
 void my_servo_init(void);
 void feetech_servo_move(uint8_t servo_ID,int16_t Position,uint16_t Speed,uint8_t ACC);
