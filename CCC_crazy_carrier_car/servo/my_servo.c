@@ -30,21 +30,29 @@ int state_spin_without_claw_position_1 = 25;
 int state_spin_without_claw_position_2 = 69;
 int state_spin_without_claw_position_3 = 111;
 
-//! 精密舵机2000对应12.4cm， 0.0062cm/pulse
 
 // 精密舵机参数范围0-4095
 int feet_acc = 180; //180
 int feet_acc_claw_up_down = 240;
 
-//? 以下为正常物料参数
+
+
+
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//! 精密舵机2000对应12.4cm， 0.0062cm/pulse
+//? 以下为正常物料参数  
 int put_claw_down_pile_position = 1878; 
 int put_claw_down_state_position = 777 ; //从车的载物盘上 982
 int put_claw_down_position = 1701;  // 从转盘上取物料  
-int put_claw_down_ground_position = 3003; // 放在地上 3144
+int put_claw_down_ground_position = 3010; // 放在地上 3144
 int put_claw_up_top_position =280; // 最高点  
 int put_claw_up_position =1667; //  看粗调移动底盘的位置
 int put_claw_down_near_ground_position = 2770; //!细调放置的位置
 int put_claw_down_near_plate_position = 1600; //转盘放置细调的位置
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
 
 //? 以下为通用参数
 int claw_spin_position_front = 3329 ; // 2号精密舵机回到前方
@@ -1721,7 +1729,7 @@ void get_and_pre_put_with_state_find_position(int position,int is_pile_up)
 
 
 
-/// @brief 根据物料放置到大致的位置，然后开始闭环调整
+/// @brief （废弃）根据物料放置到大致的位置，然后开始闭环调整
 void get_and_pre_put_different_color(int position,int is_pile_up)
 {
     state_spin(position);

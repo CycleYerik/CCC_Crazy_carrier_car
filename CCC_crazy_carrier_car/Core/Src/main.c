@@ -368,9 +368,13 @@ int main(void)
     //! 单独测试
     // put_claw_up();
     // signle_line_circle_adjust();
-    // // // // signle_line_circle_adjust_JJ();
-    // signle_get_and_put_some_with_load(1,0,1,1);
+    // // // // // signle_line_circle_adjust_JJ();
+    // // signle_get_and_put_some_with_load(1,0,0,0);
 
+    // while(1)
+    // {
+    //     HAL_Delay(100);
+    // }
 
 
     // HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
@@ -384,11 +388,9 @@ int main(void)
     // put_claw_down();
 
     // get_from_plate_all_movement();
- 
-    // while(1)
-    // {
-    //     HAL_Delay(1000);
-    // }
+
+
+
 
     // /***********************比赛初赛所用的全流程***********************/
 
@@ -449,14 +451,15 @@ int main(void)
     HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
     HAL_Delay(1000);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -little_back_1);
-    put_claw_down();
 
+    //! 注意：两个函数的配合使用（包括发送的字母标志位）
+    put_claw_down();
     get_from_plate_all_movement();
 
 
     /**************第一次从转盘前往粗加工区并放置*****************/
 
-    put_claw_up();
+    put_claw_up();  //! 姿态的恢复
     whole_arm_spin(1); 
     arm_stretch();
     float move_right_length_1 = 41; 
@@ -475,8 +478,8 @@ int main(void)
 
 
     //到达粗加工区，开始校正车身位置
+    //! 注意：两个函数的配合使用（包括发送的字母标志位）
     signle_line_circle_adjust();
-
     signle_get_and_put_some_with_load(1,1,0,0);
     
 
@@ -486,7 +489,7 @@ int main(void)
     int move_back_length_2 = 86; 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_2);
     HAL_Delay(2000);
-    put_claw_up();
+    put_claw_up();//! 姿态的恢复
     arm_stretch();
     spin_right_90(open_loop_spin_velocity,acceleration_spin);
     HAL_Delay(1000);
@@ -494,8 +497,8 @@ int main(void)
     HAL_Delay(1800);
     put_claw_up();
 
+    //! 注意：两个函数的配合使用（包括发送的字母标志位）
     signle_line_circle_adjust();
-
     signle_get_and_put_some_with_load(2,0,0,0);
     
     
@@ -513,11 +516,12 @@ int main(void)
     HAL_Delay(1500);
     HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
     HAL_Delay(100);
+
+    //! 注意：两个函数的配合使用（包括发送的字母标志位）
     put_claw_down();
-    
     get_from_plate_all_movement();
 
-    put_claw_up();
+    put_claw_up();//! 姿态的恢复
     whole_arm_spin(1); 
     arm_stretch();
 
@@ -527,19 +531,17 @@ int main(void)
     move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_3,0);
     HAL_Delay(900);
     
+    //先校正直线
     signle_line_adjust();
-
-
-    
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_3);
     HAL_Delay(2500);
-    put_claw_up();
+    put_claw_up();//! 姿态的恢复
     spin_right_180(open_loop_spin_velocity,acceleration_spin);
     HAL_Delay(2000);
 
+    //! 注意：两个函数的配合使用（包括发送的字母标志位）
     signle_line_circle_adjust();
-    
     signle_get_and_put_some_with_load(3,1,0,0);
 
     /**************第二次从粗加工区前往暂存区并放置*****************/
@@ -548,24 +550,24 @@ int main(void)
     float move_back_length_4 = 86; 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_4);
     HAL_Delay(2000);
-    put_claw_up();
+    put_claw_up();//! 姿态的恢复
     arm_stretch();
     spin_right_90(open_loop_spin_velocity,acceleration_spin);
     HAL_Delay(1000);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_4);
     HAL_Delay(1800);
 
+    //! 注意：两个函数的配合使用（包括发送的字母标志位）
     signle_line_circle_adjust();
-
     signle_get_and_put_some_with_load(4,0,1,0);
     
 
     /**************从暂存区回原点*****************/
     
     int move_45_length_5 = 28;
-    int move_front_length_5 = 70;
-    int move_back_length_5 = 163;
-    int move_right_length_5 = 3;
+    int move_front_length_5 = 75.5;
+    int move_back_length_5 = 169;
+    int move_right_length_5 = 0.1;
     move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length_5,0);
     HAL_Delay(900);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length_5);
@@ -578,7 +580,7 @@ int main(void)
     HAL_Delay(1000);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_5);
     HAL_Delay(2000);
-    move_all_direction_position(acceleration, open_loop_move_velocity, move_45_length_5-2, move_45_length_5);
+    move_all_direction_position(acceleration, open_loop_move_velocity, move_45_length_5-7.5, move_45_length_5);
     HAL_Delay(2000);
 
     HAL_UART_Transmit(&huart3, (uint8_t*)"end", strlen("end"), 50);
