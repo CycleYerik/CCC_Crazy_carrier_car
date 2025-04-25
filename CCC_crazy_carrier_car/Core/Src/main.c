@@ -181,6 +181,12 @@ int is_put_material_in_plate = 0;
 
 int theta_servo_value[] = {2895,2895,2895,2895}; //TODO 需要修改
 int r_servo_value[] = {2704,2704,2704,2704};
+int theta_servo_final_value = 2895;
+int r_servo_final_value = 2704;
+
+int is_put_plate = 0;
+
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -364,128 +370,534 @@ int main(void)
 
 
     /*****************单独调试程序***********************/
-
-    //! 单独测试
-    // put_claw_up();
-    // signle_line_circle_adjust();
-    // // // // // signle_line_circle_adjust_JJ();
-    // // signle_get_and_put_some_with_load(1,0,0,0);
-
+    // // // ? 原地上下夹取放置测试
     // while(1)
     // {
-    //     HAL_Delay(100);
+    //     put_claw_down_ground();
+    //     open_claw_180();
+    //     HAL_Delay(2000);
+    //     close_claw();
+    //     HAL_Delay(1000);
+    //     put_claw_up_top();
+    //     HAL_Delay(3000);
+    // }
+    
+
+// //? 从地上随机夹取
+
+// put_claw_up();
+// HAL_UART_Transmit(&huart3, (uint8_t*)"II", strlen("II"), 50);
+
+// //纯直线调整
+// is_slight_spin_and_move = 1;
+// tim3_count = 0;
+// while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+// {
+//     slight_spin_and_move(); // 直线和圆环一起调整
+//     HAL_Delay(50);
+// }
+// is_slight_spin_and_move = 0;
+// stop();
+// HAL_Delay(50);
+
+// // 看中心物料的颜色
+// put_claw_down_near_ground();
+// HAL_Delay(1000);
+// HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50);
+// is_slight_spin_and_move =1;
+// tim3_count = 0;
+// while(is_slight_spin_and_move != 0) 
+// {
+//     slight_spin_and_move(); //根据色块定位
+//     HAL_Delay(50);
+// }
+// is_slight_spin_and_move = 0;
+// stop(); //根据中间物料的中心调整底盘
+
+// is_get_material_from_temp_area = 2;
+// is_slight_spin_and_move = 0;
+// // 看另一个颜色
+// get_and_pre_put_void(1,0);
+// HAL_Delay(500);
+// HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50);
+// //等待树莓派返回识别结果
+// while(is_get_material_from_temp_area != 3)
+// {
+//     HAL_Delay(100);
+// }
+
+// put_claw_up_top();
+// HAL_Delay(1000);
+// int temp_get_order[3] = {0,0,0};//本次抓取的位置顺序，123对应的是右中左
+// for(int i = 0 ; i < 3 ; i++)
+// {
+//     for(int j = 0 ; j < 3 ; j++)
+//     {
+//         if(target_colour[i] == material_place[j])
+//         {
+//             temp_get_order[i] = j+1;
+//             sprintf(temp,"ss target:%d,place:%d,i:%d,j+1:%d",target_colour[i],material_place[j],i,j+1);
+//             // HAL_UART_Transmit(&huart3, (uint8_t*)temp, strlen(temp), 50);
+//             HAL_Delay(10);
+//             break; 
+//         }
+//     }
+// }
+// for(int i = 0; i < 3; i++)
+// {
+//     get_and_load_openloop_with_temp_put(temp_get_order[i],target_colour[i]); // 开环抓取，avoid
+// }
+
+
+
+// //? 放置和抓取
+//     HAL_Delay(1000);
+//     HAL_UART_Transmit(&huart3, (uint8_t*)"KK", strlen("KK"), 50); 
+//     HAL_Delay(1800);
+//     put_claw_up();
+//     is_slight_spin_and_move = 1;
+//     tim3_count = 0;
+//     while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+//     {
+//         slight_spin_and_move(); // 直线和圆环一起调整
+//         HAL_Delay(50);
+//     }
+//     is_slight_spin_and_move = 0;
+//     stop();
+//     HAL_Delay(50);
+
+//     //TODO times_count 加入
+
+
+//     for (int i = 0; i < 3; i++)
+//     {
+//         // if(is_put_adjust_with_material == 1)
+//         // {
+//         get_and_pre_put_with_state_find_position(target_colour[i], 0); //夹着物料放置
+        
+//         servo_adjust_status = target_colour[i];
+//         is_servo_adjust = 1;
+//         tim3_count = 0;
+//         // HAL_Delay(700);
+//         HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
+//         // HAL_Delay(500); 
+//         while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
+//         {
+//             adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
+//             HAL_Delay(adjust_position_with_camera_time); 
+//         }
+//         theta_servo_value[target_colour[i+times_count]] = theta_servo_now;
+//         r_servo_value[target_colour[i+times_count]] = r_servo_now;
+//             is_servo_adjust = 0;
+//         is_servo_adjust = 0;
+        
+//             put_claw_down_ground();
+//             HAL_Delay(500);
+//             open_claw();
+//             HAL_Delay(500);
+        
+
+//     }
+
+//     //TODO 抓取
+//     for(int i = 0; i < 3; i++)
+//     {
+//         get_and_load_openloop(target_colour[i+times_count],0); 
+//     }
+
+
+
+
+    // //? 在转盘放置
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"HH", strlen("HH"), 50);
+    // int add_count = 0;
+    
+
+    // // 先张开看去调整
+    // put_claw_down();
+    // open_claw_180();
+
+    // servo_adjust_status = 1;
+    // is_servo_adjust = 1; //! 
+    // while (is_servo_adjust != 0 ) //等待接收0x39
+    // {
+    //     adjust_position_with_camera(x_camera_error, y_camera_error,1); 
+    //     HAL_Delay(adjust_position_with_camera_time); 
+    // }
+    
+
+
+
+    // for(int i = 0; i < 3; i++) //前两次可以放置
+    // {
+        
+    //     //TODO 等待标志位
+    //     is_put_plate = 0;
+    //     while(is_put_plate != 1)
+    //     {
+    //         HAL_Delay(50);
+    //     }
+        
+    //     get_and_pre_put_spin_plate_avoid_collide(target_colour[i]);
+    //     is_put_material_in_plate = 0;
+    //     is_third_preput = 0;
+    //     put_claw_down();
+    //     HAL_Delay(300);
+    //     open_claw_180();
+    //     HAL_Delay(300);
+
+        
+
+    //     while(is_third_preput != 1)
+    //     {
+    //         HAL_Delay(50);
+    //     }
+        
+
     // }
 
 
-    // HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
-    // HAL_Delay(1000);
-    // put_claw_down();
 
-    // get_from_plate_all_movement();
-    // HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
-    // HAL_Delay(1000);
-    // // move_all_direction_position(acceleration, open_loop_move_velocity, 0, -little_back_1);
-    // put_claw_down();
+//? 决赛的路径测试
+//? 决赛的路径测试
+//? 决赛的路径测试
+//? 决赛的路径测试
+//? 决赛的路径测试
+//? 决赛的路径测试
 
-    // get_from_plate_all_movement();
+// //从起始到二维码
+//     HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50);
+//     float start_move_x = 15;
+//     float start_move_y = 22.5; 
+//     float move_to_qrcode = 122.5;
+//     float little_back_1 = 2;
+//     motor_state = 1;
+//     move_all_direction_position(acceleration, open_loop_move_velocity, -start_move_x , start_move_y); 
+//     HAL_Delay(1000);
+//     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_to_qrcode); 
+//     HAL_Delay(4000);
 
-
-
-
-    // /***********************比赛初赛所用的全流程***********************/
-
-    //! 全流程测试（3.27版本，更新新的色环放置，更新了最新的转盘放置）
-    //! 全流程测试（3.27版本，更新新的色环放置，更新了最新的转盘放置）
-    //! 全流程测试（3.27版本，更新新的色环放置，更新了最新的转盘放置）
-
-
-
-
-    /************初始化和第一次前往转盘*************/
-    is_adjust_motor_in_tim = 0;
-    motor_state = 1;
-    HAL_Delay(1000); // 等待电机初始化
-    HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50);  // 开始识别二维码
-
-    //! wifi接收（不用的话保持注释）
-    // HAL_Delay(2000);
-    // HAL_UART_Transmit(&huart3, (uint8_t*)"MM", strlen("MM"), 50);
-    // char temp_wifi_printf[50];
-    // HAL_UART_Transmit(&huart4, (uint8_t*)"AT+CIPMUX=0\r\n", strlen("AT+CIPMUX=0\r\n"), 50);
-    // HAL_Delay(500);
-    // HAL_UART_Transmit(&huart4, (uint8_t*)"AT+CIPMODE=1\r\n", strlen("AT+CIPMODE=1\r\n"), 50);
-    // HAL_Delay(500);
-    // HAL_UART_Transmit(&huart4, (uint8_t*)"AT+CIPSTART=\"TCP\",\"192.168.43.42\",8089\r\n", strlen("AT+CIPSTART=\"TCP\",\"192.168.43.42\",8089\r\n"), 50);
-    // HAL_Delay(500);
-    // HAL_UART_Transmit(&huart4, (uint8_t*)"AT+CIPMODE=1\r\n", strlen("AT+CIPMODE=1\r\n"), 50);
-    // HAL_Delay(500);
-    // while(is_wifi_already_get_message != 1)
-    // {
-    //     HAL_Delay(100);
-    // } 
-    // sprintf(temp_wifi_printf, "%s",wifi_massage);
-    // HAL_UART_Transmit(&huart3, (uint8_t*)temp_wifi_printf, strlen(temp_wifi_printf), 50); //发送wifi数据
-    // HAL_Delay(100);
+//     spin_right_90(open_loop_spin_velocity,acceleration_spin);
+//     char* target_colour_str = (char*)malloc(6);
+//     HAL_Delay(1000);
+//     sprintf(target_colour_str, "%d%d%d+%d%d%d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]); //显示二维码信息
+//     printf("t0.txt=\"%s\"\xff\xff\xff", target_colour_str);
+//     free(target_colour_str);
 
 
-    float start_move_x = 15; //TODO 根据二维码的大小和车身位置调整
+
+// // 从二维码到新暂存区
+
+//     float move_right_length_1 = 41; 
+//     float move_front_length_1 = 170;  
+//     move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_1,0);
+//     put_claw_up();
+
+//     HAL_Delay(900);
+//     //先校正直线
+//     signle_line_adjust();
+//     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_1);
+//     HAL_Delay(3000);
+//     spin_right_180(open_loop_spin_velocity,acceleration_spin);
+//     HAL_Delay(2000); 
+//     HAL_UART_Transmit(&huart3, (uint8_t*)"JJ", strlen("JJ"), 50);
+//     motor_state = 1;
+//     is_slight_spin_and_move = 1;
+//     tim3_count = 0;
+//     while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+//     {
+//         slight_spin_and_move(); // 直线和圆环一起调整
+//         HAL_Delay(50);
+//     }
+//     stop();
+//     whole_arm_spin(1);
+//     arm_stretch();
+//     put_claw_up();
+
+
+// // 从新暂存区到新加工区
+
+//     int move_front_length_2 = 82;    
+//     int move_back_length_2 = 86; 
+//     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_2);
+//     HAL_Delay(2000);
+//     put_claw_up();//! 姿态的恢复
+//     arm_stretch();
+//     spin_right_90(open_loop_spin_velocity,acceleration_spin);
+//     HAL_Delay(1000);
+//     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_2 );
+//     HAL_Delay(1800);
+//     put_claw_up();
+    
+
+//     // 在新加工区放置和抓取
+//     HAL_Delay(1000);
+//     HAL_UART_Transmit(&huart3, (uint8_t*)"JJ", strlen("JJ"), 50); 
+//     HAL_Delay(1800);
+//     whole_arm_spin(1); 
+//     arm_stretch();
+//     put_claw_up();
+//     is_slight_spin_and_move = 1;
+//     tim3_count = 0;
+//     while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+//     {
+//         slight_spin_and_move(); // 直线和圆环一起调整
+//         HAL_Delay(50);
+//     }
+//     is_slight_spin_and_move = 0;
+//     stop();
+//     HAL_Delay(50);
+
+
+    
+
+
+// // 从新加工区到成品区
+
+
+//     int move_45_length_5 = 28;
+//     int move_front_length_5 = 75.5;
+//     int move_back_length_5 = 169+2;
+//     int move_right_length_5 = 0.1;
+//     move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length_5);
+//     HAL_Delay(4000);
+//     open_claw_180();
+//     whole_arm_spin(1); 
+//     arm_stretch();
+//     whole_arm_spin(1);
+//     HAL_Delay(1500);
+//     spin_right_180(open_loop_spin_velocity,acceleration_spin);
+//     HAL_Delay(6000);
+
+     
+
+// // 从成品区到到新暂存区
+
+//     int move_right_length_6 = 82.5*1.02;
+//     int move_right_length_7 = 89.5*1.02;
+
+//     move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length_6,0);
+//     HAL_Delay(2000);
+//     spin_right_90(open_loop_spin_velocity,acceleration_spin);
+//     HAL_Delay(1000);
+
+//     signle_line_adjust();
+
+
+//     move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length_7, 0);
+//     HAL_Delay(2000);
+
+    
+//     //抓取
+//     put_claw_up();
+//     HAL_UART_Transmit(&huart3, (uint8_t*)"JJ", strlen("JJ"), 50);
+
+//     //纯直线调整
+//     is_slight_spin_and_move = 1;
+//     tim3_count = 0;
+//     while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+//     {
+//         slight_spin_and_move(); // 直线和圆环一起调整
+//         HAL_Delay(50);
+//     }
+//     is_slight_spin_and_move = 0;
+//     stop();
+//     HAL_Delay(50);
+
+
+
+
+
+
+// // 从新暂存区到新加工区
+
+
+//     int move_front_length_8 = 82;    
+//     int move_back_length_8 = 86; 
+//     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_8);
+//     HAL_Delay(2000);
+//     put_claw_up();//! 姿态的恢复
+//     arm_stretch();
+//     whole_arm_spin(1);
+//     spin_right_90(open_loop_spin_velocity,acceleration_spin);
+//     HAL_Delay(1000);
+//     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_8 );
+//     HAL_Delay(1800);
+//     put_claw_up();
+
+
+
+//     HAL_Delay(1000);
+//     HAL_UART_Transmit(&huart3, (uint8_t*)"JJ", strlen("JJ"), 50); 
+//     HAL_Delay(1800);
+//     whole_arm_spin(1); 
+//     arm_stretch();
+//     put_claw_up();
+//     is_slight_spin_and_move = 1;
+//     tim3_count = 0;
+//     while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+//     {
+//         slight_spin_and_move(); // 直线和圆环一起调整
+//         HAL_Delay(50);
+//     }
+//     is_slight_spin_and_move = 0;
+//     stop();
+//     HAL_Delay(50);
+
+
+    
+
+
+// //从新加工区到成品区
+
+// int move_45_length_9 = 28;
+//     int move_front_length_9= 75.5;
+//     int move_back_length_9 = 169+2;
+//     int move_right_length_9 = 0.1;
+//     move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length_9);
+//     HAL_Delay(4000);
+//     open_claw_180();
+//     whole_arm_spin(1); 
+//     arm_stretch();
+//     HAL_Delay(1500);
+//     spin_right_180(open_loop_spin_velocity,acceleration_spin);
+//     HAL_Delay(6000);
+
+    
+
+
+// // 从成品区回到起始区
+
+// spin_left_90(open_loop_spin_velocity,acceleration_spin);
+// HAL_Delay(1000);
+
+// int move_front_lenght_10 = 75.5;
+// int move_to_stop_place_x = 18.5;
+// int move_to_stop_place_y = 28;
+
+
+// move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_lenght_10);
+// HAL_Delay(2000);
+
+// move_all_direction_position(acceleration, open_loop_move_velocity, move_to_stop_place_x,move_to_stop_place_y);
+
+// HAL_Delay(2000);
+// while(1)
+// {
+//     HAL_Delay(1000);
+// }
+
+
+
+//! 决赛的全流程：
+//! 决赛的全流程：
+//! 决赛的全流程：
+//! 决赛的全流程：
+//! 决赛的全流程：
+
+
+
+
+//从起始到二维码
+    HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50);
+    float start_move_x = 15;
     float start_move_y = 22.5; 
-    float move_to_qrcode = 37.5;
-    float move_from_qrcode_to_table = 85;
+    float move_to_qrcode = 122.5;
     float little_back_1 = 2;
     move_all_direction_position(acceleration, open_loop_move_velocity, -start_move_x , start_move_y); 
     HAL_Delay(1000);
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_to_qrcode); 
-    HAL_Delay(2000);
+    HAL_Delay(4000);
 
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table); 
-    HAL_Delay(2000);
-    char* target_colour_str = (char*)malloc(6);
-    sprintf(target_colour_str, "%d%d%d+%d%d%d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]); //显示二维码信息
-    printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); 
     spin_right_90(open_loop_spin_velocity,acceleration_spin);
-    free(target_colour_str); //! 不要忘记后面的延时
-
-    /*******************到达转盘开始抓取物料********************/
-
-    HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
+    char* target_colour_str = (char*)malloc(6);
     HAL_Delay(1000);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, -little_back_1);
-
-    //! 注意：两个函数的配合使用（包括发送的字母标志位）
-    put_claw_down();
-    get_from_plate_all_movement();
+    sprintf(target_colour_str, "%d%d%d+%d%d%d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]); //显示二维码信息
+    printf("t0.txt=\"%s\"\xff\xff\xff", target_colour_str);
+    free(target_colour_str);
 
 
-    /**************第一次从转盘前往粗加工区并放置*****************/
 
-    put_claw_up();  //! 姿态的恢复
-    whole_arm_spin(1); 
-    arm_stretch();
+// 从二维码到新暂存区
+
     float move_right_length_1 = 41; 
     float move_front_length_1 = 170;  
     move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_1,0);
-    HAL_Delay(900);
+    put_claw_up();
 
+    HAL_Delay(900);
     //先校正直线
     signle_line_adjust();
-    
-
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_1);
     HAL_Delay(3000);
     spin_right_180(open_loop_spin_velocity,acceleration_spin);
-    HAL_Delay(2000); //TODO 提前发是否会干扰视觉的判断
+    HAL_Delay(2000); 
+    HAL_UART_Transmit(&huart3, (uint8_t*)"II", strlen("II"), 50);
+
+    //纯直线调整
+    is_slight_spin_and_move = 1;
+    tim3_count = 0;
+    while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+    {
+        slight_spin_and_move(); 
+        HAL_Delay(50);
+    }
+    is_slight_spin_and_move = 0;
+    stop();
+    HAL_Delay(50);
+
+    // 看中心物料的颜色
+    put_claw_down_near_ground();
+    HAL_Delay(1000);
+    HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50);
+    is_slight_spin_and_move =1;
+    tim3_count = 0;
+    while(is_slight_spin_and_move != 0) 
+    {
+        slight_spin_and_move(); //根据色块定位
+        HAL_Delay(50);
+    }
+    is_slight_spin_and_move = 0;
+    stop(); //根据中间物料的中心调整底盘
+
+    is_get_material_from_temp_area = 2;
+    is_slight_spin_and_move = 0;
+    // 看另一个颜色
+    get_and_pre_put_void(1,0);
+    HAL_Delay(500);
+    HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50);
+    //等待树莓派返回识别结果
+    while(is_get_material_from_temp_area != 3)
+    {
+        HAL_Delay(100);
+    }
+    put_claw_up_top();
+    HAL_Delay(1000);
+    int temp_get_order[3] = {2,1,3};//本次抓取的位置顺序，123对应的是右中左
+    for(int i = 0 ; i < 3 ; i++)
+    {
+        for(int j = 0 ; j < 3 ; j++)
+        {
+            if(target_colour[i] == material_place[j])
+            {
+                temp_get_order[i] = j+1;
+                HAL_Delay(10);
+                break; 
+            }
+        }
+    }
+    for(int i = 0; i < 3; i++)
+    {
+        get_and_load_openloop_with_temp_put(temp_get_order[i],target_colour[i]); // 开环抓取，avoid
+    }
+    whole_arm_spin(1);
+    arm_stretch();
+    put_claw_up();
 
 
-    //到达粗加工区，开始校正车身位置
-    //! 注意：两个函数的配合使用（包括发送的字母标志位）
-    signle_line_circle_adjust();
-    signle_get_and_put_some_with_load(1,1,0,0);
-    
+// 从新暂存区到新加工区
 
-
-    /**************第一次从粗加工区前往暂存区并放置*****************/
-    int move_front_length_2 = 82; 
+    int move_front_length_2 = 82;    
     int move_back_length_2 = 86; 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_2);
     HAL_Delay(2000);
@@ -496,99 +908,540 @@ int main(void)
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_2 );
     HAL_Delay(1800);
     put_claw_up();
-
-    //! 注意：两个函数的配合使用（包括发送的字母标志位）
-    signle_line_circle_adjust();
-    signle_get_and_put_some_with_load(2,0,0,0);
-    
     
 
-
-
-    /**************第二次前往转盘并抓取*****************/
-    int move_right_length_b = 44;
-    int move_front_length_b = 88;
-    spin_right(open_loop_spin_velocity,acceleration_spin, 90);
+    // 在新加工区放置和抓取
     HAL_Delay(1000);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_b);
-    HAL_Delay(2500);
-    move_all_direction_position(acceleration, open_loop_x_move_velocity,move_right_length_b, 0);
-    HAL_Delay(1500);
-    HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
-    HAL_Delay(100);
-
-    //! 注意：两个函数的配合使用（包括发送的字母标志位）
-    put_claw_down();
-    get_from_plate_all_movement();
-
-    put_claw_up();//! 姿态的恢复
+    HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); 
+    HAL_Delay(1800);
     whole_arm_spin(1); 
     arm_stretch();
+    put_claw_up();
+    is_slight_spin_and_move = 1;
+    tim3_count = 0;
+    while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+    {
+        slight_spin_and_move(); // 直线和圆环一起调整
+        HAL_Delay(50);
+    }
+    is_slight_spin_and_move = 0;
+    stop();
+    HAL_Delay(50);
 
-    /**************第二次从转盘前往粗加工区并放置*****************/
-    float move_right_length_3 = 41; 
-    float move_front_length_3 = 170;  
-    move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_3,0);
-    HAL_Delay(900);
-    
-    //先校正直线
-    signle_line_adjust();
 
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_3);
-    HAL_Delay(2500);
-    put_claw_up();//! 姿态的恢复
+    for (int i = 0; i < 3; i++)
+    {
+        // if(is_put_adjust_with_material == 1)
+        // {
+        get_and_pre_put_avoid(target_colour[i], 0); //夹着物料放置
+        servo_adjust_status = target_colour[i];
+        is_servo_adjust = 1;
+        tim3_count = 0;
+        // HAL_Delay(700);
+        HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
+        // HAL_Delay(500); 
+        while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
+        {
+            adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
+            HAL_Delay(adjust_position_with_camera_time); 
+        }
+        theta_servo_value[target_colour[i]] = theta_servo_now;
+        r_servo_value[target_colour[i]] = r_servo_now;
+            is_servo_adjust = 0;
+        is_servo_adjust = 0;
+        put_claw_down_ground();
+        HAL_Delay(500);
+        open_claw();
+        HAL_Delay(500);
+        
+
+    }
+    put_claw_up_top();
+    HAL_Delay(1000);
+
+    //TODO 抓取
+    for(int i = 0; i < 3; i++)
+    {
+        get_and_load_openloop(target_colour[i],0); 
+    }
+
+
+
+// 从新加工区到成品区
+
+
+int move_45_length_5 = 28;
+    int move_front_length_5 = 75.5;
+    int move_back_length_5 = 169+2;
+    int move_right_length_5 = 0.1;
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length_5);
+    HAL_Delay(4000);
+    open_claw_180();
+    whole_arm_spin(1); 
+    arm_stretch();
+    whole_arm_spin(1);
+    HAL_Delay(1500);
     spin_right_180(open_loop_spin_velocity,acceleration_spin);
     HAL_Delay(2000);
 
-    //! 注意：两个函数的配合使用（包括发送的字母标志位）
-    signle_line_circle_adjust();
-    signle_get_and_put_some_with_load(3,1,0,0);
+     //? 在转盘放置
+    HAL_UART_Transmit(&huart3, (uint8_t*)"HH", strlen("HH"), 50);
+    int add_count = 0;
+    // 先张开看去调整
+    put_claw_down();
+    open_claw_180();
 
-    /**************第二次从粗加工区前往暂存区并放置*****************/
+    servo_adjust_status = 1;
+    is_servo_adjust = 1; //! 
+    while (is_servo_adjust != 0 ) //等待接收0x39
+    {
+        adjust_position_with_camera(x_camera_error, y_camera_error,1); 
+        HAL_Delay(adjust_position_with_camera_time); 
+    }
+    theta_servo_final_value = theta_servo_now;
+    r_servo_final_value = r_servo_now;
 
-    float move_front_length_4 = 82.5; 
-    float move_back_length_4 = 86; 
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_4);
+    for(int i = 0; i < 3; i++) //前两次可以放置
+    {
+        
+        //TODO 等待标志位
+        
+        is_put_plate = 0;
+        tim3_count = 0;
+        while(is_put_plate != 1  )
+        {
+            HAL_Delay(50);
+        }
+        
+        get_and_pre_put_spin_plate_avoid_collide(target_colour[i]);
+        is_put_material_in_plate = 0;
+        is_third_preput = 0;
+        put_claw_down();
+        HAL_Delay(300);
+        open_claw_180();
+        HAL_Delay(300);
+
+
+    
+    }
+    arm_stretch();
+    put_claw_up();
+    whole_arm_spin(1);
+
+
+// 从成品区到到新暂存区
+
+    int move_right_length_6 = 82.5*1.02;
+    int move_right_length_7 = 89.5*1.02;
+
+    move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length_6,0);
+    HAL_Delay(2000);
+    spin_right_90(open_loop_spin_velocity,acceleration_spin);
+    HAL_Delay(1000);
+
+    signle_line_adjust();
+
+
+    move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length_7, 0);
+    HAL_Delay(2000);
+
+    
+    //抓取
+    put_claw_up();
+    HAL_UART_Transmit(&huart3, (uint8_t*)"II", strlen("II"), 50);
+
+    //纯直线调整
+    is_slight_spin_and_move = 1;
+    tim3_count = 0;
+    while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+    {
+        slight_spin_and_move(); // 直线和圆环一起调整
+        HAL_Delay(50);
+    }
+    is_slight_spin_and_move = 0;
+    stop();
+    HAL_Delay(50);
+
+    // 看中心物料的颜色
+    put_claw_down_near_ground();
+    HAL_Delay(1000);
+    HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50);
+    is_slight_spin_and_move =1;
+    tim3_count = 0;
+    while(is_slight_spin_and_move != 0) 
+    {
+        slight_spin_and_move(); //根据色块定位
+        HAL_Delay(50);
+    }
+    is_slight_spin_and_move = 0;
+    stop(); //根据中间物料的中心调整底盘
+
+    is_get_material_from_temp_area = 2;
+    is_slight_spin_and_move = 0;
+    // 看另一个颜色
+    get_and_pre_put_void(1,0);
+    HAL_Delay(500);
+    HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50);
+    //等待树莓派返回识别结果
+    while(is_get_material_from_temp_area != 3)
+    {
+        HAL_Delay(100);
+    }
+    put_claw_up_top();
+    HAL_Delay(1000);
+    for(int i = 0 ; i < 3 ; i++)
+    {
+        for(int j = 0 ; j < 3 ; j++)
+        {
+            if(target_colour[i+3] == material_place[j])
+            {
+                temp_get_order[i] = j+1;
+                // sprintf(temp,"ss target:%d,place:%d,i:%d,j+1:%d",target_colour[i+3],material_place[j],i,j+1);
+                // HAL_UART_Transmit(&huart3, (uint8_t*)temp, strlen(temp), 50);
+                HAL_Delay(10);
+                break; 
+            }
+        }
+    }
+    for(int i = 0; i < 3; i++)
+    {
+        get_and_load_openloop_with_temp_put(temp_get_order[i],target_colour[i+3]); // 开环抓取，avoid
+    }
+
+
+
+
+// 从新暂存区到新加工区
+
+
+    int move_front_length_8 = 82;    
+    int move_back_length_8 = 86; 
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_8);
     HAL_Delay(2000);
     put_claw_up();//! 姿态的恢复
     arm_stretch();
+    whole_arm_spin(1);
     spin_right_90(open_loop_spin_velocity,acceleration_spin);
     HAL_Delay(1000);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_4);
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_8 );
     HAL_Delay(1800);
+    put_claw_up();
 
-    //! 注意：两个函数的配合使用（包括发送的字母标志位）
-    signle_line_circle_adjust();
-    signle_get_and_put_some_with_load(4,0,1,0);
-    
 
-    /**************从暂存区回原点*****************/
-    
-    int move_45_length_5 = 28;
-    int move_front_length_5 = 75.5;
-    int move_back_length_5 = 169;
-    int move_right_length_5 = 0.1;
-    move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length_5,0);
-    HAL_Delay(900);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length_5);
+
     HAL_Delay(1000);
+    HAL_UART_Transmit(&huart3, (uint8_t*)"CC", strlen("CC"), 50); 
+    HAL_Delay(1800);
+    whole_arm_spin(1); 
+    arm_stretch();
+    put_claw_up();
+    is_slight_spin_and_move = 1;
+    tim3_count = 0;
+    while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+    {
+        slight_spin_and_move(); // 直线和圆环一起调整
+        HAL_Delay(50);
+    }
+    is_slight_spin_and_move = 0;
+    stop();
+    HAL_Delay(50);
+
+
+    for (int i = 3; i < 6; i++)
+    {
+        // if(is_put_adjust_with_material == 1)
+        // {
+        get_and_pre_put_avoid(target_colour[i], 0); //夹着物料放置
+        servo_adjust_status = target_colour[i];
+        is_servo_adjust = 1;
+        tim3_count = 0;
+        // HAL_Delay(700);
+        HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
+        // HAL_Delay(500); 
+        while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
+        {
+            adjust_position_with_camera(x_camera_error, y_camera_error,1); // TODO 可以针对视觉调整的情况来进行方案的调整
+            HAL_Delay(adjust_position_with_camera_time); 
+        }
+        theta_servo_value[target_colour[i]] = theta_servo_now;
+        r_servo_value[target_colour[i]] = r_servo_now;
+        is_servo_adjust = 0;
+        put_claw_down_ground();
+        HAL_Delay(500);
+        open_claw();
+        HAL_Delay(500);
+        
+
+    }
+    put_claw_up_top();
+    HAL_Delay(1000);
+
+    //TODO 抓取
+    for(int i = 3; i < 6; i++)
+    {
+        get_and_load_openloop(target_colour[i],0); 
+    }
+
+
+//从新加工区到成品区
+
+int move_45_length_9 = 28;
+    int move_front_length_9= 75.5;
+    int move_back_length_9 = 169+2;
+    int move_right_length_9 = 0.1;
+    move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length_9);
+    HAL_Delay(4000);
     open_claw_180();
     whole_arm_spin(1); 
     arm_stretch();
     HAL_Delay(1500);
-    spin_right(open_loop_spin_velocity,acceleration_spin, 90);
-    HAL_Delay(1000);
-    move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_5);
-    HAL_Delay(2000);
-    move_all_direction_position(acceleration, open_loop_move_velocity, move_45_length_5-7.5, move_45_length_5);
+    spin_right_180(open_loop_spin_velocity,acceleration_spin);
     HAL_Delay(2000);
 
-    HAL_UART_Transmit(&huart3, (uint8_t*)"end", strlen("end"), 50);
+     //? 在转盘放置
+    HAL_UART_Transmit(&huart3, (uint8_t*)"HH", strlen("HH"), 50);
+    add_count = 0;
+    // 先张开看去调整
+    put_claw_down();
+    open_claw_180();
 
-    while(1)
+    servo_adjust_status = 1;
+    is_servo_adjust = 1; //! 
+    while (is_servo_adjust != 0 ) //等待接收0x39
     {
-        HAL_Delay(1000);
+        adjust_position_with_camera(x_camera_error, y_camera_error,1); 
+        HAL_Delay(adjust_position_with_camera_time); 
     }
+
+    for(int i = 3; i < 6; i++) //前两次可以放置
+    {
+        
+        //TODO 等待标志位
+        is_put_plate = 0;
+        tim3_count = 0;
+        while(is_put_plate != 1  )
+        {
+            HAL_Delay(50);
+        }
+        
+        get_and_pre_put_spin_plate_avoid_collide(target_colour[i]);
+        is_put_material_in_plate = 0;
+        is_third_preput = 0;
+        put_claw_down();
+        HAL_Delay(300);
+        open_claw_180();
+        HAL_Delay(300);
+
+        
+
+    }
+
+
+
+// 从成品区回到起始区
+
+spin_left_90(open_loop_spin_velocity,acceleration_spin);
+HAL_Delay(1000);
+
+int move_front_lenght_10 = 75.5;
+int move_to_stop_place_x = 18.5;
+int move_to_stop_place_y = 28;
+
+
+move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_lenght_10);
+HAL_Delay(2000);
+
+move_all_direction_position(acceleration, open_loop_move_velocity, move_to_stop_place_x,move_to_stop_place_y);
+
+HAL_Delay(2000);
+while(1)
+{
+    HAL_Delay(1000);
+}
+
+// 结束
+
+
+
+    // /***********************比赛初赛所用的全流程***********************/
+
+    //! 全流程测试（3.29版本，更新新的色环放置，更新了最新的转盘放置）
+    //! 全流程测试（3.29版本，更新新的色环放置，更新了最新的转盘放置）
+    //! 全流程测试（3.29版本，更新新的色环放置，更新了最新的转盘放置）
+
+
+
+
+    // /************初始化和第一次前往转盘*************/
+    // is_adjust_motor_in_tim = 0;
+    // motor_state = 1;
+    // HAL_Delay(1000); // 等待电机初始化
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50);  // 开始识别二维码
+
+
+
+
+    // float start_move_x = 15; //TODO 根据二维码的大小和车身位置调整
+    // float start_move_y = 22.5; 
+    // float move_to_qrcode = 37.5;
+    // float move_from_qrcode_to_table = 85;
+    // float little_back_1 = 2;
+    // move_all_direction_position(acceleration, open_loop_move_velocity, -start_move_x , start_move_y); 
+    // HAL_Delay(1000);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_to_qrcode); 
+    // HAL_Delay(2000);
+
+    // move_all_direction_position(acc eleration, open_loop_move_velocity, 0, move_from_qrcode_to_table); 
+    // HAL_Delay(2000);
+    // char* target_colour_str = (char*)malloc(6);
+    // sprintf(target_colour_str, "%d%d%d+%d%d%d", target_colour[0], target_colour[1], target_colour[2], target_colour[3], target_colour[4], target_colour[5]); //显示二维码信息
+    // printf("t0.txt=\"%s\"\xff\xff\xff",target_colour_str); 
+    // spin_right_90(open_loop_spin_velocity,acceleration_spin);
+    // free(target_colour_str); //! 不要忘记后面的延时
+
+    // /*******************到达转盘开始抓取物料********************/
+
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
+    // HAL_Delay(1000);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, -little_back_1);
+
+    // //! 注意：两个函数的配合使用（包括发送的字母标志位）
+    // put_claw_down();
+    // get_from_plate_all_movement();
+
+
+    // /**************第一次从转盘前往粗加工区并放置*****************/
+
+    // put_claw_up();  //! 姿态的恢复
+    // whole_arm_spin(1); 
+    // arm_stretch();
+    // float move_right_length_1 = 41; 
+    // float move_front_length_1 = 170;  
+    // move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_1,0);
+    // HAL_Delay(900);
+
+    // //先校正直线
+    // signle_line_adjust();
+    
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_1);
+    // HAL_Delay(3000);
+    // spin_right_180(open_loop_spin_velocity,acceleration_spin);
+    // HAL_Delay(2000); //TODO 提前发是否会干扰视觉的判断
+
+
+    // //到达粗加工区，开始校正车身位置
+    // //! 注意：两个函数的配合使用（包括发送的字母标志位）
+    // signle_line_circle_adjust();
+    // signle_get_and_put_some_with_load(1,1,0,0);
+    
+
+
+    // /**************第一次从粗加工区前往暂存区并放置*****************/
+    // int move_front_length_2 = 82; 
+    // int move_back_length_2 = 86; 
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_2);
+    // HAL_Delay(2000);
+    // put_claw_up();//! 姿态的恢复
+    // arm_stretch();
+    // spin_right_90(open_loop_spin_velocity,acceleration_spin);
+    // HAL_Delay(1000);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_2 );
+    // HAL_Delay(1800);
+    // put_claw_up();
+
+    // //! 注意：两个函数的配合使用（包括发送的字母标志位）
+    // signle_line_circle_adjust();
+    // signle_get_and_put_some_with_load(2,0,0,0);
+    
+    
+
+
+
+    // /**************第二次前往转盘并抓取*****************/
+    // int move_right_length_b = 44;
+    // int move_front_length_b = 88;
+    // spin_right(open_loop_spin_velocity,acceleration_spin, 90);
+    // HAL_Delay(1000);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_b);
+    // HAL_Delay(2500);
+    // move_all_direction_position(acceleration, open_loop_x_move_velocity,move_right_length_b, 0);
+    // HAL_Delay(1500);
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
+    // HAL_Delay(100);
+
+    // //! 注意：两个函数的配合使用（包括发送的字母标志位）
+    // put_claw_down();
+    // get_from_plate_all_movement();
+
+    // put_claw_up();//! 姿态的恢复
+    // whole_arm_spin(1); 
+    // arm_stretch();
+
+    // /**************第二次从转盘前往粗加工区并放置*****************/
+    // float move_right_length_3 = 41; 
+    // float move_front_length_3 = 170;  
+    // move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_3,0);
+    // HAL_Delay(900);
+    
+    // //先校正直线
+    // signle_line_adjust();
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_3);
+    // HAL_Delay(2500);
+    // put_claw_up();//! 姿态的恢复
+    // spin_right_180(open_loop_spin_velocity,acceleration_spin);
+    // HAL_Delay(2000);
+
+    // //! 注意：两个函数的配合使用（包括发送的字母标志位）
+    // signle_line_circle_adjust();
+    // signle_get_and_put_some_with_load(3,1,0,0);
+
+    // /**************第二次从粗加工区前往暂存区并放置*****************/
+
+    // float move_front_length_4 = 82.5; 
+    // float move_back_length_4 = 86; 
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_4);
+    // HAL_Delay(2000);
+    // put_claw_up();//! 姿态的恢复
+    // arm_stretch();
+    // spin_right_90(open_loop_spin_velocity,acceleration_spin);
+    // HAL_Delay(1000);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_4);
+    // HAL_Delay(1800);
+
+    // //! 注意：两个函数的配合使用（包括发送的字母标志位）
+    // signle_line_circle_adjust();
+    // signle_get_and_put_some_with_load(4,0,1,0);
+    
+
+    // /**************从暂存区回原点*****************/
+    
+    // int move_45_length_5 = 28;
+    // int move_front_length_5 = 75.5;
+    // int move_back_length_5 = 169;
+    // int move_right_length_5 = 0.1;
+    // move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length_5,0);
+    // HAL_Delay(900);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length_5);
+    // HAL_Delay(1000);
+    // open_claw_180();
+    // whole_arm_spin(1); 
+    // arm_stretch();
+    // HAL_Delay(1500);
+    // spin_right(open_loop_spin_velocity,acceleration_spin, 90);
+    // HAL_Delay(1000);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_5);
+    // HAL_Delay(2000);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, move_45_length_5-7.5, move_45_length_5);
+    // HAL_Delay(2000);
+
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"end", strlen("end"), 50);
+
+    // while(1)
+    // {
+    //     HAL_Delay(1000);
+    // }
 
     //! 全流程测试结束
     //! 全流程测试结束
@@ -768,7 +1621,7 @@ int main(void)
     //     HAL_Delay(10);
     // }
 
-    //// ? 在暂存区定位随机放置的物料并抓取
+    // //// ? 在暂存区定位随机放置的物料并抓取
     // int start_move_x_raw = 15; //TODO 根据二维码的大小和车身位置调整
     // int start_move_y_raw = 15;
     // move_all_direction_position(acceleration, open_loop_move_velocity, -start_move_x_raw , start_move_y_raw); 
@@ -1185,7 +2038,7 @@ int main(void)
     //     HAL_Delay(1000);
     // }
 
-    ////? 色环放置（在车的载物盘上看物料的中心位置）
+    // ////? 色环放置（在车的载物盘上看物料的中心位置）
     // HAL_Delay(1000);
     // HAL_UART_Transmit(&huart3, (uint8_t*)"KK", strlen("KK"), 50); 
     // HAL_Delay(1800);
@@ -3389,12 +4242,12 @@ void get_and_put_in_spin_plate_cricle_all(int times)
     {
         get_and_pre_put_spin_plate_avoid_collide(target_colour[i+add_count]);
         // get_and_pre_put_spin_plate(target_colour[i+add_count]); //?
-        is_put_material_in_plate = 0;
-        //等待树莓派标志位
-        while(is_put_material_in_plate != 1)
-        {
-            HAL_Delay(50);
-        }
+        // is_put_material_in_plate = 0;
+        // //等待树莓派标志位
+        // while(is_put_material_in_plate != 1)
+        // {
+        //     HAL_Delay(50);
+        // }
         
         is_put_material_in_plate = 0;
         is_third_preput = 0;

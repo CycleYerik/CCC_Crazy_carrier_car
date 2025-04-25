@@ -42,17 +42,24 @@ int feet_acc_claw_up_down = 240;
 //! 精密舵机2000对应12.4cm， 0.0062cm/pulse
 //? 以下为正常物料参数  
 int put_claw_down_pile_position = 1878; 
-int put_claw_down_state_position = 777 ; //从车的载物盘上 982
-int put_claw_down_position = 1701;  // 从转盘上取物料  
-int put_claw_down_ground_position = 3010; // 放在地上 3144
+int put_claw_down_state_position = 892 ; //从车的载物盘上 982
+int put_claw_down_position = 1883;  // 从转盘上取物料  
+int put_claw_down_ground_position = 3156; // 放在地上 3144
 int put_claw_up_top_position =280; // 最高点  
 int put_claw_up_position =1667; //  看粗调移动底盘的位置
-int put_claw_down_near_ground_position = 2770; //!细调放置的位置
-int put_claw_down_near_plate_position = 1600; //转盘放置细调的位置
+int put_claw_down_near_ground_position = 3028; //!细调放置的位置
+int put_claw_down_near_plate_position = 1590; //转盘放置细调的位置
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
-
+// int put_claw_down_pile_position = 1878; 
+// int put_claw_down_state_position = 777 ; //从车的载物盘上 982
+// int put_claw_down_position = 1701;  // 从转盘上取物料  
+// int put_claw_down_ground_position = 3010; // 放在地上 3144
+// int put_claw_up_top_position =280; // 最高点  
+// int put_claw_up_position =1667; //  看粗调移动底盘的位置
+// int put_claw_down_near_ground_position = 2770; //!细调放置的位置
+// int put_claw_down_near_plate_position = 1600; //转盘放置细调的位置
 
 //? 以下为通用参数
 int claw_spin_position_front = 3329 ; // 2号精密舵机回到前方
@@ -785,42 +792,48 @@ void get_and_load_openloop_with_temp_put(int position,int state_position)
     switch(position)
     {
         case 1:
-            feetech_servo_move(3,right_3,2000,feet_acc);
+            feetech_servo_move(3,right_3_pileup,2000,feet_acc);
             feetech_servo_move(4,right_4,4095,feet_acc);
             r_servo_now = right_4;
-            theta_servo_now = right_3;
+            theta_servo_now = right_3_pileup;
             break;
         case 2:
-            feetech_servo_move(3,middle_3,2000,feet_acc);
+            feetech_servo_move(3,middle_3_pileup,2000,feet_acc);
             feetech_servo_move(4,middle_4,4095,feet_acc);
             r_servo_now = middle_4;
-            theta_servo_now = middle_3;
+            theta_servo_now = middle_3_pileup;
             break;
         case 3:
-            feetech_servo_move(3,left_3,2000,feet_acc);
+            feetech_servo_move(3,left_3_pileup,2000,feet_acc);
             feetech_servo_move(4,left_4,4095,feet_acc);
             r_servo_now = left_4;
-            theta_servo_now = left_3;
+            theta_servo_now = left_3_pileup;
             break;
     }
-    HAL_Delay(300);
+    HAL_Delay(500);
     put_claw_down_ground();
     HAL_Delay(800);
     close_claw();
     HAL_Delay(600);
     put_claw_up_top();
     arm_shrink();
-    HAL_Delay(300); //300
+    HAL_Delay(600); //300
     claw_spin_state_without_claw();
     // HAL_Delay(700); //TODO 直接撇进去，以下带？为新增的
-    HAL_Delay(600); //? 
+    HAL_Delay(700); //? 
     put_claw_down_state(); //?
     HAL_Delay(300);  //?
-    open_claw();
-    HAL_Delay(300);
-    put_claw_up_top();
-    HAL_Delay(400); //?
+    open_claw_bigger();
+    HAL_Delay(200);
+    // put_claw_up_top();
+    // HAL_Delay(400); //?
+    state_spin_without_claw_avoid_collide(position);
+    HAL_Delay(400);
     claw_spin_front();
+    open_claw_avoid_collide();
+    HAL_Delay(600);
+    // arm_stretch();
+    open_claw();
 
 
 }
@@ -972,13 +985,13 @@ void get_and_pre_put_spin_plate_avoid_collide(int position)
     HAL_Delay(600);
     put_claw_up_top();
     HAL_Delay(500); //200
-    claw_spin_front(); //TODO 是否可能撞到
+    feetech_servo_move(2,claw_spin_position_front,3500,feet_acc);
     feetech_servo_move(4,temp_r_servo_position_plate,4000,feet_acc);
     feetech_servo_move(3,temp_theta_servo_position_plate,4000,feet_acc);
     r_servo_now = temp_r_servo_position_plate;
     theta_servo_now = temp_theta_servo_position_plate;
     HAL_Delay(400);
-    put_claw_down_near_plate();
+    put_claw_down();
     HAL_Delay(300);
 }
 
@@ -1142,8 +1155,8 @@ void get_and_pre_put_avoid(int position,int is_pile_up)
         }
         else
         {
-            feetech_servo_move(3,right_3,2000,feet_acc);
-            theta_servo_now = right_3;
+            feetech_servo_move(3,right_3_pileup,2000,feet_acc);
+            theta_servo_now = right_3_pileup;
         }
     }
     else if(position == 2)
@@ -1155,8 +1168,8 @@ void get_and_pre_put_avoid(int position,int is_pile_up)
         }
         else
         {
-            feetech_servo_move(3,middle_3,2000,feet_acc);    
-            theta_servo_now = middle_3; 
+            feetech_servo_move(3,middle_3_pileup,2000,feet_acc);
+            theta_servo_now = middle_3_pileup;
         }
     }
     else if(position == 3)
@@ -1168,13 +1181,13 @@ void get_and_pre_put_avoid(int position,int is_pile_up)
         }
         else
         {
-            feetech_servo_move(3,left_3,2000,feet_acc);
-            theta_servo_now = left_3;
+            feetech_servo_move(3,left_3_pileup,2000,feet_acc);
+            theta_servo_now = left_3_pileup;
         }
     }
     HAL_Delay(500);
     state_spin(position);
-    HAL_Delay(200); //400
+    HAL_Delay(400); //400
     close_claw();
     HAL_Delay(700);
     put_claw_up_top();
@@ -1183,7 +1196,8 @@ void get_and_pre_put_avoid(int position,int is_pile_up)
     //     HAL_Delay(1000);
     // }
     HAL_Delay(500); //! 不规则物料所用的识别
-    claw_spin_front(); //TODO 是否可能撞到
+    // claw_spin_front(); //TODO 是否可能撞到
+    feetech_servo_move(2,claw_spin_position_front,2000,feet_acc);
     if(position == 1) 
     {
         
@@ -1202,7 +1216,7 @@ void get_and_pre_put_avoid(int position,int is_pile_up)
         feetech_servo_move(4,left_4,4000,feet_acc);
         r_servo_now = left_4;
     }
-    HAL_Delay(400);
+    HAL_Delay(1000);
     if(is_pile_up == 1)
     {
         feetech_servo_move(1,put_claw_down_pile_position,4095,feet_acc);
@@ -1211,7 +1225,7 @@ void get_and_pre_put_avoid(int position,int is_pile_up)
     else
     {
         feetech_servo_move(1,put_claw_down_near_ground_position,4095,feet_acc);
-        HAL_Delay(900);
+        HAL_Delay(500);
     }
 }
 
@@ -1479,7 +1493,7 @@ void get_and_pre_put_void(int position,int is_pile_up)
     {
         HAL_Delay(600);
     }
-    HAL_Delay(500); //TODO 可能会撞到物料 需要根据物料来调整
+    HAL_Delay(800); //TODO 可能会撞到物料 需要根据物料来调整
     if(position == 1) 
     {
         feetech_servo_move(3,right_3,2000,feet_acc);
@@ -1634,9 +1648,9 @@ void get_and_pre_put(int position,int is_pile_up)
 /// @brief 根据物料放置到大致的位置，然后开始闭环调整
 void get_and_pre_put_with_state_find_position(int position,int is_pile_up)
 {
-    state_spin(position);
-    open_claw();
-    put_claw_up_top();
+    state_spin_without_claw_avoid_collide(position);
+    open_claw_avoid_collide();
+    put_claw_down_state();
     HAL_Delay(500); 
     // open_claw_avoid_collide();
     arm_shrink(); 
@@ -1666,28 +1680,28 @@ void get_and_pre_put_with_state_find_position(int position,int is_pile_up)
     else{
     if(position == 1) 
     {
-        feetech_servo_move(3,right_3,2000,feet_acc);
+        feetech_servo_move(3,right_3_pileup,2000,feet_acc);
         theta_servo_now = right_3;
     }
     else if(position == 2)
     {
-        feetech_servo_move(3,middle_3,2000,feet_acc);    
+        feetech_servo_move(3,middle_3_pileup,2000,feet_acc);    
         theta_servo_now = middle_3; 
     }
     else if(position == 3)
     {
-        feetech_servo_move(3,left_3,2000,feet_acc);
+        feetech_servo_move(3,left_3_pileup,2000,feet_acc);
         theta_servo_now = left_3;
-        
     }
     }
     HAL_Delay(500);
-    put_claw_down_state();
+    state_spin(position);
     HAL_Delay(500); //400
     close_claw();
-    HAL_Delay(300);
+    HAL_Delay(600);
     put_claw_up_top();
     HAL_UART_Transmit(&huart3, (uint8_t*)"update", strlen("update"), 50); //发给树莓派，开始校正
+
     HAL_Delay(800); //200
     claw_spin_front(); //TODO 是否可能撞到
     if(position == 1) 

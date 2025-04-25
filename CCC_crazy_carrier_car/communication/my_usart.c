@@ -87,7 +87,7 @@ extern int is_get_material_from_temp_area;
 extern int test_is_uart_message_lost,uart_data;
 
 extern int is_put_material_in_plate;
-
+extern int is_put_plate;
 /**
 	* @brief   USART1中断函数
 	* @param   无
@@ -486,6 +486,15 @@ void UART_receive_process_3(void)
             if(rxdata_u3[0] == '?' && rxdata_u3[1] == 0x03)
             {
                 start_check_plate_back_state = 0;
+            }
+        }
+
+        //? 转盘放置，接收到直接放
+        if(is_put_plate == 0)
+        {
+            if(rxdata_u3[0] == '?' && rxdata_u3[1] == 0x77)
+            {
+                is_put_plate = 1;
             }
         }
 
