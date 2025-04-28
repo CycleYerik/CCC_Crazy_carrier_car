@@ -27,7 +27,26 @@ Project File Date:  03/19/2025
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 0 Warning(s).
+compiling main.c...
+../Core/Src/main.c(3131): warning:  #128-D: loop is not reachable
+      while (1)
+../Core/Src/main.c(4910): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,1,status);
+../Core/Src/main.c(4969): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,2,status);
+../Core/Src/main.c(5006): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,3,status);
+../Core/Src/main.c(5053): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,1,status);
+../Core/Src/main.c(5066): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,2,status);
+../Core/Src/main.c(5079): warning:  #167-D: argument of type "volatile int *" is incompatible with parameter of type "int *"
+      move_follow_sequence(target_colour,3,status);
+../Core/Src/main.c: 7 warnings, 0 errors
+linking...
+Program Size: Code=25320 RO-data=448 RW-data=732 ZI-data=2676  
+FromELF: creating hex file...
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 7 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -51,7 +70,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:00
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>
