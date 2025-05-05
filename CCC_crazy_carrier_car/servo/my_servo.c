@@ -10,201 +10,114 @@ extern int theta_servo_value[],r_servo_value[];
 
 /*-------以下数据如果重新装车需要重新调，务必注意！！！！！！！！！！！！-------*/
 
-// 夹爪PD13  载物盘PD15 机械臂PD12
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!      普通舵机调试的注意事项
+//!      夹爪PD13  载物盘PD15 机械臂PD12
+//!      普通舵机转动120°对应给定数据为44.44
+//!      普通舵机参数范围25-125  对应0-270°
 
-// 普通舵机参数范围25-125  270
-int open_claw_avoid_collide_position = 108;
-int open_claw_180_position = 104; //87 为正常抓放的位置
-int open_claw_position = 86; //87 为正常抓放的位置
-int open_claw_bigger_position = 92;
-int close_claw_position = 74; //74
-int close_bit_position = 78;
-int arm_stretch_position = 39; // 弃用
-int arm_shrink_position = 75;  // 弃用
-int arm_shrink_all_position = 75; // 弃用
-int state_spin_position_1 = 25;  //120度对应44.44
-int state_spin_position_2 = 69;
-int state_spin_position_3 = 111; 
+//? 夹爪舵机参数
+const int open_claw_avoid_collide_position = 108; //从物料的侧面过的张开角度 //TODO 待修改
+const int open_claw_180_position = 104;  
+const int open_claw_position = 86; 
+const int open_claw_bigger_position = 92; 
+const int close_claw_position = 74; 
+const int close_bit_position = 78; //略微夹紧
 
-int state_spin_without_claw_position_1 = 25;  
-int state_spin_without_claw_position_2 = 69;
-int state_spin_without_claw_position_3 = 111;
+//? 载物盘舵机参数 
+const int state_spin_position_1 = 25;  //TODO 待修改
+const int state_spin_position_2 = 69;//TODO 待修改
+const int state_spin_position_3 = 111; //TODO 待修改
 
-
-// 精密舵机参数范围0-4095
-int feet_acc = 180; //180
-int feet_acc_claw_up_down = 240;
+const int state_spin_without_claw_position_1 = 25;   //TODO 待修改
+const int state_spin_without_claw_position_2 = 69;//TODO 待修改
+const int state_spin_without_claw_position_3 = 111;//TODO 待修改
 
 
 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!     飞特舵机调试的注意事项
+//!     飞特舵机参数范围0-4095
+//!     飞特舵机速度范围0-3400
+//!     飞特舵机加速度范围0-255
+//!     对于机械臂伸缩，2000步进对应12.4cm，0.0062cm/pulse
 
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//! 精密舵机2000对应12.4cm， 0.0062cm/pulse
-//? 以下为正常物料参数  
-int put_claw_down_pile_position = 1878; 
-int put_claw_down_state_position = 777 ; //从车的载物盘上 982
-int put_claw_down_position = 1701;  // 从转盘上取物料  
-int put_claw_down_ground_position = 3010; // 放在地上 3144
-int put_claw_up_top_position =280; // 最高点  
-int put_claw_up_position =1667; //  看粗调移动底盘的位置
-int put_claw_down_near_ground_position = 2770; //!细调放置的位置
-int put_claw_down_near_plate_position = 1600; //转盘放置细调的位置
-//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+const int feet_acc = 180; //TODO 待修改
+const int feet_acc_claw_up_down = 240;
 
 
+//? 初赛物料升降参数（一号舵机）  
+//TODO 待修改（全部重新测）
+const int put_claw_down_pile_position = 1878;  
+const int put_claw_down_state_position = 777 ; //从车的载物盘上 982
+const int put_claw_down_position = 1701;  // 从转盘上取物料  
+const int put_claw_down_ground_position = 3010; // 放在地上 3144
+const int put_claw_up_top_position =280; // 最高点  
+const int put_claw_up_position =1667; //  看粗调移动底盘的位置
+const int put_claw_down_near_ground_position = 2770; //!细调放置的位置
+const int put_claw_down_near_plate_position = 1600; //转盘放置细调的位置
 
 
-//? 以下为通用参数
-int claw_spin_position_front = 3329 ; // 2号精密舵机回到前方
-int claw_spin_position_state = 1590; // 2号精密舵机回到载物盘//TODO 待测量
-int claw_spin_without_claw_position_state = 1590; //与上面一样
-
-// //? 异形三棱柱
-// int put_claw_down_pile_position = 2012; 
-// int put_claw_down_state_position = 973 ; //从车的载物盘上 982
-// int put_claw_down_position = 1942;  // 从转盘上取物料  
-// int put_claw_down_ground_position = 3250; // 放在地上 3144
-// // int put_claw_down_ground_position = 3250; //! 夹取会滑的物料放在地上 
-// int put_claw_up_top_position =290; // 最高点  
-// int put_claw_up_position =1725; //  看粗调移动底盘的位置
-// int put_claw_down_near_ground_position = 3073; //!细调放置的位置
-// // int put_claw_down_near_ground_position = 2900; //夹取会滑的物料时的位置
-// int put_claw_down_near_plate_position = 1837; //转盘放置细调的位置
+//? 机械臂前端旋转参数（二号舵机）
+const int claw_spin_position_front = 3329 ; // 2号精密舵机回到前方
+const int claw_spin_position_state = 1590; // 2号精密舵机回到载物盘//TODO 待测量
+const int claw_spin_without_claw_position_state = 1590; //与上面一样
 
 
+//? 中板整体旋转参数（三号舵机）
+//TODO 待测量（全部）
+const int theta_left_position_limit = 1800;
+const int theta_right_position_limit = 3800;
+const int theta_right_position_rlimit = 3300;
+const int theta_left_position_rlimit = 2440;
+const int r_front_position_limit = 4090;
+const int r_back_position_limit = 1950;
+const int r_back_position_rlimit = 3200; // 当theta超过rlimit，r的限制值不能小于这个值
 
-//? 三棱柱
-// int put_claw_down_pile_position = 1896; 
-// int put_claw_down_state_position = 680 ; //从车的载物盘上 982
-// int put_claw_down_position = 1800;  // 从转盘上取物料  
-// // int put_claw_down_ground_position = 3144; // 放在地上 3144
-// int put_claw_down_ground_position = 3000; //! 夹取会滑的物料放在地上 
-// int put_claw_up_top_position =376; // 最高点  
-// int put_claw_up_position =1725; //  看粗调移动底盘的位置
-// // int put_claw_down_near_ground_position = 3003; //!细调放置的位置
-// int put_claw_down_near_ground_position = 2800; //夹取会滑的物料时的位置
-// int put_claw_down_near_plate_position = 1652; //转盘放置细调的位置
+const int middle_arm = 2895;  // 舵机3在不进行动作时的默认位置
 
-
-//? 圆台凸 加长高跟鞋爪子3.14
-// int put_claw_down_pile_position = 2080; //
-// int put_claw_down_state_position = 900 ; //从车的载物盘上  737
-// int put_claw_down_position = 1964;  // 从转盘上取物料  1625
-// int put_claw_down_ground_position = 3267; // 放在地上 2899
-// int put_claw_up_top_position =536; // 最高点  360
-// int put_claw_up_position =1845; //  看粗调移动底盘的位置
-// int put_claw_down_near_ground_position = 3138; //细调放置的位置
-// int put_claw_down_near_plate_position = 1772; //转盘放置细调的位置
-
-//? 圆台凹 细细20cm 
-// int put_claw_down_pile_position = 2040; //
-// int put_claw_down_state_position = 840; //从车的载物盘上  737
-// int put_claw_down_position = 1840;  // 从转盘上取物料  1625
-// int put_claw_down_ground_position = 3129; // 放在地上 2899
-// int put_claw_up_top_position =376; // 最高点  360
-// int put_claw_up_position =1725; //  看粗调移动底盘的位置
-// int put_claw_down_near_ground_position = 3024; //细调放置的位置
-// int put_claw_down_near_plate_position = 1652; //转盘放置细调的位置
-
-// //? 以下为圆台烟囱物料参数
-// int put_claw_down_pile_position = 2250; //1819
-// int put_claw_down_state_position = 1080 ; //从车的载物盘上  737
-// int put_claw_down_position = 2100;  // 从转盘上取物料  1625
-// int put_claw_down_ground_position = 3476; // 放在地上 2899
-// int put_claw_up_top_position =536; // 最高点  360
-// int put_claw_up_position =1845; //  看粗调移动底盘的位置
-// int put_claw_down_near_ground_position = 3265; //细调放置的位置
-// int put_claw_down_near_plate_position = 1772; //转盘放置细调的位置
-
-// ? 以下为圆台凸物料参数
-// int put_claw_down_pile_position = 2250; //1819
-// int put_claw_down_state_position = 1080 ; //从车的载物盘上  737
-// int put_claw_down_position = 2070;  // 从转盘上取物料  1625
-// int put_claw_down_ground_position = 3476; // 放在地上 2899
-// int put_claw_up_top_position =536; // 最高点  360
-// int put_claw_up_position =1845; //  看粗调移动底盘的位置
-// int put_claw_down_near_ground_position = 3265; //细调放置的位置
-// int put_claw_down_near_plate_position = 1772; //转盘放置细调的位置
-
-//? 物料9第三版爪子
-// int put_claw_down_pile_position = 2250; //1819
-// int put_claw_down_state_position = 1150 ; //从车的载物盘上  737
-// int put_claw_down_position = 2155;  // 从转盘上取物料  1625
-// int put_claw_down_ground_position = 3470; // 放在地上 2899
-// int put_claw_up_top_position =536; // 最高点  360
-// int put_claw_up_position =1845; //  看粗调移动底盘的位置
-// int put_claw_down_near_ground_position = 3265; //细调放置的位置
-// int put_claw_down_near_plate_position = 1772; //转盘放置细调的位置
-
-// 机械臂位置限制 
-// 2280左 3400右
-// 2000后 4050前
-//TODO 待测量
-int theta_left_position_limit = 1800;
-int theta_right_position_limit = 3800;
-int theta_right_position_rlimit = 3300;
-int theta_left_position_rlimit = 2440;
-int r_front_position_limit = 4090;
-int r_back_position_limit = 1950;
-int r_back_position_rlimit = 3200; // 当theta超过rlimit，r的限制值不能小于这个值
+//? 机械臂整体伸缩参数（四号舵机）
+//TODO 待测量（全部）
+const int shrink_arm = 3800;  //机械臂运动到从车上载物盘抓取物料
+const int stretch_arm = 2704; // 机械臂默认伸长位置
+const int shrink_arm_all = 2704;
 
 
-int shrink_arm = 3800; 
-int stretch_arm_longgest = 2704;
-int stretch_camera = 2704;
-int shrink_arm_all = 2704;
+//? 左中右三个动作对应的各自舵机参数
+//TODO 待测量（全部）
+const int left_2 = 3929; 
+const int left_3 = 2070;  //! 进行了一些偏置
+const int left_3_pileup = 2050;
+const int left_4 =  3800; 
 
-int init_plate = 2632;// 初始抓转盘
+const int right_2 = 3929; 
+const int right_3 = 3780;  //! 进行了一些偏置
+const int right_3_pileup = 3760;
+const int right_4 =  3810; 
+
+const int middle_2 = 3929;
+const int middle_3 = 2940; //! 进行了一些偏置，故与middle_arm不同
+const int middle_3_pileup = 2905;
+const int middle_4 =  stretch_arm;  //TODO 这里可以考虑用和其不一样的值
 
 
-int left_2 = 3929; 
-int left_3 = 2070;  
-int left_3_pileup = 2050;
-int left_4 =  3800; 
 
-int right_2 = 3929; 
-int right_3 = 3780;  
-int right_3_pileup = 3760;
-int right_4 =  3810; 
-
-int middle_2 = 3929;
-int middle_3 = 2940;
-int middle_3_pileup = 2905;
-int middle_4 =  2704;  //TODO 务必和shrink一样
-
-int right_arm = 2935;
-int left_arm = 2935;
-int middle_arm = 2895;  //2865 用了很久
 volatile int x_plate_error = 0, y_plate_error = 0; // 载物盘中心和色环中心的偏差
 volatile int x_camera_error = 0, y_camera_error = 0; // 物料中心和色环中心的偏差
 volatile int x_camera_error_plate = 0, y_camera_error_plate = 0; // 载物盘带有色环时，中心和色环中心的偏差
-volatile int  r_servo_now =  2704; // 机械臂伸缩舵机的位置
-volatile int  theta_servo_now = 2823; // 机械臂中板旋转舵机的位置
 
+//! 初始化，需要和上面保持一致
+volatile int  r_servo_now =  stretch_arm; // 机械臂伸缩舵机的位置
+volatile int  theta_servo_now = middle_arm; // 机械臂中板旋转舵机的位置
 
 
 volatile int x_error_last = 0, y_error_last = 0; // 上一次的偏差
 volatile int x_error_long_last = 0, y_error_long_last = 0; // 上上次的偏差
 
+extern const float pixel_to_distance_r,pixel_to_distance_theta; 
+extern const float Kp_theta,Kd_theta,Ki_theta;
+extern const float Kp_r,Kd_r,Ki_r;
 
-// 机械臂位置阈值（废弃）
-int r_big_limit = 45;
-int r_mid_limit = 10;
-int r_small_limit = 2;
-int theta_big_limit = 45;
-int theta_mid_limit = 10;
-int theta_small_limit = 2;
-
-int r_pulse_servo_big = 45; // 精密舵机伸缩位置步进（大）
-int r_pulse_servo_mid = 18; // 精密舵机伸缩位置步进（中）
-int r_pulse_servo_small = 10; // 精密舵机伸缩位置步进（小）
-
-int theta_pulse_servo_big = 35; // 精密舵机旋转位置步进（大）
-int theta_pulse_servo_mid = 15; // 精密舵机旋转位置步进（中）   
-int theta_pulse_servo_small = 5; // 精密舵机旋转位置步进（小）
-
-int previous_theta_error = 0,pre_previous_theta_error = 0;
-int previous_r_error = 0,pre_previous_r_error = 0;
 
 char temp_function_char[50];
 long UART_count = 0;
@@ -1954,8 +1867,8 @@ void arm_stretch(void)
     // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_stretch_position);
     if( ReadPos(4) >1500)
     {
-        feetech_servo_move(4,stretch_arm_longgest,4095,feet_acc);
-        r_servo_now = stretch_arm_longgest;
+        feetech_servo_move(4,stretch_arm,4095,feet_acc);
+        r_servo_now = stretch_arm;
     }
 }
 
@@ -1972,6 +1885,8 @@ void arm_shrink(void)
     }
 }
 
+/// @brief 忘了干什么的
+/// @param  
 void arm_shrink_all(void)
 {
     // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_all_position);

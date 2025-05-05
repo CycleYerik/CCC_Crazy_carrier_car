@@ -833,10 +833,9 @@ Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp.sp --apcs=
 interwork --depend=ccc_crazy_carrier_car\startup_stm32f407xx.d -occc_crazy_carr
 ier_car\startup_stm32f407xx.o -I.\RTE\_CCC_crazy_carrier_car -ID:\MDK\ARM\CMSIS
 \5.8.0\CMSIS\Core\Include -ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Devi
-ce\ST\STM32F4xx\Include --predefine="__EVAL SETA 1" --predefine="__MICROLIB SET
-A 1" --predefine="__UVISION_VERSION SETA 536" --predefine="_RTE_ SETA 1" --pred
-efine="STM32F407xx SETA 1" --predefine="_RTE_ SETA 1" --list=startup_stm32f407x
-x.lst startup_stm32f407xx.s
+ce\ST\STM32F4xx\Include --predefine="__MICROLIB SETA 1" --predefine="__UVISION_
+VERSION SETA 536" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" -
+-predefine="_RTE_ SETA 1" --list=startup_stm32f407xx.lst startup_stm32f407xx.s
 
 
 
@@ -1921,4 +1920,4 @@ Symbol: __main
       At line 176 in file startup_stm32f407xx.s
 Comment: __main used once
 2 symbols
-446 symbols in table
+445 symbols in table

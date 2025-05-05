@@ -1,4 +1,13 @@
 #include "my_usart.h"
+
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!  
+
+
+
+
+
+
 /// usart1,2,3接收缓冲区
 extern int is_raspi_get_massage;
 uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128],rxdata_u4[50],rxdata_u5[50]; // usart1,2,3,4接收缓冲区
@@ -59,15 +68,12 @@ extern int x_move_before_slight_move ;
 extern int is_slight_spin_and_move;
 
 float line_spin_error_1 = 0, line_spin_error_2 = 0;
-int Kp_line_spin = 1;  //1.0
-int Ki_line_spin = 0.05;  //0.05
-int Kd_line_spin = 0.1;  //0.1
+
+extern float Kp_line_spin,Kd_line_spin,Ki_line_spin;
 
 int temp_spin_which_direction = 0;
 
-#define Kp_slight_move 0.28  // 0.28
-#define Ki_slight_move 0.02 // 0.02
-#define Kd_slight_move 0.08 // 0.08
+extern const float Kp_slight_move,Ki_slight_move,Kd_slight_move;
 
 
 extern int is_get_massage;
@@ -87,6 +93,14 @@ extern int is_get_material_from_temp_area;
 extern int test_is_uart_message_lost,uart_data;
 
 extern int is_put_material_in_plate;
+
+extern const float y_plate_k,x_plate_k;
+extern const float xy_move_k;
+
+extern const float spin_limit_max ;
+extern const float spin_limit_min ; // 旋转的最小值
+extern const float move_limit_max; // 移动的最大值
+extern const float move_limit_min ; // 移动的最小值
 
 /**
 	* @brief   USART1中断函数
@@ -638,27 +652,27 @@ void UART_receive_process_3(void)
             if(rxdata_u3[0] == 0x01)
             {
                 x_plate_error = (int) (rxdata_u3[1] <<8 | rxdata_u3[2]);
-                x_plate_error *= 1;
+                x_plate_error *= x_plate_k;
                 
 
             }
             else if(rxdata_u3[0] == 0x02)
             {
                 x_plate_error = - (int) (rxdata_u3[1] <<8 | rxdata_u3[2]);
-                x_plate_error *= 1;
+                x_plate_error *= x_plate_k;
 
             }
             if(rxdata_u3[3] == 0x01)
             {
                 y_plate_error = (int) (rxdata_u3[4] <<8 | rxdata_u3[5]);
-                y_plate_error *= 7;
+                y_plate_error *= y_plate_k;
                 is_adjust_plate_servo = 0;
 
             }
             else if(rxdata_u3[3] == 0x02)
             {
                 y_plate_error = - (int) (rxdata_u3[4] <<8 | rxdata_u3[5]);
-                y_plate_error *= 7;
+                y_plate_error *= y_plate_k;
                 is_adjust_plate_servo = 0;
             }
         }
@@ -715,13 +729,13 @@ void UART_receive_process_3(void)
             if(rxdata_u3[0] == 0x01)
             {
                 temp_spin_which_direction = Kp_line_spin * (float)rxdata_u3[1] + Ki_line_spin * ((float)rxdata_u3[1] +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(float)rxdata_u3[1]+ line_spin_error_2);
-                if(temp_spin_which_direction > 10)
+                if(temp_spin_which_direction > spin_limit_max)
                 {
-                    spin_which_direction = 10;
+                    spin_which_direction = spin_limit_max;
                 }
-                else if(temp_spin_which_direction < 0.4)
+                else if(temp_spin_which_direction < spin_limit_min)
                 {
-                    spin_which_direction = 0.4;
+                    spin_which_direction = spin_limit_min;
                 }
                 else
                 {
@@ -733,13 +747,13 @@ void UART_receive_process_3(void)
             else if(rxdata_u3[0] == 0x02)
             {
                 temp_spin_which_direction = Kp_line_spin * (-(float)rxdata_u3[1]) + Ki_line_spin * ((-(float)rxdata_u3[1]) +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(-(float)rxdata_u3[1])+ line_spin_error_2);
-                if(temp_spin_which_direction < -10)
+                if(temp_spin_which_direction < -spin_limit_max)
                 {
-                    spin_which_direction = -10;
+                    spin_which_direction = -spin_limit_max;
                 }
-                else if(temp_spin_which_direction > -0.4)
+                else if(temp_spin_which_direction > -spin_limit_min)
                 {
-                    spin_which_direction = -0.4;
+                    spin_which_direction = -spin_limit_min;
                 }
                 else
                 {
@@ -765,8 +779,8 @@ void UART_receive_process_3(void)
             {
                 y_move_position = - (float)  ( rxdata_u3[6]<<8 | rxdata_u3[7]);
             }
-		    x_move_position *= 0.2;  //TODO magic number
-            y_move_position *= 0.2;
+		    x_move_position *= xy_move_k;  //TODO magic number
+            y_move_position *= xy_move_k;
             x_err_1 = x_move_position;
             y_err_1 = y_move_position;
             x_err_2 = x_err_1;
@@ -775,37 +789,37 @@ void UART_receive_process_3(void)
             y_err_3 = y_err_2;
             x_move_position = Kp_slight_move * (x_err_1) + Ki_slight_move * (x_err_1+x_err_2 + x_err_3) + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2)/2.0;
             y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + x_err_2 + x_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2.0 ;
-            if(x_move_position > 15)
+            if(x_move_position > move_limit_max)
             {
-                x_move_position = 15;
+                x_move_position = move_limit_max;
             }
-            if(y_move_position > 15)
+            if(y_move_position > move_limit_max)
             {
-                y_move_position = 15;
+                y_move_position = move_limit_max;
             }
-            if(x_move_position < -15)
+            if(x_move_position < -move_limit_max)
             {
-                x_move_position = -15;
+                x_move_position = -move_limit_max;
             }
-            if(y_move_position < -15)
+            if(y_move_position < -move_limit_max)
             {
-                y_move_position = -15;
+                y_move_position = -move_limit_max;
             }
-            if(x_move_position < 0.5 && x_move_position >0)
+            if(x_move_position < move_limit_min && x_move_position >0)
             {
-                x_move_position = 0.5;
+                x_move_position = move_limit_min;
             }
-            if(y_move_position < 0.5 && y_move_position >0)
+            if(y_move_position < move_limit_min && y_move_position >0)
             {
-                y_move_position = 0.5;
+                y_move_position = move_limit_min;
             }
-            if(x_move_position > -0.5 && x_move_position <0)
+            if(x_move_position > -move_limit_min && x_move_position <0)
             {
-                x_move_position = -0.5;
+                x_move_position = -move_limit_min;
             }
-            if(y_move_position > -0.5 && y_move_position <0)
+            if(y_move_position > -move_limit_min && y_move_position <0)
             {
-                y_move_position = -0.5;
+                y_move_position = -move_limit_min;
             }
         }
 

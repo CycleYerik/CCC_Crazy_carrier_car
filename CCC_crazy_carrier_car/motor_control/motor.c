@@ -1,30 +1,17 @@
 #include "motor.h"
 
-
-
-// 以下数据暂时都不用
-// // 速度控制PID
-// float pos = 0.0f, Motor_Cur_Pos_1 = 0.0f, Motor_Cur_Pos_2 = 0.0f, Motor_Cur_Pos_3 = 0.0f, Motor_Cur_Pos_4 = 0.0f; // 电机当前实际位置
-// float Motor_target_vel_1 = 10, Motor_target_vel_2 = 10, Motor_target_vel_3 = 10, Motor_target_vel_4 = 10; // 电机目标速度(默认为10r/min)
-// float vel = 0.0f, Motor_Vel_1 = 0.0f, Motor_Vel_2 = 0.0f, Motor_Vel_3 = 0.0f, Motor_Vel_4 = 0.0f; // 电机实际速度
-// float vel1_error= 0,vel1_error_last = 0,vel1_error_long_last = 0; // 电机1速度误差
-// float vel2_error= 0,vel2_error_last = 0,vel2_error_long_last = 0; // 电机2速度误差
-// float vel3_error= 0,vel3_error_last = 0,vel3_error_long_last = 0; // 电机3速度误差
-// float vel4_error= 0,vel4_error_last = 0,vel4_error_long_last = 0; // 电机4速度误差
-// float KP_vel = 2, KI_vel = 0.1, KD_vel = 0; // 速度控制PID参数
-// // 位置控制PID
-// float KP_y = 1, KI_y = 0.1, KD_y = 0.1; // y轴PID参数
-// float KP_x = 1, KI_x = 0.1, KD_x = 0.1; // x轴PID参数
-// float error_x = 0, error_last_x = 0, error_pre_x = 0; // x轴PID误差
-// float error_y = 0, error_last_y = 0, error_pre_y = 0; // y轴PID误差
-// float error_x_sum = 0, error_y_sum = 0; // x、y轴误差和
-// float x_bias_limit = 1, y_bias_limit = 1; // x、y偏差限制,单位cm,待根据视觉情况调整
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!     步进电机参数
+//!     步进电机速度0-5000
+//!     步进电机加速度0-255
+//!     5cm前后对应188像素
+//!     5cm左右对应像素181
 
 /// 所有运动情况下的加速度
-float acceleration = 180;  //180
-float acceleration_spin = 180; // 180
+extern float acceleration;
+extern float acceleration_spin;
 
-float adjust_spin_and_move_scale = 1; // 旋转和移动的比例
+extern float adjust_spin_and_move_scale; // 旋转和移动的比例
 
 
 
@@ -34,57 +21,13 @@ float volatile x_move_position = 0, y_move_position = 0;
 /// @brief 顺逆时针旋转速度（0为不旋转）
 float volatile spin_which_direction = 0; 
 
-/// @brief （废弃）单次位置移动速度（树莓派视觉联调时的移动速度）
-float position_move_velocity = 30; 
+extern int motor_vel_adjust_with_spin ;
 
-/// @brief （废弃）旋转速度（树莓派视觉联调时的旋转速度）
-float spin_move_velocity = 8; 
-
-int motor_vel_adjust_with_spin = 20;
-
-// 暂时不用
-float x_move_time=0; // x轴移动时间,ms
-float y_move_time = 0; // y轴移动时间,ms
-float all_move_time = 0; // 视觉联调时总移动时间(根据所需的移动时间取最大值)
 
 volatile int motor_vel_target_1 = 0, motor_vel_target_2 = 0, motor_vel_target_3 = 0, motor_vel_target_4 = 0;
 
 
-// /// @brief （废弃）根据树莓派发送的x、y偏差值进行PID位置控制
-// /// @param x_bias 圆心到视野中心位置的x偏差，以视野中心为原点，向右为正
-// /// @param y_bias 圆心到视野中心位置的y偏差，以视野中心为原点，向上为正
-// /// @return 
-// int PID_motor_control(float x_bias, float y_bias)
-// {
-//     if(x_bias < x_bias_limit && y_bias < y_bias_limit)
-//     {
-//         stop();
-//         return 1;
-//     }
-//     else
-//     {
-//         //! 加入位置控制
-//         // error_x = x_bias;
-//         // error_y = y_bias;
 
-//         // float P_x = KP_x * error_x;
-//         // float I_x = KI_x * (error_x + error_last_x);
-//         // float D_x = KD_x * (error_x - error_last_x);
-
-//         // float P_y = KP_y * error_y;
-//         // float I_y = KI_y * (error_y + error_last_y);
-//         // float D_y = KD_y * (error_y - error_last_y);
-
-//         // float output_x = P_x + I_x + D_x;
-//         // float output_y = P_y + I_y + D_y;
-
-//         // move_all_direction(2, output_x, output_y);
-        
-        
-
-//         return 0;
-//     }
-// }
 void slight_spin_plate_line(void)
 {
 

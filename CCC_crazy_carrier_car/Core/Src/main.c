@@ -58,12 +58,96 @@
 
 /**************************************各种全局变量区*****************************************/
 
-int is_put_adjust_with_material = 1 ; //! 1则为夹着物料进行调整，0则为不夹着物料进行调整
-int is_pile_adjust = 0; //! 1则为码垛时细调整，0为不调整
 
-int adjust_position_with_camera_time = 10;
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!      重要变量（可能要根据不同情况进行修改的）
 
-// 串口相关变量
+
+int is_put_adjust_with_material = 1 ; // 1则为夹着物料进行调整，0则为不夹着物料进行调整
+int is_pile_adjust = 0; // 1则为码垛时细调整，0为不调整
+
+
+int is_get_material_from_temp_area = 0; // 是否从暂存取物料
+
+
+
+//! 目标颜色数组
+volatile int target_colour[6] = {2,1,3,1,3,2}; 
+volatile int material_place[3] = {0,0,0}; //从暂存区夹取随机位置的物料时用的数组
+
+
+
+
+//!底盘调整相关
+const float Kp_slight_move = 0.28;
+const float Ki_slight_move = 0.02;
+const float Kd_slight_move = 0.08;
+
+const float Kp_line_spin = 1;
+const float Ki_line_spin = 0.05;
+const float Kd_line_spin = 0.1;
+
+//TODO 下面这两个考虑优化到只剩一个
+const float xy_move_k = 0.2; //底盘微调时xy乘上的比例 
+const float adjust_spin_and_move_scale = 1; // 旋转和移动的比例
+
+const float spin_limit_max = 10;
+const float spin_limit_min = 0.4; // 旋转的最小值
+const float move_limit_max = 15; // 移动的最大值
+const float move_limit_min = 0.5; // 移动的最小值
+
+//底盘电机移动相关的速度
+int motor_vel_adjust_with_spin = 20; // 底盘调整时的最大速度
+int open_loop_x_move_velocity = 120; 
+int open_loop_move_velocity = 180; 
+int open_loop_spin_velocity = 150; 
+
+// 步进电机加速度
+float acceleration = 180;
+float acceleration_spin = 180;
+
+
+
+
+
+//!机械臂调整相关
+//!!!!!!!!      注意：机械臂还有大量参数在my_servo.c中
+//!!!!!!!!      注意：机械臂还有大量参数在my_servo.c中
+//!!!!!!!!      注意：机械臂还有大量参数在my_servo.c中
+const float Kp_theta = 0.25;
+const float Ki_theta = 0.012;
+const float Kd_theta = 0.01;
+const float Kp_r = 0.40;
+const float Ki_r = 0.01;
+const float Kd_r = 0.02;
+
+const float pixel_to_distance_theta = 1.2; // theta方向的像素到实际距离的比例
+const float pixel_to_distance_r = 4; // r方向的像素到实际距离的比例
+
+//机械臂转盘单次微调系数
+const float x_plate_k = 1;
+const float y_plate_k = 7;
+
+int adjust_position_with_camera_time = 10; //机械臂细调的延时时间
+
+
+
+
+//! 调整的超时时间
+int timeout_limit = 1000; // 超时时间限制，单位ms
+int timeout_limit_line = 500;
+
+
+
+
+
+
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//! 各种extern和声明（一般无需修改的）
+
+//串口相关变量
 char wifi_massage[50]; // 串口屏发送的数据
 int is_wifi_already_get_message = 0;
 int is_raspi_get_massage = 0;
@@ -71,46 +155,38 @@ extern uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128],rxdata_u4[50],rxdata_u
 extern uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1,received_rxdata_u5,received_rxdata_u4; // 暂存usart2,3接收到的数据单字节变量
 extern uchar rxflag_u2,rxflag_u3,rxflag_u1,rxflag_u4,rxflag_u5; // usart2,3接收标志位变量
 
+
+// 各种底盘标志位和变量
 extern float acceleration; // 加速度
 extern float acceleration_spin;
 extern float x_move_position, y_move_position; // x、y
 extern int is_motor_start_move; 
 extern int is_slight_move,motor_state,is_slight_spin, is_slight_spin_and_move; // 微调底盘所用的标志位变量
-
 extern volatile int x_camera_error, y_camera_error; // 视觉闭环微调时的x、y偏差值
-int is_find_circle = 0;
 
-int temp_plate=0;
 
-float volatile gyro_z = 90;
+int is_find_circle = 0; //调整时是否找到圆环
+int temp_plate=0; //当次抓取的物料
 
-/// @brief 底盘电机移动相关的速度
-int open_loop_x_move_velocity = 120; //100
-int open_loop_move_velocity = 180; //200
-int open_loop_spin_velocity = 150; //150 
+float volatile gyro_z = 90; // 陀螺仪z轴角度（暂时废弃）
 
-// 目标颜色数组
-volatile int target_colour[6] = {2,1,3,1,3,2}; 
-volatile int material_place[3] = {0,0,0}; //从暂存区夹取随机位置的物料时用的数组
-int move_sequence_bias = 0; // 根2不同顺序移动带来的位置相对色环位置的偏差，如中-左-右，则偏差为0、-x、+x 
+int move_sequence_bias = 0; // 根据不同顺序移动带来的位置相对色环位置的偏差，如中-左-右，则偏差为0、-x、+x （暂时废弃）
 
 /// @brief 用于判断当前是第几个case,
 int case_count = 0; 
-int timeout_limit = 1000; // 超时时间限制，单位10ms
-int timeout_limit_line = 500;
 extern int tim3_count;
 
-int is_get_qrcode_target = 0; //!!!!!!
+int is_get_qrcode_target = 0; //是否已经获取二维码任务
 int volatile is_start_get_plate = 0; // 开始从转盘抓
 int volatile start_check_plate_back_state = 0;
 int volatile get_plate = 0; // 1 2 3 
 int is_adjust_plate_servo = 0; // 根据视觉定位在转盘处实现移动机械臂抓取物料
 int is_adjust_plate_first = 0;
-int get_plate_count = 0;
+int get_plate_count = 0; // 从转盘上抓取物料的计数
 
 extern volatile int x_plate_error , y_plate_error ;
 
-int is_adjust_motor_in_tim = 1; // 如果为1，则在定时器中进行电机调整，否则在main的while中进行电机调整
+int is_adjust_motor_in_tim = 1; // （废弃）如果为1，则在定时器中进行电机调整，否则在main的while中进行电机调整
 extern int acceleration_adjust;
 
 float now_spin_which_direction = 0;
@@ -123,7 +199,7 @@ int is_1_get = 0, is_2_get = 0, is_3_get = 0;
 int is_get_empty = 0,start_judge_empty = 0;
 int is_get_empty_finish = 0; // 空抓判断完成
 
-extern int middle_arm,stretch_camera;
+extern int stretch_camera;
 
 int seeking_for_circle = 0; // 当还没看到完整色环时置1
 int is_servo_adjust= 0; // 当在视觉闭环微调舵机时置1
@@ -134,6 +210,7 @@ extern volatile int  theta_servo_now ; // 机械臂中板旋转舵机的位置
 extern int left_2, left_3, left_4;
 extern int middle_2, middle_3, middle_4;
 extern int right_2, right_3, right_4;
+extern const int middle_arm,stretch_arm;
 
 extern volatile int test_slight_move; // 用于判断微调是否完成
 extern int spin_which_direction;
@@ -145,9 +222,9 @@ extern float motor_vel_1,motor_vel_2,motor_vel_3,motor_vel_4;
 int servo_adjust_status = 5;
 
 // 飞特舵机相关加速度
-int acc_front_start = 200,acc_front_stop = 200;
-int acc_x_same_start = 150,acc_x_same_stop = 150;
-int acc_spin_start = 130,acc_spin_stop = 130;
+// int acc_front_start = 200,acc_front_stop = 200;
+// int acc_x_same_start = 150,acc_x_same_stop = 150;
+// int acc_spin_start = 130,acc_spin_stop = 130;
 
 float velocity_front_y42 = 120,velocity_x_y42 = 80,velocity_spin_y42 = 80; // 废弃
 
@@ -172,15 +249,15 @@ int is_plate_move_adjust = 0; // 在将物料放置在圆盘带有色环时是�
 int put_plate_count = 0; // 将物料放置在圆盘带有色环时的计数
 int is_third_preput = 0; // 是否可以进入第三次放置
 
-int is_get_material_from_temp_area = 0; // 是否从暂存取物料
+
 
 int test_is_uart_message_lost = 0;
 int uart_data = 0;
 
 int is_put_material_in_plate = 0;
 
-int theta_servo_value[] = {2895,2895,2895,2895}; //TODO 需要修改
-int r_servo_value[] = {2704,2704,2704,2704};
+int theta_servo_value[4] = {0}; //TODO 需要修改
+int r_servo_value[4] = {0};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -205,7 +282,7 @@ int fgetc(FILE *f)
     return ch;
 }
 void all_process_main(void);
-void move_follow_sequence(int target_colour_input[6], int case_count_input, int status);
+void move_follow_sequence(volatile int target_colour_input[6], int case_count_input, int status);
 void start_and_come_to_turntable(void);
 void come_to_raw_processing_area(void);
 void come_to_temporary_area(void);
@@ -254,11 +331,54 @@ int main(void)
   /* USER CODE BEGIN 1 */
 
     /**********************************main函数说明****************************************/
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //!  本程序中包含各种测试流程和比赛流程，因为调试阶段各种动作和指令的耦合性比较强，故放弃了一些常用动作流程的封装，所以整体较为混乱
     //!  主要的程序即全流程代码
-    //! 
-    //! 
-    //! 
+ 
+    /**
+     * 
+     * 单次的调整（用于在转盘抓取时的调整）
+        void adjust_plate(int x_plate_error_in,int y_plate_error_in)
+
+        根据偏差值进行放置的调整
+        adjust_position_with_camera
+
+        avoid版本，抓哪个位置，是不是根据上次记录的值进行抓取
+        void get_and_load_openloop_avoid(int position,int is_default_position)
+
+        从暂存区的地上抓取物料
+        void get_and_load_openloop_with_temp_put(int position,int state_position)
+
+        初赛用的从转盘圆环上抓取
+        void get_and_load_openloop(int position,int is_default_position)
+
+        将物料放置在转盘上的测试程序
+
+        void get_and_pre_put_spin_plate_avoid_collide(int position)
+
+        void get_and_pre_put_spin_plate(int position)
+
+        avoid版本，pre_put
+        void get_and_pre_put_avoid(int position,int is_pile_up)
+
+        从地上抓取物料，配合调整的动作
+        void pre_put_to_get_ground_material(int position)
+
+        从地上抓物料（不带avoid）
+        void get_material_from_ground(int state_position)
+
+        不夹物料的preput调整
+        void get_and_pre_put_void(int position,int is_pile_up)
+
+        初赛用的，夹着无聊去preput
+        void get_and_pre_put(int position,int is_pile_up)
+
+        在preput后调整物料中心偏差值，使得放置更准（无avoid)
+        void get_and_pre_put_with_state_find_position(int position,int is_pile_up)
+
+     */
+
+
 
   /* USER CODE END 1 */
 
@@ -294,26 +414,22 @@ int main(void)
     /**
      * main.c
      * 
-     * timeout_limit：超时时间限制，单位10ms
+
      * 
      * 
      * 
      * my_usart.c
      * 
-     * 0.1 视觉圆环识别到的x、y偏差值所乘的系数，用于底盘微调
-     * Kp_slight_move、Ki_slight_move、Kd_slight_move：底盘微调的PID参数
-     * 
-     * x_plate_error、y_plate_error *= 2/7 ：转盘调整的x、y偏差值的系数
+
      * 
      * 
      * my_servo.c
      * 
-     * 机械臂位置的big、mid、small阈值和对应的调整步进
+
      * 
      * 
      * motor.c
-     * position_move_velocity
-     * spin_move_velocity
+
      * 
      * 
      */
@@ -361,19 +477,25 @@ int main(void)
     state_spin_without_claw(1);
     // HAL_Delay(900); // TODO等待电机初始化完成，本该是4000ms,目前暂时减少时间
     is_raspi_get_massage = 0; //空闲中断标志位清零
+    for(int i = 0 ; i < 4 ; i++)
+    {
+        theta_servo_value[i] = middle_arm;
+        r_servo_value[i] = stretch_arm;
+    }
 
 
     /*****************单独调试程序***********************/
 
     
 
+
+
     // /***********************比赛初赛所用的全流程***********************/
-
-    //! 全流程测试（3.27版本，更新新的色环放置，更新了最新的转盘放置）
-    //! 全流程测试（3.27版本，更新新的色环放置，更新了最新的转盘放置）
-    //! 全流程测试（3.27版本，更新新的色环放置，更新了最新的转盘放置）
-
-
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
     /************初始化和第一次前往转盘*************/
@@ -565,16 +687,12 @@ int main(void)
         HAL_Delay(1000);
     }
 
-    //! 全流程测试结束
-    //! 全流程测试结束
-    //! 全流程测试结束
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
-
-    
-
-    
-    // //!!!!!!!!!!!!!!!!!!!!!
 
   /* USER CODE END 2 */
 
@@ -1764,7 +1882,7 @@ void spin_adjust_line(void)
 /// @brief （废弃）根据识别到的颜色顺序，移动到对应的位置,左蓝中绿右红， 1红2绿3蓝
 /// @param target_colour_input 
 /// @param case 放置的阶段，1 2 3 对应粗加工区，然后循环，1 2 3 对应暂存区 ，第二轮则又从 1 2 3 开始
-void move_follow_sequence(int target_colour_input[6], int case_count_input, int status)
+void move_follow_sequence(volatile int target_colour_input[6], int case_count_input, int status)
 {
     if (status == 1)
     {

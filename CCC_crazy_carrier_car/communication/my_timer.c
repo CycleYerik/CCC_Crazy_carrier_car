@@ -30,7 +30,7 @@ int calculate_motor_move_time = 0;
 /// @brief 定时器3的时间间隔（10ms）
 int tim3_period = 10; 
 
-extern float x_move_time, y_move_time,all_move_time;
+
 extern float volatile x_move_position, y_move_position;
 extern float position_move_velocity;
 extern float acceleration;
@@ -164,7 +164,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                     // x_move_time = x_move_position / (float)wheel_circumference / (position_move_velocity /60.0) *1000; // x轴移动时间,ms
                     // y_move_time = y_move_position / (float)wheel_circumference / (position_move_velocity /60.0) *1000; // y轴移动时间,ms
                     // all_move_time = x_move_time > y_move_time ? x_move_time : y_move_time; // 两轴移动时间取最大值
-                    all_move_time = 100;
+
+                    
+                    // all_move_time = 100;
                 }
 
                 if (send_motor_message_flag < 6) // 进行电机移动指令的计数
