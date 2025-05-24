@@ -27,18 +27,16 @@ Project File Date:  03/19/2025
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling my_servo.c...
-..\servo\my_servo.c(250): warning:  #177-D: variable "x_origin"  was declared but never referenced
-      int x_origin = x_error;
-..\servo\my_servo.c(251): warning:  #177-D: variable "y_origin"  was declared but never referenced
-      int y_origin = y_error;
-..\servo\my_servo.c(1298): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-      int position = (int)(50 + (200* (float)angle / 270.0));
-..\servo\my_servo.c: 3 warnings, 0 errors
+compiling main.c...
+../Core/Src/main.c(494): warning:  #111-D: statement is unreachable
+      is_adjust_motor_in_tim = 0;
+../Core/Src/main.c(824): warning:  #128-D: loop is not reachable
+      while (1)
+../Core/Src/main.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=24612 RO-data=544 RW-data=496 ZI-data=2704  
+Program Size: Code=17076 RO-data=508 RW-data=484 ZI-data=2196  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 3 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 2 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -62,7 +60,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:07
 </pre>
 </body>
 </html>

@@ -60,45 +60,45 @@ const int put_claw_down_near_plate_position = 1600; //转盘放置细调的位�
 
 
 //? 机械臂前端旋转参数（二号舵机）
-const int claw_spin_position_front = 3329 ; // 2号精密舵机回到前方
-const int claw_spin_position_state = 1590; // 2号精密舵机回到载物盘//TODO 待测量
-const int claw_spin_without_claw_position_state = 1590; //与上面一样
+const int claw_spin_position_front = 3328 ; // 2号精密舵机回到前方
+const int claw_spin_position_state = 1600; // 2号精密舵机回到载物盘//TODO 待测量
+const int claw_spin_without_claw_position_state = 1600; //与上面一样
 
 
 //? 中板整体旋转参数（三号舵机）
 //TODO 待测量（全部）
-const int theta_left_position_limit = 1800;
-const int theta_right_position_limit = 3800;
-const int theta_right_position_rlimit = 3300;
-const int theta_left_position_rlimit = 2440;
-const int r_front_position_limit = 4090;
-const int r_back_position_limit = 1950;
-const int r_back_position_rlimit = 3200; // 当theta超过rlimit，r的限制值不能小于这个值
+const int theta_left_position_limit = 1822;
+const int theta_right_position_limit = 3858;
+const int theta_right_position_rlimit = 3858; //TODO
+const int theta_left_position_rlimit = 1822; //TODO
+const int r_front_position_limit = 3431;
+const int r_back_position_limit = 1261;
+const int r_back_position_rlimit = 2620; // 当theta超过rlimit，r的限制值不能小于这个值
 
-const int middle_arm = 2895;  // 舵机3在不进行动作时的默认位置
+const int middle_arm = 2869;  // 舵机3在不进行动作时的默认位置
 
 //? 机械臂整体伸缩参数（四号舵机）
 //TODO 待测量（全部）
-const int shrink_arm = 3800;  //机械臂运动到从车上载物盘抓取物料
-const int stretch_arm = 2704; // 机械臂默认伸长位置
-const int shrink_arm_all = 2704;
+const int shrink_arm = 2973;  //机械臂运动到从车上载物盘抓取物料
+const int stretch_arm = 1860; // 机械臂默认伸长位置
+const int shrink_arm_all = 1860;
 
 
 //? 左中右三个动作对应的各自舵机参数
 //TODO 待测量（全部）
-const int left_2 = 3929; 
-const int left_3 = 2070;  //! 进行了一些偏置
-const int left_3_pileup = 2050;
-const int left_4 =  3800; 
+const int left_2 = 3328; 
+const int left_3 = 2075;  
+const int left_3_pileup = 2075;
+const int left_4 =  3026; 
 
-const int right_2 = 3929; 
-const int right_3 = 3780;  //! 进行了一些偏置
-const int right_3_pileup = 3760;
-const int right_4 =  3810; 
+const int right_2 = 3328; 
+const int right_3 = 3728; 
+const int right_3_pileup = 3728;
+const int right_4 =  2930; 
 
-const int middle_2 = 3929;
-const int middle_3 = 2940; //! 进行了一些偏置，故与middle_arm不同
-const int middle_3_pileup = 2905;
+const int middle_2 = 3328;
+const int middle_3 = 2888; 
+const int middle_3_pileup = 2888;
 const int middle_4 =  stretch_arm;  //TODO 这里可以考虑用和其不一样的值
 
 
