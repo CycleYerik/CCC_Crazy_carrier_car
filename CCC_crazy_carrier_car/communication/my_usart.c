@@ -102,6 +102,8 @@ extern const float spin_limit_min ; // 旋转的最小值
 extern const float move_limit_max; // 移动的最大值
 extern const float move_limit_min ; // 移动的最小值
 
+extern int is_put_plate;
+
 /**
 	* @brief   USART1中断函数
 	* @param   无
@@ -500,6 +502,15 @@ void UART_receive_process_3(void)
             if(rxdata_u3[0] == '?' && rxdata_u3[1] == 0x03)
             {
                 start_check_plate_back_state = 0;
+            }
+        }
+
+        //? 转盘放置，接收到直接放
+        if(is_put_plate == 0)
+        {
+            if(rxdata_u3[0] == '?' && rxdata_u3[1] == 0x77)
+            {
+                is_put_plate = 1;
             }
         }
 

@@ -43,8 +43,10 @@ const int state_spin_without_claw_position_3 = 111;//TODO 待修改
 //!     飞特舵机加速度范围0-255
 //!     对于机械臂伸缩，2000步进对应12.4cm，0.0062cm/pulse
 
-const int feet_acc = 180; //TODO 待修改
-const int feet_acc_claw_up_down = 240;
+const int feet_acc = 210; //TODO 待修改
+const int feet_acc_claw_up_down = 0;
+const int feet_acc_put_down_ground_slightly = 240;
+const int feet_acc_claw_spin = 0;
 
 
 //? 初赛物料升降参数（一号舵机）  
@@ -75,7 +77,7 @@ const int r_front_position_limit = 3431;
 const int r_back_position_limit = 1261;
 const int r_back_position_rlimit = 2620; // 当theta超过rlimit，r的限制值不能小于这个值
 
-const int middle_arm = 2869;  // 舵机3在不进行动作时的默认位置
+const int middle_arm = 2900;  // 舵机3在不进行动作时的默认位置
 
 //? 机械臂整体伸缩参数（四号舵机）
 //TODO 待测量（全部）
@@ -87,7 +89,7 @@ const int shrink_arm_all = 1860;
 //? 左中右三个动作对应的各自舵机参数
 //TODO 待测量（全部）
 const int left_2 = 3328; 
-const int left_3 = 2075;  
+const int left_3 = 2000;  
 const int left_3_pileup = 2075;
 const int left_4 =  3026; 
 
@@ -97,7 +99,7 @@ const int right_3_pileup = 3728;
 const int right_4 =  2930; 
 
 const int middle_2 = 3328;
-const int middle_3 = 2888; 
+const int middle_3 = middle_arm;
 const int middle_3_pileup = 2888;
 const int middle_4 =  stretch_arm;  //TODO 这里可以考虑用和其不一样的值
 
@@ -271,8 +273,8 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
     {
         y_error = -300;
     }
-    x_camera_error = 0;
-    y_camera_error = 0;
+    // x_camera_error = 0;
+    // y_camera_error = 0; //TODO 这里需要取消注释（如果是）
     
 
     //TODO 加入x、yerror的PID
@@ -895,13 +897,13 @@ void get_and_pre_put(int position,int is_pile_up)
             theta_servo_now = left_3;
         }
     }
-    HAL_Delay(700);
+    HAL_Delay(500);
     put_claw_down_state();
-    HAL_Delay(300); //400
+    HAL_Delay(150); //400
     close_claw();
     HAL_Delay(200);
     put_claw_up_top();
-    HAL_Delay(400); //200
+    HAL_Delay(200); //200
     claw_spin_front(); //TODO 是否可能撞到
     if(position == 1) 
     {
@@ -931,7 +933,7 @@ void get_and_pre_put(int position,int is_pile_up)
     else
     {
         put_claw_down_near_ground();
-        HAL_Delay(1100);
+        HAL_Delay(500);
     }
     if(is_pile_up != 1)
     {
@@ -1107,11 +1109,11 @@ void arm_stretch(void)
 void arm_shrink(void)
 {
     // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_position);
-    if( ReadPos(4) >1500)
-    {
+    // if( ReadPos(4) >1500)
+    // {
         feetech_servo_move(4,shrink_arm,4095,feet_acc);
         r_servo_now = shrink_arm;
-    }
+    // }
 }
 
 /// @brief 忘了干什么的
@@ -1186,7 +1188,7 @@ void state_spin_angles(int angle)
 
 void put_claw_down_ground(void)
 {
-    feetech_servo_move(1,put_claw_down_ground_position,4095,feet_acc_claw_up_down);
+    feetech_servo_move(1,put_claw_down_ground_position,4095,feet_acc_put_down_ground_slightly);
 }
 
 void put_claw_down_near_ground(void)
@@ -1232,7 +1234,7 @@ void claw_spin_front(void)
 {
     if(ReadPos(2) > claw_spin_position_state - 800)
     {
-        feetech_servo_move(2,claw_spin_position_front,4000,feet_acc);
+        feetech_servo_move(2,claw_spin_position_front,4000,feet_acc_claw_spin);
     }
     else
     {
@@ -1247,7 +1249,7 @@ void claw_spin_state(void)
     int now_position = ReadPos(2);
     if(now_position > claw_spin_position_state)
     {
-        feetech_servo_move(2,claw_spin_position_state,4000,feet_acc);
+        feetech_servo_move(2,claw_spin_position_state,4000,feet_acc_claw_spin);
     }
     else
     {
@@ -1257,7 +1259,7 @@ void claw_spin_state(void)
 
 void claw_spin_state_without_claw(void)
 {
-    feetech_servo_move(2,claw_spin_without_claw_position_state,4000,feet_acc);
+    feetech_servo_move(2,claw_spin_without_claw_position_state,4000,feet_acc_claw_spin);
 }
 
 /// @brief 中板旋转,1为中间位置

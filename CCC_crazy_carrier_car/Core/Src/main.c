@@ -72,10 +72,10 @@ int is_pile_adjust = 0; // 1则为码垛时细调整，0为不调整
 
 int is_get_material_from_temp_area = 0; // 是否从暂存取物料
 
-int is_single_route_test = 1; // 1则单独路径移动
+int is_single_route_test = 0; // 1则单独路径移动
 
 //! 目标颜色数组
-volatile int target_colour[6] = {2,1,3,1,3,2}; // 物料颜色序列(1红,2绿,3蓝)
+volatile int target_colour[6] = {1,2,3,1,3,2}; // 物料颜色序列(1红,2绿,3蓝)
 volatile int material_place[3] = {0,0,0}; //从暂存区夹取随机位置的物料时用的数组
 
 
@@ -130,7 +130,7 @@ const float pixel_to_distance_r = 4; // r方向的像素到实际距离的比例
 const float x_plate_k = 1;   // 转盘处机械臂微调系数
 const float y_plate_k = 7;
 
-int adjust_position_with_camera_time = 10; //机械臂细调的延时时间
+int adjust_position_with_camera_time = 200; //机械臂细调的延时时间
 
 
 
@@ -258,6 +258,7 @@ int is_put_material_in_plate = 0;
 
 int theta_servo_value[4] = {0}; //TODO 需要修改
 int r_servo_value[4] = {0};
+int is_put_plate = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -287,9 +288,10 @@ void single_line_adjust(char *pData);
 void single_line_circle_adjust(char *pData);
 void get_from_plate_all_movement(void);
 void get_from_plate_all_movement_with_back_check(void);
-void single_get_and_put_some_with_load_first( int times,int is_pile_up);
+void single_get_and_put_some_with_load_first( int times,int is_pile_up,int is_load);
 void single_get_and_put_some_with_load( int times, int is_load,int is_pile_up,int is_avoid_collide);
 void get_and_put_in_spin_plate_cricle_all(int times);
+void get_from_ground_in_random_position(int times);
 
 /* USER CODE END PFP */
 
@@ -440,14 +442,9 @@ int main(void)
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // 开启TIM1通道4 PWM输出  
 	HAL_Delay(1000); //TODO 比赛时考虑去除，增加启动速度
     my_servo_init(); //!精密舵机初始化，使用精密舵机则必须加入
+    is_adjust_motor_in_tim = 0;
+    motor_state = 1;
 
-
-
-    //!!!!!!!
-
-   
-
-    HAL_Delay(2000);
 
     /*****************初始化动作姿态***********************/
     HAL_Delay(100);
@@ -468,14 +465,10 @@ int main(void)
 
     /*****************单独调试程序***********************/
 
-    // while(1)
-    // {
-    //     move_all_direction_position(acceleration, open_loop_move_velocity, 0, 150);
-    //     HAL_Delay(5000);
-    //     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -150); 
-    //     HAL_Delay(5000);
 
-    // }
+    //TODO 开始调试
+
+
 
 
     // /***********************比赛初赛所用的全流程***********************/
@@ -612,7 +605,7 @@ int main(void)
     //到达粗加工区，开始校正车身位置
     //! 注意：两个函数的配合使用（包括发送的字母标志位）
     single_line_circle_adjust("CC");  // 校正车身位置对准色环
-    single_get_and_put_some_with_load_first(1,0);  // 执行放置动作序列
+    single_get_and_put_some_with_load_first(1,0,1);  // 执行放置动作序列
     }
     else
     {
@@ -648,7 +641,7 @@ int main(void)
     {
     //! 注意：两个函数的配合使用（包括发送的字母标志位）
     single_line_circle_adjust("CC");  // 校正位置对准暂存区
-    single_get_and_put_some_with_load_first(2,0);  // 执行放置动作序列
+    single_get_and_put_some_with_load_first(2,0,0);  // 执行放置动作序列
     }
     else
     {
@@ -732,7 +725,7 @@ int main(void)
     {
     //! 注意：两个函数的配合使用（包括发送的字母标志位）
     single_line_circle_adjust("CC");
-    single_get_and_put_some_with_load_first(3,0);
+    single_get_and_put_some_with_load_first(3,0,1);
     }
     else
     {
@@ -765,7 +758,7 @@ int main(void)
     {
     //! 注意：两个函数的配合使用（包括发送的字母标志位）
     single_line_circle_adjust("CC");
-    single_get_and_put_some_with_load_first(4,1);
+    single_get_and_put_some_with_load_first(4,1,0);
     }
     else
     {
@@ -815,6 +808,10 @@ int main(void)
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
+
+
 
 
   /* USER CODE END 2 */
@@ -952,10 +949,15 @@ void single_line_circle_adjust(char *pData)
 
 
 
-/// @brief 将物料放置在转盘色环上的全流程函数
+/// @brief 将物料放置在转盘色环上的全流程函数（省赛版本，非常复杂）
 /// @param times 
 void get_and_put_in_spin_plate_cricle_all(int times)
 {
+    /**
+     * @brief 目前是在前一个颜色转走后，判断下一个颜色即是要放置的颜色，树莓派就发送信号，然后开始抓取并放置。放完就在原地等，以此类推
+     * 
+     */
+    
     HAL_UART_Transmit(&huart3, (uint8_t*)"PP", strlen("PP"), 50);
     int add_count = 0;
     if(times == 2)
@@ -974,96 +976,52 @@ void get_and_put_in_spin_plate_cricle_all(int times)
         adjust_position_with_camera(x_camera_error, y_camera_error,1); 
         HAL_Delay(adjust_position_with_camera_time); 
     }
-    // temp_r_this = r_servo_now;
-    // temp_theta_this = theta_servo_now;
+    //调整完了位置，可以直接放置了
 
-    for(int i = 0; i < 2; i++) //前两次可以放置
+    for(int i = 0; i < 3; i++) 
     {
-        get_and_pre_put_spin_plate_avoid_collide(target_colour[i+add_count]);
-        // get_and_pre_put_spin_plate(target_colour[i+add_count]); //?
-        is_put_material_in_plate = 0;
-        //等待树莓派标志位
-        while(is_put_material_in_plate != 1)
+        is_put_plate = 0;
+        tim3_count = 0;
+        while(is_put_plate != 1 ) //等待接受信号就放
         {
             HAL_Delay(50);
         }
         
+        
+        get_and_pre_put_spin_plate_avoid_collide(target_colour[i+add_count]);
         is_put_material_in_plate = 0;
         is_third_preput = 0;
+        
         put_claw_down();
         HAL_Delay(300);
         open_claw_180();
         HAL_Delay(300);
 
-        
 
-        while(is_third_preput != 1)
-        {
-            HAL_Delay(50);
-        }
-        
 
     }
 
+    arm_stretch();
+    put_claw_up();
+    whole_arm_spin(1);
 
-    //? 转回去夹起来等
-    state_spin_without_claw_avoid_collide(target_colour[2+add_count]);
-    open_claw_180();
-    put_claw_up_top();
-    // HAL_Delay(500); //TODO 可能会撞到物料
-    int temp_r_servo_position_plate = r_servo_now;
-    int temp_theta_servo_position_plate = theta_servo_now;
-    arm_shrink(); //TODO 待区分
-    HAL_Delay(700);
-    claw_spin_state_without_claw();
-    HAL_Delay(700);
-    put_claw_down_state();
-    state_spin_without_claw(target_colour[2+add_count]);
-    HAL_Delay(700); //400
-    
-    HAL_UART_Transmit(&huart3, (uint8_t*)"wait", strlen("wait"), 50);
-    is_third_preput = 0;
-    while(is_third_preput != 1)
-    {
-        HAL_Delay(50);
-    }
-    close_claw();
-    HAL_Delay(600);
-    put_claw_up_top();
-    HAL_Delay(500); //200
+    //! 下列为原先版本的，暂时注释掉，可能还能用
 
-    claw_spin_front(); //TODO 是否可能撞到
-    feetech_servo_move(4,temp_r_servo_position_plate,4000,180);
-    feetech_servo_move(3,temp_theta_servo_position_plate,4000,180);
-    r_servo_now = temp_r_servo_position_plate;
-    theta_servo_now = temp_theta_servo_position_plate;
-    
-    HAL_Delay(400);
-    put_claw_down_near_plate();
-    HAL_Delay(300);
-
-    is_put_material_in_plate = 0;
-    while(is_put_material_in_plate != 1)
-    {
-        HAL_Delay(50);
-    }
-    is_put_material_in_plate = 0;
-
-
-    //? 不用avoid
-    // state_spin(position);
-    // open_claw();
+    // //? 转回去夹起来等
+    // state_spin_without_claw_avoid_collide(target_colour[2+add_count]);
+    // open_claw_180();
     // put_claw_up_top();
     // // HAL_Delay(500); //TODO 可能会撞到物料
     // int temp_r_servo_position_plate = r_servo_now;
     // int temp_theta_servo_position_plate = theta_servo_now;
     // arm_shrink(); //TODO 待区分
-    // HAL_Delay(500);
-    // claw_spin_state();
-    // // feetech_servo_move(3,middle_3,2000,feet_acc);    
+    // HAL_Delay(700);
+    // claw_spin_state_without_claw();
     // HAL_Delay(700);
     // put_claw_down_state();
+    // state_spin_without_claw(target_colour[2+add_count]);
     // HAL_Delay(700); //400
+    
     // HAL_UART_Transmit(&huart3, (uint8_t*)"wait", strlen("wait"), 50);
     // is_third_preput = 0;
     // while(is_third_preput != 1)
@@ -1071,30 +1029,73 @@ void get_and_put_in_spin_plate_cricle_all(int times)
     //     HAL_Delay(50);
     // }
     // close_claw();
-    // HAL_Delay(400);
+    // HAL_Delay(600);
     // put_claw_up_top();
     // HAL_Delay(500); //200
+
     // claw_spin_front(); //TODO 是否可能撞到
-    // feetech_servo_move(4,temp_r_servo_position_plate,4000,feet_acc);
-    // feetech_servo_move(3,temp_theta_servo_position_plate,4000,feet_acc);
+    // feetech_servo_move(4,temp_r_servo_position_plate,4000,180);
+    // feetech_servo_move(3,temp_theta_servo_position_plate,4000,180);
     // r_servo_now = temp_r_servo_position_plate;
     // theta_servo_now = temp_theta_servo_position_plate;
-    // HAL_Delay(200);
+    
+    // HAL_Delay(400);
     // put_claw_down_near_plate();
     // HAL_Delay(300);
 
+    // is_put_material_in_plate = 0;
+    // while(is_put_material_in_plate != 1)
+    // {
+    //     HAL_Delay(50);
+    // }
+    // is_put_material_in_plate = 0;
 
 
-    put_claw_down();
-    HAL_Delay(300);
-    open_claw_180();
-    HAL_Delay(300);
+    // //? 不用avoid
+    // // state_spin(position);
+    // // open_claw();
+    // // put_claw_up_top();
+    // // // HAL_Delay(500); //TODO 可能会撞到物料
+    // // int temp_r_servo_position_plate = r_servo_now;
+    // // int temp_theta_servo_position_plate = theta_servo_now;
+    // // arm_shrink(); //TODO 待区分
+    // // HAL_Delay(500);
+    // // claw_spin_state();
+    // // // feetech_servo_move(3,middle_3,2000,feet_acc);    
+    // // HAL_Delay(700);
+    // // put_claw_down_state();
+    // // HAL_Delay(700); //400
+    // // HAL_UART_Transmit(&huart3, (uint8_t*)"wait", strlen("wait"), 50);
+    // // is_third_preput = 0;
+    // // while(is_third_preput != 1)
+    // // {
+    // //     HAL_Delay(50);
+    // // }
+    // // close_claw();
+    // // HAL_Delay(400);
+    // // put_claw_up_top();
+    // // HAL_Delay(500); //200
+    // // claw_spin_front(); //TODO 是否可能撞到
+    // // feetech_servo_move(4,temp_r_servo_position_plate,4000,feet_acc);
+    // // feetech_servo_move(3,temp_theta_servo_position_plate,4000,feet_acc);
+    // // r_servo_now = temp_r_servo_position_plate;
+    // // theta_servo_now = temp_theta_servo_position_plate;
+    // // HAL_Delay(200);
+    // // put_claw_down_near_plate();
+    // // HAL_Delay(300);
+
+
+
+    // put_claw_down();
+    // HAL_Delay(300);
+    // open_claw_180();
+    // HAL_Delay(300);
 }
 
 /// @brief 国赛初赛使用的物料放置和夹取函数
 /// @param times 
 /// @param is_pile_up 
-void single_get_and_put_some_with_load_first( int times,int is_pile_up)
+void single_get_and_put_some_with_load_first( int times,int is_pile_up,int is_load)
 {
     int times_count = 0; //用于计算target_colour的索引
     if(times == 3 || times == 4)
@@ -1136,7 +1137,7 @@ void single_get_and_put_some_with_load_first( int times,int is_pile_up)
             HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
             while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
             {
-                adjust_position_with_camera(x_camera_error, y_camera_error,1); 
+                adjust_position_with_camera(x_camera_error, y_camera_error,1);  //!!!!! 现在 
                 HAL_Delay(adjust_position_with_camera_time);  //30
             }
             theta_servo_value[target_colour[i+times_count]] = theta_servo_now;
@@ -1147,7 +1148,7 @@ void single_get_and_put_some_with_load_first( int times,int is_pile_up)
                 put_claw_down_ground();
                 HAL_Delay(500);
                 open_claw();
-                HAL_Delay(500);
+                HAL_Delay(300);
             }
             
         }
@@ -1155,8 +1156,27 @@ void single_get_and_put_some_with_load_first( int times,int is_pile_up)
         HAL_Delay(500);
         open_claw_bigger(); //防止夹不到物料
     }
+    if(is_load == 1)
+    {
+        int times_count = 0;
+        if(times == 3 || times == 4)
+        {
+            times_count = 3;
+        }
+        for(int i = 0; i < 3; i++)
+            {
+                get_and_load_openloop(target_colour[i+times_count],0); // 开环抓取
+            }
+    }
+    whole_arm_spin(1);
+    open_claw_180();
+    arm_stretch();
+    HAL_Delay(10);
     
 }
+
+
+
 
 /// @brief 色环放置(保留版本，这个是屎山)
 /// @param is_load  放置完后是否需要抓取物料， 1为需要，0为不需要
@@ -1646,6 +1666,52 @@ void get_from_plate_all_movement_with_back_check(void)
     get_plate = 0;
     is_start_get_plate = 0;
 }
+
+
+/// @brief 从地上抓取随机顺序摆放的物料全流程函数
+/// @param times 1为第一轮，2为第二轮
+void get_from_ground_in_random_position(int times)
+{
+    put_claw_down_near_ground();
+    HAL_Delay(1000);
+    HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //开始识别最中间的物料
+    is_get_material_from_temp_area = 2; 
+    get_and_pre_put_void(1,0); //看最右侧的物料
+    HAL_Delay(500);
+    HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //识别最右侧的物料
+    while(is_get_material_from_temp_area != 3) //等待树莓派返回识别结果
+    {
+        HAL_Delay(100);
+    }
+    put_claw_up_top();
+    HAL_Delay(1000);
+    int temp_add = 0;
+    if(times == 2)
+    {
+        temp_add = 3;
+    }
+    int temp_get_order[3] = {2,1,3};//本次抓取的位置顺序，123对应的是右中左
+    for(int i = 0 ; i < 3 ; i++)
+    {
+        for(int j = 0 ; j < 3 ; j++)
+        {
+            if(target_colour[i+temp_add] == material_place[j])
+            {
+                temp_get_order[i] = j+1;
+                HAL_Delay(10);
+                break; 
+            }
+        }
+    }
+    for(int i = 0; i < 3; i++)
+    {
+        get_and_load_openloop_with_temp_put(temp_get_order[i],target_colour[i+temp_add]); // 开环抓取，avoid
+    }
+    whole_arm_spin(1);
+    arm_stretch();
+    put_claw_up();
+}
+
 
 
 

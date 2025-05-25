@@ -1,0 +1,12 @@
+# 忽略CCC_Crazy_carrier_car文件夹下MDK-ARM中的.o、.crf、.hex、.elf、.dep、.axf、.htm、.map、.dep文件
+MDK-ARM/*.o
+MDK-ARM/*.crf
+MDK-ARM/*.hex
+MDK-ARM/*.elf
+MDK-ARM/*.dep
+MDK-ARM/*.axf
+MDK-ARM/*.htm
+MDK-ARM/*.map
+MDK-ARM/*.dep
+
+
