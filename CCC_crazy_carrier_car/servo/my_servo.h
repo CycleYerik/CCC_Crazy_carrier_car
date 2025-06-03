@@ -13,7 +13,7 @@
 void adjust_plate(int x_plate_error_in,int y_plate_error_in);
 
 int adjust_position_with_camera(int x_error, int y_error,int is_min_1 );
-
+void adjust_position_with_camera_new(int x_error, int y_error, int dt);
 
 void my_servo_init(void);
 void feetech_servo_move(uint8_t servo_ID,int16_t Position,uint16_t Speed,uint8_t ACC);
@@ -26,6 +26,7 @@ void servo_move(int servo_ID, int angle);
 
 void put_claw_down_pile(void);
 void put_claw_down_ground(void);
+void put_claw_down_ground_slightly(void);
 void put_claw_down_near_ground(void);
 void put_claw_down_state(void);
 void put_claw_down(void);

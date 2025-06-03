@@ -82,16 +82,17 @@ volatile int material_place[3] = {0,0,0}; //从暂存区夹取随机位置的物
 
 
 //!底盘调整相关参数
-const float Kp_slight_move = 0.28;  // 底盘前后左右微调PID参数
-const float Ki_slight_move = 0.02;
-const float Kd_slight_move = 0.08;
+const float Kp_slight_move = 0.5;  // 底盘前后左右微调PID参数
+const float Ki_slight_move = 0.01;
+const float Kd_slight_move = 0.8;
 
 const float Kp_line_spin = 1;      // 直线校正PID参数
-const float Ki_line_spin = 0.05;
-const float Kd_line_spin = 0.1;
+const float Ki_line_spin = 0.04;
+const float Kd_line_spin = 0.5;
 
 const float xy_move_k = 0.2; //底盘微调时xy乘上的比例 
-const float adjust_spin_and_move_scale = 1; // 底盘微调时旋转和移动的比例
+const float adjust_spin_scale = 1; // 底盘微调时旋转和移动的比例
+const float adjust_move_scale = 1;
 
 
 const float spin_limit_max = 10;   // 旋转速度的最大值
@@ -105,10 +106,10 @@ int open_loop_move_velocity = 180;    // 开环前进速度180
 int open_loop_spin_velocity = 150;    // 开环旋转速度150
 
 // 步进电机加速度
-float acceleration = 180;          // 直线运动加速度180
+float acceleration = 170;          // 直线运动加速度170  180会出现明显的震荡类似丢步
 float acceleration_spin = 180;     // 旋转运动加速度180
-
-
+float acceleration_adjust = 180;
+int motor_pos_move_mode = 0; //如果是0则是位置模式按照上一条指令的目标位置进行相对移动；2则是按照当前的实际位置进行相对移动
 
 
 
@@ -116,9 +117,11 @@ float acceleration_spin = 180;     // 旋转运动加速度180
 //!!!!!!!!      注意：机械臂还有大量参数在my_servo.c中
 //!!!!!!!!      注意：机械臂还有大量参数在my_servo.c中
 //!!!!!!!!      注意：机械臂还有大量参数在my_servo.c中
-const float Kp_theta = 0.25;  // 机械臂旋转PID参数
+
+//? 以下是旧版本的PID控制参数（配合adjust_position_with_camera）
+const float Kp_theta = 0.3;  // 机械臂旋转PID参数
 const float Ki_theta = 0.012;
-const float Kd_theta = 0.01;
+const float Kd_theta = 0.015;
 const float Kp_r = 0.40;     // 机械臂伸缩PID参数
 const float Ki_r = 0.01;
 const float Kd_r = 0.02;
@@ -126,17 +129,41 @@ const float Kd_r = 0.02;
 const float pixel_to_distance_theta = 1.2; // theta方向的像素到实际距离的比例
 const float pixel_to_distance_r = 4; // r方向的像素到实际距离的比例
 
+//? 以下是新版本的PID控制参数（adjust_position_with_camera_new）
+// const float Kp_theta = 0.3;  // 机械臂旋转PID参数
+// const float Ki_theta = 0.008;
+// const float Kd_theta = 0.012;
+// const float Kp_r = 0.5;     // 机械臂伸缩PID参数
+// const float Ki_r = 0.010;
+// const float Kd_r = 0.018;
+
+// const float pixel_to_distance_theta = 1; // theta方向的像素到实际距离的比例
+// const float pixel_to_distance_r = 1; // r方向的像素到实际距离的比例
+
+
+float error_decrease_gain = 0.5; //如果没有新的值，根据旧的值继续调时用的衰减系数
+
+// 根据不同的误大小调整Kp的值
+const float Kp_decrease_gain_big = 1.5;
+const float Kp_decrease_gain_middle =1.3; 
+const float Kp_decrease_gain_small = 1;
+
+// 像素值范围
+const float middle_limit = 20;
+const float small_limit = 10;
+
+
+//? 机械臂通用调整参数
+
+int adjust_position_with_camera_time = 10; //机械臂细调的延时时间
+
 //机械臂转盘单次微调系数
 const float x_plate_k = 1;   // 转盘处机械臂微调系数
 const float y_plate_k = 7;
 
-int adjust_position_with_camera_time = 200; //机械臂细调的延时时间
-
-
-
 
 //! 调整的超时时间
-int timeout_limit = 1000; // 超时时间限制，单位ms
+int timeout_limit = 1000; // 超时时间限制，单位10ms
 int timeout_limit_line = 500;
 
 
@@ -187,7 +214,6 @@ int get_plate_count = 0; // 从转盘上抓取物料的计数
 extern volatile int x_plate_error , y_plate_error ;
 
 int is_adjust_motor_in_tim = 1; // （废弃）如果为1，则在定时器中进行电机调整，否则在main的while中进行电机调整
-extern int acceleration_adjust;
 
 float now_spin_which_direction = 0;
 
@@ -450,7 +476,7 @@ int main(void)
     HAL_Delay(100);
     arm_stretch();                // 机械臂伸缩位置初始化
     whole_arm_spin(1);           // 中板旋转位置初始化
-    put_claw_up_top();           // 机械爪抬起到最高
+    put_claw_up();           // 机械爪抬起
     claw_spin_front();           // 机械爪旋转到正前方
     open_claw_180();             // 机械爪完全张开
     state_spin_without_claw(1);  // 载物盘旋转到1号位
@@ -465,10 +491,29 @@ int main(void)
 
     /*****************单独调试程序***********************/
 
+    HAL_Delay(3000); 
+    // single_line_circle_adjust("CC");
+    // single_get_and_put_some_with_load_first(1,0,1);
 
-    //TODO 开始调试
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50);  // 通知树莓派开始识别转盘
 
+    // while(1)
+    // {
+    //     HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50);
+    //     put_claw_down();  // 放下机械爪准备抓取
+    //     get_from_plate_all_movement();
+    //     HAL_Delay(2000);
+    // }
 
+    while(1)
+    {
+            put_claw_up();  // 抬起机械爪
+            single_line_circle_adjust("CC");
+    single_get_and_put_some_with_load_first(1,0,1);
+        HAL_Delay(1000);
+        put_claw_up();
+        HAL_Delay(2000);
+    }
 
 
     // /***********************比赛初赛所用的全流程***********************/
@@ -523,7 +568,7 @@ int main(void)
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, -start_move_x , start_move_y);  // 从启停区出来
-    HAL_Delay(1000);
+    HAL_Delay(1200);
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_to_qrcode);  // 出来后移动到二维码前
@@ -581,7 +626,7 @@ int main(void)
 
 
     move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_1,0);  // 向右移动到中轴线
-    HAL_Delay(900);
+    HAL_Delay(1100);
 
     if(is_single_route_test != 1)
     {
@@ -701,7 +746,7 @@ int main(void)
 
 
     move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_3,0);  // 向右移动到中轴线
-    HAL_Delay(900);
+    HAL_Delay(1100);
     
     if(is_single_route_test != 1)
     {
@@ -915,14 +960,16 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 /// @param pData 要发送的字符串
 void single_line_adjust(char *pData)
 {
+    static int adjust_delay = 50;
     HAL_UART_Transmit(&huart3, (uint8_t*)pData, strlen(pData), 50); // 发送传入的字符串
-    HAL_Delay(200);
+    HAL_Delay(10);
     is_slight_spin_and_move = 1;
     tim3_count = 0;
-    while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit_line)
+    // while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit_line)
+    while(is_slight_spin_and_move != 0 )
     {
         slight_spin_and_move(); // 在转盘旁的直线处进行姿态的校正
-        HAL_Delay(50);
+        HAL_Delay(adjust_delay);
     }
     stop();
     HAL_Delay(50);
@@ -932,14 +979,16 @@ void single_line_adjust(char *pData)
 /// @param  
 void single_line_circle_adjust(char *pData)
 {
+    static int adjust_delay = 50;
     HAL_UART_Transmit(&huart3, (uint8_t*)pData, strlen(pData), 50);
     HAL_Delay(200);
     is_slight_spin_and_move = 1;
     tim3_count = 0;
-    while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+    // while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+    while(is_slight_spin_and_move != 0 )
     {
         slight_spin_and_move(); // 直线和圆环一起调整
-        HAL_Delay(50);
+        HAL_Delay(adjust_delay);
     }
     is_slight_spin_and_move = 0;
     stop();
@@ -1121,7 +1170,7 @@ void single_get_and_put_some_with_load_first( int times,int is_pile_up,int is_lo
             y_camera_error = 0;
             is_servo_adjust = 0;
             open_claw();
-            HAL_Delay(500);
+            HAL_Delay(300);
         }
         put_claw_up_top();
         HAL_Delay(500);
@@ -1135,17 +1184,18 @@ void single_get_and_put_some_with_load_first( int times,int is_pile_up,int is_lo
             is_servo_adjust = 1;
             tim3_count = 0;
             HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
-            while (is_servo_adjust != 0 && tim3_count < timeout_limit) 
+            while (is_servo_adjust != 0 ) 
             {
-                adjust_position_with_camera(x_camera_error, y_camera_error,1);  //!!!!! 现在 
-                HAL_Delay(adjust_position_with_camera_time);  //30
+                adjust_position_with_camera(x_camera_error, y_camera_error,50);  
+                // adjust_position_with_camera_new(x_camera_error,y_camera_error,adjust_position_with_camera_time);
+                HAL_Delay(adjust_position_with_camera_time);  //10
             }
             theta_servo_value[target_colour[i+times_count]] = theta_servo_now;
             r_servo_value[target_colour[i+times_count]] = r_servo_now;
             is_servo_adjust = 0;
             if(is_put_adjust_with_material == 1)
             {
-                put_claw_down_ground();
+                put_claw_down_ground_slightly();
                 HAL_Delay(500);
                 open_claw();
                 HAL_Delay(300);

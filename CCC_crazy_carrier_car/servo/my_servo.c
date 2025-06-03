@@ -1,5 +1,5 @@
 #include "my_servo.h"
-
+#include <stdlib.h>
 
 extern TIM_HandleTypeDef htim4;
 extern UART_HandleTypeDef huart3;
@@ -77,7 +77,7 @@ const int r_front_position_limit = 3431;
 const int r_back_position_limit = 1261;
 const int r_back_position_rlimit = 2620; // 当theta超过rlimit，r的限制值不能小于这个值
 
-const int middle_arm = 2900;  // 舵机3在不进行动作时的默认位置
+const int middle_arm = 2250;  // 舵机3在不进行动作时的默认位置
 
 //? 机械臂整体伸缩参数（四号舵机）
 //TODO 待测量（全部）
@@ -89,18 +89,18 @@ const int shrink_arm_all = 1860;
 //? 左中右三个动作对应的各自舵机参数
 //TODO 待测量（全部）
 const int left_2 = 3328; 
-const int left_3 = 2000;  
-const int left_3_pileup = 2075;
-const int left_4 =  3026; 
+const int left_3 = 1390;  
+const int left_3_pileup = 1390;
+const int left_4 =  3010; 
 
 const int right_2 = 3328; 
-const int right_3 = 3728; 
-const int right_3_pileup = 3728;
+const int right_3 = 3078; 
+const int right_3_pileup = 3078;
 const int right_4 =  2930; 
 
 const int middle_2 = 3328;
 const int middle_3 = middle_arm;
-const int middle_3_pileup = 2888;
+const int middle_3_pileup = middle_arm;
 const int middle_4 =  stretch_arm;  //TODO 这里可以考虑用和其不一样的值
 
 
@@ -120,6 +120,14 @@ volatile int x_error_long_last = 0, y_error_long_last = 0; // 上上次的偏差
 extern const float pixel_to_distance_r,pixel_to_distance_theta; 
 extern const float Kp_theta,Kd_theta,Ki_theta;
 extern const float Kp_r,Kd_r,Ki_r;
+
+extern float error_decrease_gain;
+extern const float Kp_decrease_gain_big;
+extern const float Kp_decrease_gain_middle; 
+extern const float Kp_decrease_gain_small ;
+
+extern const float middle_limit;
+extern const float small_limit;
 
 
 char temp_function_char[50];
@@ -246,6 +254,10 @@ void adjust_plate(int x_plate_error_in,int y_plate_error_in)
 /// @param 调参思路： 调整pixel_to_distance
 int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
 {   
+    if(x_error == 0 && y_error == 0)
+    {
+        return -1;
+    }
     //TODO 如果看不到，则xy传进来设置一个特殊值，然后开始转动
     float r_adjust_values = 0, theta_adjust_values = 0;
     int is_theta_ok = 0, is_r_ok = 0;
@@ -273,8 +285,8 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
     {
         y_error = -300;
     }
-    // x_camera_error = 0;
-    // y_camera_error = 0; //TODO 这里需要取消注释（如果是）
+    x_camera_error = 0; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    y_camera_error = 0; //TODO 这里需要取消注释（如果是）
     
 
     //TODO 加入x、yerror的PID
@@ -365,15 +377,16 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
     //! 原先版本，限位不够
     if((theta_servo_now + theta_adjust_values < theta_right_position_limit) && (theta_servo_now + theta_adjust_values > theta_left_position_limit) && (r_servo_now + r_adjust_values < r_front_position_limit) && (r_servo_now + r_adjust_values > r_back_position_limit))
     {
-        feetech_servo_move(4,r_servo_now + r_adjust_values,4000,100);
+        feetech_servo_move(4,r_servo_now + r_adjust_values,4000,180);
         r_servo_now += r_adjust_values;
         HAL_Delay(10);
-        feetech_servo_move(3,theta_servo_now + theta_adjust_values,4000,100);
+        feetech_servo_move(3,theta_servo_now + theta_adjust_values,4000,180);
         theta_servo_now += theta_adjust_values;
     }
     else
     {
         // HAL_UART_Transmit(&huart3, (uint8_t*)"limit", strlen("limit"), 50);
+        //TODO 加入通知的功能
     }
 
     if(is_r_ok == 1 && is_theta_ok == 1)
@@ -387,6 +400,102 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
     }
 }
 
+
+void adjust_position_with_camera_new(int x_error, int y_error, int dt)
+{
+    static float old_input_x_error = 0;
+    static float old_input_y_error = 0;
+    static int error_max = 50;
+
+    float r_adjust_values = 0, theta_adjust_values = 0;
+
+    float Kp_gain = 0;
+
+    float max_servo_movement_single = 700;
+
+    if(x_error == 0 && y_error == 0)
+    {
+        return;
+    }
+
+    if(x_error == old_input_x_error && y_error == old_input_y_error) //如果没有新的值传进来，对旧的值进行衰减
+    {
+        x_error *= error_decrease_gain;
+    
+        y_error *= error_decrease_gain;
+    }
+
+    if(x_error > error_max )
+    {
+        x_error = error_max;
+    }
+    if(y_error > error_max)
+    {
+        y_error = error_max;
+    }
+    if(x_error < -error_max)
+    {
+        x_error = -error_max;
+    }
+    if(y_error < -error_max)
+    {
+        y_error = -error_max;
+    }
+
+    if(abs(x_error) > middle_limit)
+    {
+        Kp_gain = Kp_decrease_gain_big;
+    }
+    if(abs(x_error) < middle_limit && abs(x_error) > small_limit)
+    {
+        Kp_gain = Kp_decrease_gain_middle;
+    }
+    if(abs(x_error) < small_limit )
+    {
+        Kp_gain = Kp_decrease_gain_small;
+    }
+
+    theta_adjust_values = Kp_theta * x_error * Kp_gain+ Ki_theta * (x_error + x_error_last + x_error_long_last) + Kd_theta * (x_error - x_error_last)/dt/1000;
+    r_adjust_values = Kp_r * y_error * Kp_gain+ Ki_r * (y_error + y_error_last + y_error_long_last) + Kd_r * ( y_error - y_error_last)/dt/1000;
+    theta_adjust_values = theta_adjust_values * pixel_to_distance_theta;
+    r_adjust_values = r_adjust_values * pixel_to_distance_r;
+    x_error_long_last = x_error_last;
+    x_error_last = x_error;
+    y_error_long_last = y_error_last;
+    y_error_last = y_error;
+
+    //输出限幅
+    if(theta_adjust_values > max_servo_movement_single)
+    {
+        theta_adjust_values = max_servo_movement_single;
+    }
+    if(r_adjust_values > max_servo_movement_single)
+    {
+        r_adjust_values = max_servo_movement_single;
+    }
+    if(theta_adjust_values < -max_servo_movement_single)
+    {
+        theta_adjust_values = -max_servo_movement_single;
+    }
+    if(r_adjust_values < -max_servo_movement_single)
+    {
+        r_adjust_values = -max_servo_movement_single;
+    }
+
+    theta_adjust_values = (int)theta_adjust_values;
+    r_adjust_values = (int)r_adjust_values;
+
+    if((theta_servo_now + theta_adjust_values < theta_right_position_limit) && (theta_servo_now + theta_adjust_values > theta_left_position_limit) && (r_servo_now + r_adjust_values < r_front_position_limit) && (r_servo_now + r_adjust_values > r_back_position_limit))
+    {
+        feetech_servo_move(4,r_servo_now + r_adjust_values,4000,180);
+        r_servo_now += r_adjust_values;
+        HAL_Delay(10);
+        feetech_servo_move(3,theta_servo_now + theta_adjust_values,4000,180);
+        theta_servo_now += theta_adjust_values;
+        HAL_Delay(10);
+    }
+
+}
 
 /// @brief avoid 动作  无视觉辅助的从圆环上抓取物料
 /// @param position 
@@ -594,21 +703,21 @@ void get_and_load_openloop(int position,int is_default_position)
     }
     HAL_Delay(300);
     put_claw_down_ground();
-    HAL_Delay(800);
+    HAL_Delay(500);
     close_claw();
-    HAL_Delay(600);
+    HAL_Delay(300);
     put_claw_up_top();
     arm_shrink();
     HAL_Delay(300); //300
     claw_spin_state_without_claw();
     // HAL_Delay(700); //TODO 直接撇进去，以下带？为新增的
-    HAL_Delay(600); //? 
+    HAL_Delay(500); //? 
     put_claw_down_state(); //?
     HAL_Delay(300);  //?
     open_claw();
-    HAL_Delay(300);
+    HAL_Delay(200);
     put_claw_up_top();
-    HAL_Delay(400); //?
+    HAL_Delay(300); //?
     claw_spin_front();
 
 
@@ -1187,6 +1296,11 @@ void state_spin_angles(int angle)
 
 
 void put_claw_down_ground(void)
+{
+    feetech_servo_move(1,put_claw_down_ground_position,4095,feet_acc_claw_up_down);
+}
+
+void put_claw_down_ground_slightly(void)
 {
     feetech_servo_move(1,put_claw_down_ground_position,4095,feet_acc_put_down_ground_slightly);
 }

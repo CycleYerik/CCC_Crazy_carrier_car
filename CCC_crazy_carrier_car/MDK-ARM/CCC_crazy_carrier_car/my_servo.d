@@ -39,3 +39,4 @@ ccc_crazy_carrier_car\my_servo.o: ..\servo\INST.h
 ccc_crazy_carrier_car\my_servo.o: ..\servo\SCS.h
 ccc_crazy_carrier_car\my_servo.o: ..\servo\SMS_STS.h
 ccc_crazy_carrier_car\my_servo.o: ..\servo\uart.h
+ccc_crazy_carrier_car\my_servo.o: D:\MDK\ARM\ARMCC\Bin\..\include\stdlib.h

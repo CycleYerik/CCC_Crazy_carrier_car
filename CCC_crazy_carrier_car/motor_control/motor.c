@@ -10,8 +10,10 @@
 /// 所有运动情况下的加速度
 extern float acceleration;
 extern float acceleration_spin;
+extern float acceleration_adjust;
 
-extern float adjust_spin_and_move_scale; // 旋转和移动的比例
+extern float adjust_spin_scale; // 旋转和移动的比例
+extern float adjust_move_scale;
 
 
 
@@ -26,7 +28,7 @@ extern int motor_vel_adjust_with_spin ;
 
 volatile int motor_vel_target_1 = 0, motor_vel_target_2 = 0, motor_vel_target_3 = 0, motor_vel_target_4 = 0;
 
-
+extern int motor_pos_move_mode;
 
 void slight_spin_plate_line(void)
 {
@@ -80,30 +82,30 @@ void move_leftright_front_with_spin_position(int left_or_right, float vel  , flo
     
         if(VL_motor >= 0)
         {
-            Emm_V5_Pos_Control(1,0,VL_motor,acceleration,clk_L,0,1);
+            Emm_V5_Pos_Control(1,0,VL_motor,acceleration,clk_L,motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(3,0,VL_motor,acceleration,clk_L,0,1);
+            Emm_V5_Pos_Control(3,0,VL_motor,acceleration,clk_L,motor_pos_move_mode,1);
             HAL_Delay(10);
         }
         else
         {
-            Emm_V5_Pos_Control(1,1,-VL_motor,acceleration,clk_L,0,1);
+            Emm_V5_Pos_Control(1,1,-VL_motor,acceleration,clk_L,motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(3,1,-VL_motor,acceleration,clk_L,0,1);
+            Emm_V5_Pos_Control(3,1,-VL_motor,acceleration,clk_L,motor_pos_move_mode,1);
             HAL_Delay(10);
         }
         if(VR_motor >= 0)
         {
-            Emm_V5_Pos_Control(2,1,VR_motor,acceleration,clk_R,0,1);
+            Emm_V5_Pos_Control(2,1,VR_motor,acceleration,clk_R,motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(4,1,VR_motor,acceleration,clk_R,0,1);
+            Emm_V5_Pos_Control(4,1,VR_motor,acceleration,clk_R,motor_pos_move_mode,1);
             HAL_Delay(10);
         }
         else
         {
-            Emm_V5_Pos_Control(2,0,-VR_motor,acceleration,clk_R,0,1);
+            Emm_V5_Pos_Control(2,0,-VR_motor,acceleration,clk_R,motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(4,0,-VR_motor,acceleration,clk_R,0,1);
+            Emm_V5_Pos_Control(4,0,-VR_motor,acceleration,clk_R,motor_pos_move_mode,1);
             HAL_Delay(10);
         }
         Emm_V5_Synchronous_motion(0);
@@ -176,10 +178,12 @@ void move_leftright_front_with_spin(int left_or_right, float vel  , float R_spin
 /// @param  调参的思路：x/y_move_position乘了一个偏差量，最后直线的参数也乘了一个偏差量，通过修改这两个偏差量使得直线和圆的调整比例合适，同时也控制各自的数值不会过大
 void slight_spin_and_move(void)
 {
-    motor_vel_target_1 = (int)(adjust_spin_and_move_scale *spin_which_direction - x_move_position - y_move_position);
-    motor_vel_target_2 = (int)(adjust_spin_and_move_scale *spin_which_direction - x_move_position + y_move_position);
-    motor_vel_target_3 = (int)(adjust_spin_and_move_scale *spin_which_direction + x_move_position - y_move_position);
-    motor_vel_target_4 = (int)(adjust_spin_and_move_scale *spin_which_direction + x_move_position + y_move_position);
+    motor_vel_target_1 = (int)(adjust_spin_scale *spin_which_direction + adjust_move_scale * (-x_move_position - y_move_position));
+    motor_vel_target_2 = (int)(adjust_spin_scale *spin_which_direction + adjust_move_scale * (-x_move_position + y_move_position));
+    motor_vel_target_3 = (int)(adjust_spin_scale *spin_which_direction + adjust_move_scale * (x_move_position - y_move_position));
+    motor_vel_target_4 = (int)(adjust_spin_scale *spin_which_direction + adjust_move_scale * (x_move_position + y_move_position));
+
+
         if(motor_vel_target_1 > motor_vel_adjust_with_spin) motor_vel_target_1 = motor_vel_adjust_with_spin;
         if(motor_vel_target_2 > motor_vel_adjust_with_spin) motor_vel_target_2 = motor_vel_adjust_with_spin;
         if(motor_vel_target_3 > motor_vel_adjust_with_spin) motor_vel_target_3 = motor_vel_adjust_with_spin;
@@ -193,38 +197,38 @@ void slight_spin_and_move(void)
 
         if(motor_vel_target_1 >= 0)
         {
-            Emm_V5_Vel_Control(1,1,motor_vel_target_1,0,1);
+            Emm_V5_Vel_Control(1,1,motor_vel_target_1,acceleration_adjust,1);
         }
         else
         {
-            Emm_V5_Vel_Control(1,0,-motor_vel_target_1,0,1);
+            Emm_V5_Vel_Control(1,0,-motor_vel_target_1,acceleration_adjust,1);
         }
         HAL_Delay(10);
         if(motor_vel_target_2 >= 0)
         {
-            Emm_V5_Vel_Control(2,1,motor_vel_target_2,0,1);
+            Emm_V5_Vel_Control(2,1,motor_vel_target_2,acceleration_adjust,1);
         }
         else
         {
-            Emm_V5_Vel_Control(2,0,-motor_vel_target_2,0,1);
+            Emm_V5_Vel_Control(2,0,-motor_vel_target_2,acceleration_adjust,1);
         }
         HAL_Delay(10);
         if(motor_vel_target_3 >= 0)
         {
-            Emm_V5_Vel_Control(3,1,motor_vel_target_3,0,1);
+            Emm_V5_Vel_Control(3,1,motor_vel_target_3,acceleration_adjust,1);
         }
         else
         {
-            Emm_V5_Vel_Control(3,0,-motor_vel_target_3,0,1);
+            Emm_V5_Vel_Control(3,0,-motor_vel_target_3,acceleration_adjust,1);
         }
         HAL_Delay(10);
         if(motor_vel_target_4 >= 0)
         {
-            Emm_V5_Vel_Control(4,1,motor_vel_target_4,0,1);
+            Emm_V5_Vel_Control(4,1,motor_vel_target_4,acceleration_adjust,1);
         }
         else
         {
-            Emm_V5_Vel_Control(4,0,-motor_vel_target_4,0,1);
+            Emm_V5_Vel_Control(4,0,-motor_vel_target_4,acceleration_adjust,1);
         }
         HAL_Delay(10);
         Emm_V5_Synchronous_motion(0);
@@ -682,88 +686,88 @@ void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_len
     if(x_move_length >= 0 && y_move_length >= 0)
     {
         float delta_xy = x_move_length - y_move_length;
-        Emm_V5_Pos_Control(1,0,velocity, acc,  get_clk(x_move_length + y_move_length),0,1);
+        Emm_V5_Pos_Control(1,0,velocity, acc,  get_clk(x_move_length + y_move_length),motor_pos_move_mode,1);
         HAL_Delay(10);
-        Emm_V5_Pos_Control(4,1,velocity, acc, get_clk(x_move_length + y_move_length), 0, 1);
+        Emm_V5_Pos_Control(4,1,velocity, acc, get_clk(x_move_length + y_move_length), motor_pos_move_mode, 1);
         HAL_Delay(10);
         if(delta_xy >= 0)
         {
-            Emm_V5_Pos_Control(2,0,velocity, acc, get_clk(delta_xy), 0,1);
+            Emm_V5_Pos_Control(2,0,velocity, acc, get_clk(delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(3,1,velocity, acc, get_clk(delta_xy), 0,1);
+            Emm_V5_Pos_Control(3,1,velocity, acc, get_clk(delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
         }
         else
         {
-            Emm_V5_Pos_Control(2,1,velocity, acc, get_clk(-delta_xy), 0,1);
+            Emm_V5_Pos_Control(2,1,velocity, acc, get_clk(-delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(3,0,velocity, acc, get_clk(-delta_xy), 0,1);
+            Emm_V5_Pos_Control(3,0,velocity, acc, get_clk(-delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
         }
     }
     else if (x_move_length >= 0 && y_move_length < 0)
     {
         float delta_xy = x_move_length + y_move_length;
-        Emm_V5_Pos_Control(2,0,velocity, acc, get_clk(x_move_length - y_move_length), 0,1);
+        Emm_V5_Pos_Control(2,0,velocity, acc, get_clk(x_move_length - y_move_length), motor_pos_move_mode,1);
         HAL_Delay(10);
-        Emm_V5_Pos_Control(3,1,velocity, acc, get_clk(x_move_length - y_move_length), 0,1);
+        Emm_V5_Pos_Control(3,1,velocity, acc, get_clk(x_move_length - y_move_length), motor_pos_move_mode,1);
         HAL_Delay(10);
         if(delta_xy >= 0)
         {
-            Emm_V5_Pos_Control(1,0,velocity, acc, get_clk(delta_xy), 0,1);
+            Emm_V5_Pos_Control(1,0,velocity, acc, get_clk(delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(4,1,velocity, acc, get_clk(delta_xy), 0,1);
+            Emm_V5_Pos_Control(4,1,velocity, acc, get_clk(delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
         }
         else
         {
-            Emm_V5_Pos_Control(1,1,velocity, acc, get_clk(-delta_xy), 0,1);
+            Emm_V5_Pos_Control(1,1,velocity, acc, get_clk(-delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(4,0,velocity, acc, get_clk(-delta_xy), 0,1);
+            Emm_V5_Pos_Control(4,0,velocity, acc, get_clk(-delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
         }
     }
     else if (x_move_length < 0 && y_move_length >= 0)
     {
         float delta_xy = y_move_length + x_move_length;
-        Emm_V5_Pos_Control(2,1,velocity, acc, get_clk(y_move_length - x_move_length), 0,1);
+        Emm_V5_Pos_Control(2,1,velocity, acc, get_clk(y_move_length - x_move_length), motor_pos_move_mode,1);
         HAL_Delay(10);
-        Emm_V5_Pos_Control(3,0,velocity, acc, get_clk(y_move_length - x_move_length), 0,1);
+        Emm_V5_Pos_Control(3,0,velocity, acc, get_clk(y_move_length - x_move_length), motor_pos_move_mode,1);
         HAL_Delay(10);
         if(delta_xy >= 0)
         {
-            Emm_V5_Pos_Control(1,0,velocity, acc, get_clk(delta_xy), 0,1);
+            Emm_V5_Pos_Control(1,0,velocity, acc, get_clk(delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(4,1,velocity, acc, get_clk(delta_xy), 0,1);
+            Emm_V5_Pos_Control(4,1,velocity, acc, get_clk(delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
         }
         else
         {
-            Emm_V5_Pos_Control(1,1,velocity, acc, get_clk(-delta_xy), 0,1);
+            Emm_V5_Pos_Control(1,1,velocity, acc, get_clk(-delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(4,0,velocity, acc, get_clk(-delta_xy), 0,1);
+            Emm_V5_Pos_Control(4,0,velocity, acc, get_clk(-delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
         }
     }
     else if (x_move_length < 0 && y_move_length < 0)
     {
         float delta_xy = y_move_length - x_move_length;
-        Emm_V5_Pos_Control(1,1,velocity, acc, get_clk(-x_move_length - y_move_length), 0,1);
+        Emm_V5_Pos_Control(1,1,velocity, acc, get_clk(-x_move_length - y_move_length), motor_pos_move_mode,1);
         HAL_Delay(10);
-        Emm_V5_Pos_Control(4,0,velocity, acc, get_clk(-x_move_length - y_move_length), 0,1);
+        Emm_V5_Pos_Control(4,0,velocity, acc, get_clk(-x_move_length - y_move_length), motor_pos_move_mode,1);
         HAL_Delay(10);
         if(delta_xy >= 0)
         {
-            Emm_V5_Pos_Control(2,1,velocity, acc, get_clk(delta_xy), 0,1);
+            Emm_V5_Pos_Control(2,1,velocity, acc, get_clk(delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(3,0,velocity, acc, get_clk(delta_xy), 0,1);
+            Emm_V5_Pos_Control(3,0,velocity, acc, get_clk(delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
         }
         else
         {
-            Emm_V5_Pos_Control(2,0,velocity, acc, get_clk(-delta_xy), 0,1);
+            Emm_V5_Pos_Control(2,0,velocity, acc, get_clk(-delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
-            Emm_V5_Pos_Control(3,1,velocity, acc, get_clk(-delta_xy), 0,1);
+            Emm_V5_Pos_Control(3,1,velocity, acc, get_clk(-delta_xy), motor_pos_move_mode,1);
             HAL_Delay(10);
         }
     }
@@ -1488,13 +1492,13 @@ void spin_right(uint16_t vel,uint8_t acc, uint32_t angle)
 void spin_right_180(uint16_t vel,uint8_t acc)
 {
     uint32_t clk = (uint32_t)((float)181.5 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
-    Emm_V5_Pos_Control(1, 0, vel, acc,clk, 0,1);
+    Emm_V5_Pos_Control(1, 0, vel, acc,clk, motor_pos_move_mode,1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(2, 0, vel, acc, clk, 0, 1);
+    Emm_V5_Pos_Control(2, 0, vel, acc, clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(3, 0, vel, acc,clk, 0, 1);
+    Emm_V5_Pos_Control(3, 0, vel, acc,clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(4, 0, vel, acc, clk, 0, 1);
+    Emm_V5_Pos_Control(4, 0, vel, acc, clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
     Emm_V5_Synchronous_motion(0);
     HAL_Delay(10);
@@ -1518,13 +1522,13 @@ void spin_right_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop)
 void spin_left_180(uint16_t vel,uint8_t acc)
 {
     uint32_t clk = (uint32_t)((float)181.5 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
-    Emm_V5_Pos_Control(1, 1, vel, acc,clk, 0,1);
+    Emm_V5_Pos_Control(1, 1, vel, acc,clk, motor_pos_move_mode,1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(2, 1, vel, acc, clk, 0, 1);
+    Emm_V5_Pos_Control(2, 1, vel, acc, clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(3, 1, vel, acc,clk, 0, 1);
+    Emm_V5_Pos_Control(3, 1, vel, acc,clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(4, 1, vel, acc, clk, 0, 1);
+    Emm_V5_Pos_Control(4, 1, vel, acc, clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
     Emm_V5_Synchronous_motion(0);
     HAL_Delay(10);
@@ -1548,13 +1552,13 @@ void spin_left_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop)
 void spin_right_90(uint16_t vel,uint8_t acc)
 {
     uint32_t clk = (uint32_t)((float)90.7 / 360 * spin_radius_90 * 2 * pi / wheel_circumference * pulse_per_circle);
-    Emm_V5_Pos_Control(1, 0, vel, acc,clk, 0,1);
+    Emm_V5_Pos_Control(1, 0, vel, acc,clk, motor_pos_move_mode,1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(2, 0, vel, acc, clk, 0, 1);
+    Emm_V5_Pos_Control(2, 0, vel, acc, clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(3, 0, vel, acc,clk, 0, 1);
+    Emm_V5_Pos_Control(3, 0, vel, acc,clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(4, 0, vel, acc, clk, 0, 1);
+    Emm_V5_Pos_Control(4, 0, vel, acc, clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
     Emm_V5_Synchronous_motion(0);
     HAL_Delay(10);
@@ -1578,13 +1582,13 @@ void spin_right_90_y42(float vel, uint16_t acc_start,uint16_t acc_stop)
 void spin_left_90(uint16_t vel,uint8_t acc)
 {
     uint32_t clk = (uint32_t)((float)90.27 / 360 * spin_radius_90 * 2 * pi / wheel_circumference * pulse_per_circle);
-    Emm_V5_Pos_Control(1, 1, vel, acc,clk, 0,1);
+    Emm_V5_Pos_Control(1, 1, vel, acc,clk, motor_pos_move_mode,1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(2, 1, vel, acc, clk, 0, 1);
+    Emm_V5_Pos_Control(2, 1, vel, acc, clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(3, 1, vel, acc,clk, 0, 1);
+    Emm_V5_Pos_Control(3, 1, vel, acc,clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
-    Emm_V5_Pos_Control(4, 1, vel, acc, clk, 0, 1);
+    Emm_V5_Pos_Control(4, 1, vel, acc, clk, motor_pos_move_mode, 1);
     HAL_Delay(10);
     Emm_V5_Synchronous_motion(0);
     HAL_Delay(10);
@@ -1751,6 +1755,22 @@ void Emm_V5_Synchronous_motion(uint8_t addr)
   
   // 发送命令
   usart_SendCmd_u1(cmd, 4);
+}
+
+/// @brief 修改电机ID
+/// @param addr 目标电机的ID
+/// @param modify_to_addr 修改之后的ID
+void set_motor_ID(uint8_t addr,uint8_t modify_to_addr)
+{
+    uint8_t cmd[16] = {0};
+
+    cmd[0] = addr;
+    cmd[1] = 0xAE;
+    cmd[2] = 0x4B;
+    cmd[3] = 0x01;
+    cmd[4] = modify_to_addr;
+    cmd[5] = 0x6B;
+    usart_SendCmd_u1(cmd, 6);
 }
 
 /**

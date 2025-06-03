@@ -34,7 +34,7 @@ int tim3_period = 10;
 extern float volatile x_move_position, y_move_position;
 extern float position_move_velocity;
 extern float acceleration;
-int acceleration_adjust = 200;
+int acceleration_adjust_motor = 200;
 
 extern uint8_t rxdata_u3[50];
 extern uint8_t received_rxdata_u3;
@@ -176,27 +176,27 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
                 if (send_motor_message_flag == 1)
                 {
                     // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,1);
-                    move_all_direction_tim(acceleration_adjust, x_move_position, y_move_position, 1);
+                    move_all_direction_tim(acceleration_adjust_motor, x_move_position, y_move_position, 1);
                 }
                 if (send_motor_message_flag == 2)
                 {
                     // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,2);
-                    move_all_direction_tim(acceleration_adjust, x_move_position, y_move_position, 2);
+                    move_all_direction_tim(acceleration_adjust_motor, x_move_position, y_move_position, 2);
                 }
                 if (send_motor_message_flag == 3)
                 {
                     // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,3);
-                    move_all_direction_tim(acceleration_adjust, x_move_position, y_move_position, 3);
+                    move_all_direction_tim(acceleration_adjust_motor, x_move_position, y_move_position, 3);
                 }
                 if (send_motor_message_flag == 4)
                 {
                     // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,4);
-                    move_all_direction_tim(acceleration_adjust, x_move_position, y_move_position, 4);
+                    move_all_direction_tim(acceleration_adjust_motor, x_move_position, y_move_position, 4);
                 }
                 if (send_motor_message_flag == 5)
                 {
                     // move_all_direction_position_tim(acceleration,position_move_velocity,x_move_position,y_move_position,5);
-                    move_all_direction_tim(acceleration_adjust, x_move_position, y_move_position, 5);
+                    move_all_direction_tim(acceleration_adjust_motor, x_move_position, y_move_position, 5);
                 }
                 if (send_motor_message_flag == 6)
                 {

@@ -97,6 +97,7 @@ void spin_left_90_y42(float vel, uint16_t acc_start,uint16_t acc_stop);
 void spin_right_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop);
 void spin_left_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop);
 
+void set_motor_ID(uint8_t addr,uint8_t modify_to_addr);
 
 void move_leftright_front_with_spin(int left_or_right, float vel , float R_spin);
 void move_leftright_front_with_spin_position(int left_or_right, float vel  , float R_spin, float angles);
