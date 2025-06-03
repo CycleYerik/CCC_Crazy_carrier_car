@@ -22,7 +22,7 @@ const int open_claw_avoid_collide_position = 108; //从物料的侧面过的张�
 const int open_claw_180_position = 104;  
 const int open_claw_position = 86; 
 const int open_claw_bigger_position = 92; 
-const int close_claw_position = 74; 
+const int close_claw_position = 73; 
 const int close_bit_position = 78; //略微夹紧
 
 //? 载物盘舵机参数 
@@ -69,15 +69,15 @@ const int claw_spin_without_claw_position_state = 1600; //与上面一样
 
 //? 中板整体旋转参数（三号舵机）
 //TODO 待测量（全部）
-const int theta_left_position_limit = 1822;
-const int theta_right_position_limit = 3858;
-const int theta_right_position_rlimit = 3858; //TODO
-const int theta_left_position_rlimit = 1822; //TODO
+const int theta_left_position_limit = 1172;
+const int theta_right_position_limit = 3208;
+const int theta_right_position_rlimit = 3208; //TODO
+const int theta_left_position_rlimit = 1172; //TODO
 const int r_front_position_limit = 3431;
 const int r_back_position_limit = 1261;
 const int r_back_position_rlimit = 2620; // 当theta超过rlimit，r的限制值不能小于这个值
 
-const int middle_arm = 2250;  // 舵机3在不进行动作时的默认位置
+const int middle_arm = 2255;  // 舵机3在不进行动作时的默认位置
 
 //? 机械臂整体伸缩参数（四号舵机）
 //TODO 待测量（全部）
@@ -89,13 +89,13 @@ const int shrink_arm_all = 1860;
 //? 左中右三个动作对应的各自舵机参数
 //TODO 待测量（全部）
 const int left_2 = 3328; 
-const int left_3 = 1390;  
-const int left_3_pileup = 1390;
+const int left_3 = 1430;  
+const int left_3_pileup = 1430;
 const int left_4 =  3010; 
 
 const int right_2 = 3328; 
-const int right_3 = 3078; 
-const int right_3_pileup = 3078;
+const int right_3 = 3085; 
+const int right_3_pileup = 3085;
 const int right_4 =  2930; 
 
 const int middle_2 = 3328;
@@ -1042,7 +1042,7 @@ void get_and_pre_put(int position,int is_pile_up)
     else
     {
         put_claw_down_near_ground();
-        HAL_Delay(500);
+        HAL_Delay(800);
     }
     if(is_pile_up != 1)
     {

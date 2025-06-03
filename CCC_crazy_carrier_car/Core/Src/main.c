@@ -75,7 +75,7 @@ int is_get_material_from_temp_area = 0; // 是否从暂存取物料
 int is_single_route_test = 0; // 1则单独路径移动
 
 //! 目标颜色数组
-volatile int target_colour[6] = {1,2,3,1,3,2}; // 物料颜色序列(1红,2绿,3蓝)
+volatile int target_colour[6] = {2,3,1,1,3,2}; // 物料颜色序列(1红,2绿,3蓝)
 volatile int material_place[3] = {0,0,0}; //从暂存区夹取随机位置的物料时用的数组
 
 
@@ -119,12 +119,12 @@ int motor_pos_move_mode = 0; //如果是0则是位置模式按照上一条指令
 //!!!!!!!!      注意：机械臂还有大量参数在my_servo.c中
 
 //? 以下是旧版本的PID控制参数（配合adjust_position_with_camera）
-const float Kp_theta = 0.3;  // 机械臂旋转PID参数
-const float Ki_theta = 0.012;
-const float Kd_theta = 0.015;
-const float Kp_r = 0.40;     // 机械臂伸缩PID参数
+const float Kp_theta = 0.28;  // 机械臂旋转PID参数
+const float Ki_theta = 0.01;
+const float Kd_theta = 0.05;
+const float Kp_r = 0.35;     // 机械臂伸缩PID参数
 const float Ki_r = 0.01;
-const float Kd_r = 0.02;
+const float Kd_r = 0.08;
 
 const float pixel_to_distance_theta = 1.2; // theta方向的像素到实际距离的比例
 const float pixel_to_distance_r = 4; // r方向的像素到实际距离的比例
@@ -214,6 +214,7 @@ int get_plate_count = 0; // 从转盘上抓取物料的计数
 extern volatile int x_plate_error , y_plate_error ;
 
 int is_adjust_motor_in_tim = 1; // （废弃）如果为1，则在定时器中进行电机调整，否则在main的while中进行电机调整
+
 
 float now_spin_which_direction = 0;
 
@@ -491,7 +492,7 @@ int main(void)
 
     /*****************单独调试程序***********************/
 
-    HAL_Delay(3000); 
+    // HAL_Delay(1000); 
     // single_line_circle_adjust("CC");
     // single_get_and_put_some_with_load_first(1,0,1);
 
@@ -505,15 +506,19 @@ int main(void)
     //     HAL_Delay(2000);
     // }
 
-    while(1)
-    {
-            put_claw_up();  // 抬起机械爪
-            single_line_circle_adjust("CC");
-    single_get_and_put_some_with_load_first(1,0,1);
-        HAL_Delay(1000);
-        put_claw_up();
-        HAL_Delay(2000);
-    }
+    // while(1)
+    // {
+    //         put_claw_up();  // 抬起机械爪
+    //         single_line_circle_adjust("CC");
+    // single_get_and_put_some_with_load_first(1,0,1);
+    //     HAL_Delay(1000);
+        // put_claw_up();
+        // HAL_Delay(2000);
+    // }
+    // while(1)
+    // {
+    //     HAL_Delay(1000);
+    // }
 
 
     // /***********************比赛初赛所用的全流程***********************/
@@ -1186,7 +1191,7 @@ void single_get_and_put_some_with_load_first( int times,int is_pile_up,int is_lo
             HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
             while (is_servo_adjust != 0 ) 
             {
-                adjust_position_with_camera(x_camera_error, y_camera_error,50);  
+                adjust_position_with_camera(x_camera_error, y_camera_error,1);  
                 // adjust_position_with_camera_new(x_camera_error,y_camera_error,adjust_position_with_camera_time);
                 HAL_Delay(adjust_position_with_camera_time);  //10
             }
