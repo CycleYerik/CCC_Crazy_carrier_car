@@ -4,13 +4,13 @@
 #include "my_usart.h"
 
 
-#define pi 3.1415926
-#define wheel_circumference 31.4 //轮子周长
-#define pulse_per_circle 3200 //每圈脉冲数
-#define spin_radius_180 21.51 //自转半径，数据不准确 // 21.495 90 
-#define spin_radius_90 21.495 //自转半径，数据不准确 // 21.495 90
-#define spin_radius 21.495 //自转半径，数据不准确 // 21.495 90
-#define speed_ratio 0.47 //速度比例系数，0.47 cm/s 对应速度为1
+// #define pi 3.1415926
+// #define wheel_circumference 31.4 //轮子周长
+// #define pulse_per_circle 3200 //每圈脉冲数
+// #define spin_radius_180 21.51 //自转半径，数据不准确 // 21.495 90 
+// #define spin_radius_90 21.495 //自转半径，数据不准确 // 21.495 90
+// #define spin_radius 21.495 //自转半径，数据不准确 // 21.495 90
+// #define speed_ratio 0.52 //速度比例系数，0.47 cm/s 对应速度为1 （此处修改为0.52cm/s 对应速度为1）
 
 // 0.523 cm/s 对应速度为1
 
@@ -57,6 +57,7 @@ int get_distance_time(float distance, float velocity);
 void move_all_direction(uint8_t acc,float x_move_velocity,float y_move_velocity);
 // void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_velocity);
 void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length);
+void move_all_direction_position_delay(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length);
 void move_all_direction_position_y42(uint16_t acc_start,uint16_t acc_stop, float vel,float x_move_length,float y_move_length);
 void move_all_direction_position_tim(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int times_count);
 void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count);

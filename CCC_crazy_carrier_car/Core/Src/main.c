@@ -106,7 +106,7 @@ int open_loop_move_velocity = 180;    // 开环前进速度180
 int open_loop_spin_velocity = 150;    // 开环旋转速度150
 
 // 步进电机加速度
-float acceleration = 170;          // 直线运动加速度170  180会出现明显的震荡类似丢步
+float acceleration = 180;          // 直线运动加速度170  180会出现明显的震荡类似丢步
 float acceleration_spin = 180;     // 旋转运动加速度180
 float acceleration_adjust = 180;
 int motor_pos_move_mode = 0; //如果是0则是位置模式按照上一条指令的目标位置进行相对移动；2则是按照当前的实际位置进行相对移动
@@ -214,6 +214,7 @@ int get_plate_count = 0; // 从转盘上抓取物料的计数
 extern volatile int x_plate_error , y_plate_error ;
 
 int is_adjust_motor_in_tim = 1; // （废弃）如果为1，则在定时器中进行电机调整，否则在main的while中进行电机调整
+
 
 
 float now_spin_which_direction = 0;
@@ -492,33 +493,6 @@ int main(void)
 
     /*****************单独调试程序***********************/
 
-    // HAL_Delay(1000); 
-    // single_line_circle_adjust("CC");
-    // single_get_and_put_some_with_load_first(1,0,1);
-
-    // HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50);  // 通知树莓派开始识别转盘
-
-    // while(1)
-    // {
-    //     HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50);
-    //     put_claw_down();  // 放下机械爪准备抓取
-    //     get_from_plate_all_movement();
-    //     HAL_Delay(2000);
-    // }
-
-    // while(1)
-    // {
-    //         put_claw_up();  // 抬起机械爪
-    //         single_line_circle_adjust("CC");
-    // single_get_and_put_some_with_load_first(1,0,1);
-    //     HAL_Delay(1000);
-        // put_claw_up();
-        // HAL_Delay(2000);
-    // }
-    // while(1)
-    // {
-    //     HAL_Delay(1000);
-    // }
 
 
     // /***********************比赛初赛所用的全流程***********************/
@@ -573,15 +547,18 @@ int main(void)
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, -start_move_x , start_move_y);  // 从启停区出来
-    HAL_Delay(1200);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, -start_move_x , start_move_y);  
+    // HAL_Delay(1200);
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_to_qrcode);  // 出来后移动到二维码前
-    HAL_Delay(2000);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, move_to_qrcode);
+    // HAL_Delay(2000);
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table);  // 移动到转盘前
-    HAL_Delay(2000);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table);
+    // HAL_Delay(2000);
 
     
     //显示二维码信息
@@ -597,6 +574,7 @@ int main(void)
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -little_back_1);  // 微调位置往后
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -little_back_1);
 
     if(is_single_route_test != 1)
     {
@@ -631,7 +609,8 @@ int main(void)
 
 
     move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_1,0);  // 向右移动到中轴线
-    HAL_Delay(1100);
+    move_all_direction_position_delay(acceleration, open_loop_x_move_velocity, move_right_length_1,0);
+    // HAL_Delay(1100);
 
     if(is_single_route_test != 1)
     {
@@ -645,7 +624,8 @@ int main(void)
     
     
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_1);// 后退到粗加工区
-    HAL_Delay(3000);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_front_length_1);
+    // HAL_Delay(3000);
 
     spin_right_180(open_loop_spin_velocity,acceleration_spin);  // 旋转180度面向色环
     HAL_Delay(2000); 
@@ -673,7 +653,8 @@ int main(void)
     int move_back_length_2 = 86; 
     
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_2);  // 后退到十字中心
-    HAL_Delay(2000);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_2);
+    // HAL_Delay(2000);
 
 
     put_claw_up();//! 姿态的恢复
@@ -684,7 +665,8 @@ int main(void)
     HAL_Delay(1000);
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_2 );  // 前进到暂存区
-    HAL_Delay(1800);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_2 );
+    // HAL_Delay(1800);
 
 
     if(is_single_route_test != 1)
@@ -713,10 +695,12 @@ int main(void)
     HAL_Delay(1000);
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_b);  // 前进到转盘左侧
-    HAL_Delay(2500);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_b);
+    // HAL_Delay(2500);
 
     move_all_direction_position(acceleration, open_loop_x_move_velocity,move_right_length_b, 0);  // 向右移动到转盘
-    HAL_Delay(1500);
+    move_all_direction_position_delay(acceleration, open_loop_x_move_velocity,move_right_length_b, 0);
+    // HAL_Delay(1500);
 
 
     HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
@@ -751,7 +735,8 @@ int main(void)
 
 
     move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_3,0);  // 向右移动到中轴线
-    HAL_Delay(1100);
+    move_all_direction_position_delay(acceleration, open_loop_x_move_velocity, move_right_length_3,0);
+    // HAL_Delay(1100);
     
     if(is_single_route_test != 1)
     {
@@ -764,7 +749,8 @@ int main(void)
     }
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_3);  // 后退到粗加工区
-    HAL_Delay(2500);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_front_length_3);
+    // HAL_Delay(2500);
 
     put_claw_up();//! 姿态的恢复
 
@@ -792,7 +778,8 @@ int main(void)
     float move_back_length_4 = 86; 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_4);  // 后退到十字中心
-    HAL_Delay(2000);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_4);
+    // HAL_Delay(2000);
 
     put_claw_up();//! 姿态的恢复
     arm_stretch();
@@ -801,7 +788,8 @@ int main(void)
     HAL_Delay(1000);
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_4);  // 前进到暂存区
-    HAL_Delay(1800);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_4);
+    // HAL_Delay(1800);
 
 
     if(is_single_route_test != 1)
@@ -827,10 +815,12 @@ int main(void)
     int move_right_length_5 = 0.1;
 
     move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length_5,0);  
-    HAL_Delay(900);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, move_right_length_5,0);
+    // HAL_Delay(900);
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length_5);  
-    HAL_Delay(1000);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,-move_back_length_5);
+    // HAL_Delay(1000);
 
     open_claw_180();
     whole_arm_spin(1); 
@@ -841,10 +831,12 @@ int main(void)
     HAL_Delay(1000);
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_5);  
-    HAL_Delay(2000);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_5);  
+    // HAL_Delay(2000);
 
     move_all_direction_position(acceleration, open_loop_move_velocity, move_45_length_5-7.5, move_45_length_5);
-    HAL_Delay(2000);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, move_45_length_5-7.5, move_45_length_5);
+    // HAL_Delay(2000);
 
     HAL_UART_Transmit(&huart3, (uint8_t*)"end", strlen("end"), 50);
 

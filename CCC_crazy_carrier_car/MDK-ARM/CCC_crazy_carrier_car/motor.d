@@ -42,3 +42,4 @@ ccc_crazy_carrier_car\motor.o: ../screen/uart_screen.h
 ccc_crazy_carrier_car\motor.o: ../Core/Inc/tim.h
 ccc_crazy_carrier_car\motor.o: ../communication/my_timer.h
 ccc_crazy_carrier_car\motor.o: ../sensor/my_gyroscope.h
+ccc_crazy_carrier_car\motor.o: D:\MDK\ARM\ARMCC\Bin\..\include\math.h

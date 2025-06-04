@@ -1,11 +1,26 @@
 #include "motor.h"
-
+#include <math.h>
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //!     步进电机参数
 //!     步进电机速度0-5000
 //!     步进电机加速度0-255
 //!     5cm前后对应188像素
 //!     5cm左右对应像素181
+
+#define pi 3.1415926
+// #define wheel_circumference 31.4 //轮子周长
+// #define pulse_per_circle 3200 //每圈脉冲数
+// #define spin_radius_180 21.51 //自转半径，数据不准确 // 21.495 90 
+// #define spin_radius_90 21.495 //自转半径，数据不准确 // 21.495 90
+// #define spin_radius 21.495 //自转半径，数据不准确 // 21.495 90
+// #define speed_ratio 0.52 //速度比例系数，0.47 cm/s 对应速度为1 （此处修改为0.52cm/s 对应速度为1）
+const float wheel_circumference = 31.4; //轮子周长
+const float pulse_per_circle = 3200; //每圈脉冲数
+const float spin_radius_180 = 21.51; //自转半径，数据不准确 // 21.495 90 
+const float spin_radius_90 = 21.495; //自转半径，数据不准确 // 21.495 90
+const float spin_radius = 21.495; //自转半径，数据不准确 // 21.495 90
+const float speed_ratio = 0.52; //速度比例系数，0.47 cm/s 对应速度为1 （此处修改为0.52cm/s 对应速度为1）
+
 
 /// 所有运动情况下的加速度
 extern float acceleration;
@@ -251,7 +266,8 @@ float get_angle(float distance)
 /// @brief 根据移动的距离和速度计算需要的时间（ms）
 int get_distance_time(float distance, float velocity)
 {
-    return (int)(1000* distance /(float)(speed_ratio * velocity ));
+    float temp = (1000* distance /speed_ratio / velocity );
+    return (int)(temp);
 }
 // 速度/60 *周长 = 每秒的距离
 
@@ -676,7 +692,7 @@ void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count
 
 
 
-/// @brief 横向位置*1.02  全向位置移动,需自己给Delay延时，速度1对应0.47cm/s，delaytime(ms) = length /(0.47cm/s * velocity) *1000 （该公式不准，还是得自己计算） （在加减速过程中，t2-t1 = （256-acc）*50us， vt2 = vt1 + 1
+/// @brief 横向位置*1.02  全向位置移动,需自己给Delay,直接使用move_all_direction_position_delay延时函数即可，速度1对应0.47cm/s，delaytime(ms) = 0.05*v *(256-acc)+ x/v （在加减速过程中，t2-t1 = （256-acc）*50us， vt2 = vt1 + 1
 /// @param acc 
 /// @param velocity 
 /// @param x_move_length 面部朝向为车头前进方向，x轴正方向为右手方向
@@ -773,10 +789,62 @@ void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_len
     }
     Emm_V5_Synchronous_motion(0);
     HAL_Delay(10);
-    // uint32_t timex =  get_distance_time(abs(x_move_length), velocity);
-    // uint32_t timey = get_distance_time(abs(y_move_length), velocity);
+    // if(x_move_length < 0)
+    // {
+    //     x_move_length = -x_move_length;
+    // }
+    // if(y_move_length < 0)
+    // {
+    //     y_move_length = -y_move_length;
+    // }
+    // int timex =  get_distance_time(x_move_length, (int)velocity)+0.05*(int)velocity*(256-acc);
+    // int timey = get_distance_time(y_move_length, (int)velocity)+0.05*(int)velocity*(256-acc);
+    // HAL_Delay(timex > timey ? timex : timey);// 1068+630
+
+    // char temp_print[30];
+    // sprintf(temp_print,"t0.txt=\"%d,%d\"\xff\xff\xff",timex,timey);
+    // HAL_UART_Transmit(&huart5, (uint8_t *)temp_print, strlen(temp_print), 1000);
+    
+    // move_all_direction_position_delay(acc,velocity,x_move_length,y_move_length);
+
+}
+
+/// @brief 配合move_all_direction_position使用，计算时间并延时
+/// @param acc 
+/// @param velocity 
+/// @param x_move_length 
+/// @param y_move_length 
+void move_all_direction_position_delay(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length)
+{
+    if(x_move_length < 0)
+    {
+        x_move_length = -x_move_length;
+    }
+    if(y_move_length < 0)
+    {
+        y_move_length = -y_move_length;
+    }
+    int timex =  get_distance_time(x_move_length, (int)velocity)+0.05*(int)velocity*(256-acc);
+    int timey = get_distance_time(y_move_length, (int)velocity)+0.05*(int)velocity*(256-acc);
     // HAL_Delay(timex > timey ? timex : timey);
 
+    //TODO 原计划是计算达不到匀速时的时间，但实际测试时间过长，遂舍去
+    // if(x_move_length < (float)((float)velocity * (float)velocity * speed_ratio  * (256-(int)acc) *20000.0))
+    // {
+    //     timex = 1000*sqrt(x_move_length *(256-acc) /20.0 / speed_ratio);
+    // }
+    // if(y_move_length < (float)((float)velocity * (float)velocity * speed_ratio  * (256-(int)acc) *20000.0))
+    // {
+    //     timey = 1000*sqrt(y_move_length *(256-acc) /20.0 / speed_ratio);
+    // }
+
+    char temp_print[30];
+    sprintf(temp_print,"t0.txt=\"%d,%d\"\xff\xff\xff",timex,timey);
+    HAL_UART_Transmit(&huart5, (uint8_t *)temp_print, strlen(temp_print), 1000);
+
+    int delay_time = timex > timey ? timex : timey;
+    HAL_Delay(delay_time);
+    
 }
 
 
