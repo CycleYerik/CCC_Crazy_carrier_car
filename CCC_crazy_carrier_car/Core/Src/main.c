@@ -84,10 +84,10 @@ volatile int material_place[3] = {0,0,0}; //从暂存区夹取随机位置的物
 //!底盘调整相关参数
 const float Kp_slight_move = 0.5;  // 底盘前后左右微调PID参数
 const float Ki_slight_move = 0.01;
-const float Kd_slight_move = 0.8;
+const float Kd_slight_move = 0.9;
 
 const float Kp_line_spin = 1;      // 直线校正PID参数
-const float Ki_line_spin = 0.04;
+const float Ki_line_spin = 0.1;
 const float Kd_line_spin = 0.5;
 
 const float xy_move_k = 0.2; //底盘微调时xy乘上的比例 
@@ -100,13 +100,13 @@ const float spin_limit_min = 0.4;  // 旋转速度的最小值
 const float move_limit_max = 15;   // 移动速度的最大值
 const float move_limit_min = 0.5;  // 移动速度的最小值
 
-int motor_vel_adjust_with_spin = 20;  // 底盘直线调整时的最大速度20
+int motor_vel_adjust_with_spin = 50;  // 底盘直线调整时的最大速度20
 int open_loop_x_move_velocity = 120;  // 开环横向移动速度120
 int open_loop_move_velocity = 180;    // 开环前进速度180
 int open_loop_spin_velocity = 150;    // 开环旋转速度150
 
 // 步进电机加速度
-float acceleration = 180;          // 直线运动加速度170  180会出现明显的震荡类似丢步
+float acceleration = 210;          // 直线运动加速度170  180会出现明显的震荡类似丢步
 float acceleration_spin = 180;     // 旋转运动加速度180
 float acceleration_adjust = 180;
 int motor_pos_move_mode = 0; //如果是0则是位置模式按照上一条指令的目标位置进行相对移动；2则是按照当前的实际位置进行相对移动
@@ -119,10 +119,10 @@ int motor_pos_move_mode = 0; //如果是0则是位置模式按照上一条指令
 //!!!!!!!!      注意：机械臂还有大量参数在my_servo.c中
 
 //? 以下是旧版本的PID控制参数（配合adjust_position_with_camera）
-const float Kp_theta = 0.28;  // 机械臂旋转PID参数
-const float Ki_theta = 0.01;
+const float Kp_theta = 0.32;  // 机械臂旋转PID参数
+const float Ki_theta = 0.008;
 const float Kd_theta = 0.05;
-const float Kp_r = 0.35;     // 机械臂伸缩PID参数
+const float Kp_r = 0.40;     // 机械臂伸缩PID参数
 const float Ki_r = 0.01;
 const float Kd_r = 0.08;
 
@@ -164,7 +164,7 @@ const float y_plate_k = 7;
 
 //! 调整的超时时间
 int timeout_limit = 1000; // 超时时间限制，单位10ms
-int timeout_limit_line = 500;
+int timeout_limit_line = 600;
 
 
 
@@ -478,7 +478,7 @@ int main(void)
     HAL_Delay(100);
     arm_stretch();                // 机械臂伸缩位置初始化
     whole_arm_spin(1);           // 中板旋转位置初始化
-    put_claw_up();           // 机械爪抬起
+    put_claw_up_top();           // 机械爪抬起
     claw_spin_front();           // 机械爪旋转到正前方
     open_claw_180();             // 机械爪完全张开
     state_spin_without_claw(1);  // 载物盘旋转到1号位
@@ -492,7 +492,34 @@ int main(void)
 
 
     /*****************单独调试程序***********************/
+    // HAL_Delay(1000);
+    // int rand_num_1, rand_num_2;
+    // while(1)
+    // {
+    //     single_line_circle_adjust("CC4");  // 校正车身位置对准色环
+    //     HAL_Delay(2000);
+    //     // 生成 -5 到 5 的随机整数（共11个可能值）
+    //     rand_num_1 = rand() % 11 - 5;  // [0,10] -5 -> [-5,5]
+    //     rand_num_2 = rand() % 11 - 5;  // [0,10] -5 -> [-5,5]
+    //     move_all_direction_position(acceleration, open_loop_move_velocity, rand_num_1, rand_num_2);
+    //     move_all_direction_position_delay(acceleration, open_loop_move_velocity, rand_num_1, rand_num_2);
+    //     put_claw_up();
+    //     HAL_Delay(1000);    
+    // }
 
+    // while(1)
+    // {
+    //     move_all_direction_position(acceleration, open_loop_move_velocity, 15, 23);
+    //     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 15, 23);
+    //     move_all_direction_position(acceleration, open_loop_move_velocity, -15, -23);
+    //     move_all_direction_position_delay(acceleration, open_loop_move_velocity, -15, -45);
+    //     HAL_Delay(3000);
+    // }
+    // while(1)
+    // {
+    //     single_line_circle_adjust("CC");
+    //     HAL_Delay(3000);
+    // }
 
 
     // /***********************比赛初赛所用的全流程***********************/
@@ -511,7 +538,11 @@ int main(void)
     is_adjust_motor_in_tim = 0;
     motor_state = 1;
     HAL_Delay(1000); // 等待电机初始化
+    if(is_single_route_test != 1)
+    {
     HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 50);  // 开始识别二维码
+    }
+    
 
     //! wifi接收（不用的话保持注释）
     //TODO 仍待优化和测试
@@ -548,7 +579,7 @@ int main(void)
 
     move_all_direction_position(acceleration, open_loop_move_velocity, -start_move_x , start_move_y);  // 从启停区出来
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, -start_move_x , start_move_y);  
-    // HAL_Delay(1200);
+    HAL_Delay(500);
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_to_qrcode);  // 出来后移动到二维码前
@@ -569,8 +600,12 @@ int main(void)
 
 
     spin_right_90(open_loop_spin_velocity,acceleration_spin);  // 右转90度面向转盘
-    HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50);  // 通知树莓派开始识别转盘
+    if(is_single_route_test != 1)
+    {
+    HAL_UART_Transmit(&huart3, (uint8_t*)"BB1", strlen("BB1"), 50);  // 通知树莓派开始识别转盘
+    }
     HAL_Delay(1000);
+    put_claw_up();
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -little_back_1);  // 微调位置往后
@@ -604,7 +639,7 @@ int main(void)
 
     
     //移动到粗加工区参数
-    float move_right_length_1 = 41; 
+    float move_right_length_1 = 42; 
     float move_front_length_1 = 170;  
 
 
@@ -612,15 +647,7 @@ int main(void)
     move_all_direction_position_delay(acceleration, open_loop_x_move_velocity, move_right_length_1,0);
     // HAL_Delay(1100);
 
-    if(is_single_route_test != 1)
-    {
-        //先校正直线
-        single_line_adjust("EE");  // 校正车身姿态与直线平行
-    }
-    else
-    {
-        HAL_Delay(3000);
-    }
+    single_line_adjust("EE");  // 校正车身姿态与直线平行
     
     
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_1);// 后退到粗加工区
@@ -630,15 +657,17 @@ int main(void)
     spin_right_180(open_loop_spin_velocity,acceleration_spin);  // 旋转180度面向色环
     HAL_Delay(2000); 
 
+
     if(is_single_route_test != 1)
     {
     //到达粗加工区，开始校正车身位置
     //! 注意：两个函数的配合使用（包括发送的字母标志位）
-    single_line_circle_adjust("CC");  // 校正车身位置对准色环
+    single_line_circle_adjust("CC12");  // 校正车身位置对准色环
     single_get_and_put_some_with_load_first(1,0,1);  // 执行放置动作序列
     }
     else
     {
+        single_line_circle_adjust("CC4");
         HAL_Delay(3000);
     }
     
@@ -650,7 +679,7 @@ int main(void)
 
     //移动到暂存区参数
     int move_front_length_2 = 82; 
-    int move_back_length_2 = 86; 
+    int move_back_length_2 = 85; 
     
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_2);  // 后退到十字中心
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_2);
@@ -672,11 +701,12 @@ int main(void)
     if(is_single_route_test != 1)
     {
     //! 注意：两个函数的配合使用（包括发送的字母标志位）
-    single_line_circle_adjust("CC");  // 校正位置对准暂存区
+    single_line_circle_adjust("CC12");  // 校正位置对准暂存区
     single_get_and_put_some_with_load_first(2,0,0);  // 执行放置动作序列
     }
     else
     {
+        single_line_circle_adjust("CC4");  // 校正位置对准暂存区
         HAL_Delay(3000);
     }
     
@@ -703,7 +733,10 @@ int main(void)
     // HAL_Delay(1500);
 
 
-    HAL_UART_Transmit(&huart3, (uint8_t*)"BB", strlen("BB"), 50); 
+    if(is_single_route_test != 1)
+    {
+    HAL_UART_Transmit(&huart3, (uint8_t*)"BB1", strlen("BB1"), 50);  // 通知树莓派开始识别转盘
+    }
     HAL_Delay(100);
 
     if(is_single_route_test != 1)
@@ -730,7 +763,7 @@ int main(void)
 
 
     //移动到粗加工区参数
-    float move_right_length_3 = 41; 
+    float move_right_length_3 = 42; 
     float move_front_length_3 = 170;  
 
 
@@ -738,15 +771,7 @@ int main(void)
     move_all_direction_position_delay(acceleration, open_loop_x_move_velocity, move_right_length_3,0);
     // HAL_Delay(1100);
     
-    if(is_single_route_test != 1)
-    {
-        //先校正直线
-        single_line_adjust("EE");  // 校正车身姿态与直线平行
-    }
-    else
-    {
-        HAL_Delay(3000);
-    }
+    single_line_adjust("EE");
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_3);  // 后退到粗加工区
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_front_length_3);
@@ -760,11 +785,12 @@ int main(void)
     if(is_single_route_test != 1)
     {
     //! 注意：两个函数的配合使用（包括发送的字母标志位）
-    single_line_circle_adjust("CC");
+    single_line_circle_adjust("CC3");
     single_get_and_put_some_with_load_first(3,0,1);
     }
     else
     {
+        single_line_circle_adjust("CC4");
         HAL_Delay(3000);
     }
 
@@ -774,8 +800,8 @@ int main(void)
     /**************第二次从粗加工区前往暂存区并放置*****************/
 
     //移动到暂存区参数
-    float move_front_length_4 = 82.5; 
-    float move_back_length_4 = 86; 
+    float move_front_length_4 = 82; 
+    float move_back_length_4 = 85; 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_4);  // 后退到十字中心
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_4);
@@ -795,11 +821,12 @@ int main(void)
     if(is_single_route_test != 1)
     {
     //! 注意：两个函数的配合使用（包括发送的字母标志位）
-    single_line_circle_adjust("CC");
+    single_line_circle_adjust("CC4");
     single_get_and_put_some_with_load_first(4,1,0);
     }
     else
     {
+        single_line_circle_adjust("CC4");
         HAL_Delay(3000);
     }
     
@@ -825,7 +852,7 @@ int main(void)
     open_claw_180();
     whole_arm_spin(1); 
     arm_stretch();
-    HAL_Delay(1500);
+    // HAL_Delay(1500);
 
     spin_right(open_loop_spin_velocity,acceleration_spin, 90);
     HAL_Delay(1000);
@@ -959,15 +986,16 @@ void single_line_adjust(char *pData)
 {
     static int adjust_delay = 50;
     HAL_UART_Transmit(&huart3, (uint8_t*)pData, strlen(pData), 50); // 发送传入的字符串
-    HAL_Delay(10);
     is_slight_spin_and_move = 1;
+    HAL_Delay(10);
     tim3_count = 0;
-    // while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit_line)
-    while(is_slight_spin_and_move != 0 )
+    while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit_line)
+    // while(is_slight_spin_and_move != 0 )
     {
         slight_spin_and_move(); // 在转盘旁的直线处进行姿态的校正
         HAL_Delay(adjust_delay);
     }
+    is_slight_spin_and_move = 0;
     stop();
     HAL_Delay(50);
 }
@@ -978,11 +1006,11 @@ void single_line_circle_adjust(char *pData)
 {
     static int adjust_delay = 50;
     HAL_UART_Transmit(&huart3, (uint8_t*)pData, strlen(pData), 50);
-    HAL_Delay(200);
     is_slight_spin_and_move = 1;
+    HAL_Delay(100);
     tim3_count = 0;
-    // while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
-    while(is_slight_spin_and_move != 0 )
+    while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
+    // while(is_slight_spin_and_move != 0 )
     {
         slight_spin_and_move(); // 直线和圆环一起调整
         HAL_Delay(adjust_delay);

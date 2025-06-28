@@ -50,19 +50,21 @@ const int feet_acc_claw_spin = 0;
 
 
 //? 初赛物料升降参数（一号舵机）  
+const int servo_1_add_num = -12; //! 
+
 //TODO 待修改（全部重新测）
-const int put_claw_down_pile_position = 1878;  
-const int put_claw_down_state_position = 777 ; //从车的载物盘上 982
-const int put_claw_down_position = 1701;  // 从转盘上取物料  
-const int put_claw_down_ground_position = 3010; // 放在地上 3144
-const int put_claw_up_top_position =280; // 最高点  
-const int put_claw_up_position =1667; //  看粗调移动底盘的位置
-const int put_claw_down_near_ground_position = 2770; //!细调放置的位置
-const int put_claw_down_near_plate_position = 1600; //转盘放置细调的位置
+const int put_claw_down_pile_position = 1878+servo_1_add_num;  
+const int put_claw_down_state_position = 777 +servo_1_add_num; //从车的载物盘上 982
+const int put_claw_down_position = 1701+servo_1_add_num;  // 从转盘上取物料  
+const int put_claw_down_ground_position = 3010+servo_1_add_num; // 放在地上 3144
+const int put_claw_up_top_position =280+servo_1_add_num; // 最高点  
+const int put_claw_up_position =1667+servo_1_add_num; //  看粗调移动底盘的位置
+const int put_claw_down_near_ground_position = 2770+servo_1_add_num; //!细调放置的位置
+const int put_claw_down_near_plate_position = 1600+servo_1_add_num; //转盘放置细调的位置
 
 
 //? 机械臂前端旋转参数（二号舵机）
-const int claw_spin_position_front = 3328 ; // 2号精密舵机回到前方
+const int claw_spin_position_front = 3340 ; // 2号精密舵机回到前方
 const int claw_spin_position_state = 1600; // 2号精密舵机回到载物盘//TODO 待测量
 const int claw_spin_without_claw_position_state = 1600; //与上面一样
 
