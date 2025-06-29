@@ -30,12 +30,14 @@ void put_claw_down_ground_slightly(void);
 void put_claw_down_near_ground(void);
 void put_claw_down_state(void);
 void put_claw_down(void);
+void put_claw_down_slightly(void);
 void put_claw_up(void);
 void put_claw_up_top(void);
 void put_claw_down_near_plate(void);
 
 void claw_spin_front(void);
 void claw_spin_state(void);
+void claw_spin_front_slight(void);
 void claw_spin_state_without_claw(void);
 
 void whole_arm_spin(int status);
@@ -67,6 +69,7 @@ void get_and_load_openloop_avoid(int position,int is_default_position);
 void get_and_pre_put_v3(int position,int near_ground_position,int state_position_tall,int state_position_short, int pile_up_position,int is_pile_up);
 void get_and_pre_put_avoid(int position,int is_pile_up);
 void get_and_pre_put_spin_plate(int position);
+void get_and_put_spin_plate(int position);
 void get_and_pre_put(int position,int is_pile_up);
 void get_and_pre_put_void(int position,int is_pile_up);
 void get_and_put_different_position_pileup(int position);

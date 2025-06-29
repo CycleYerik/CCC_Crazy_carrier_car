@@ -129,7 +129,7 @@ const float Kd_r = 0.08;
 const float pixel_to_distance_theta = 1.2; // theta方向的像素到实际距离的比例
 const float pixel_to_distance_r = 4; // r方向的像素到实际距离的比例
 
-//? 以下是新版本的PID控制参数（adjust_position_with_camera_new）
+//? 暂时废弃以下是版本的PID控制参数（adjust_position_with_camera_new）
 // const float Kp_theta = 0.3;  // 机械臂旋转PID参数
 // const float Ki_theta = 0.008;
 // const float Kd_theta = 0.012;
@@ -319,6 +319,7 @@ void get_from_plate_all_movement_with_back_check(void);
 void single_get_and_put_some_with_load_first( int times,int is_pile_up,int is_load);
 void single_get_and_put_some_with_load( int times, int is_load,int is_pile_up,int is_avoid_collide);
 void get_and_put_in_spin_plate_cricle_all(int times);
+void get_and_put_in_spin_plate_cricle_all_new(int times);
 void get_from_ground_in_random_position(int times);
 
 /* USER CODE END PFP */
@@ -507,18 +508,11 @@ int main(void)
     //     HAL_Delay(1000);    
     // }
 
+    
+    // get_and_put_in_spin_plate_cricle_all_new(1);
     // while(1)
     // {
-    //     move_all_direction_position(acceleration, open_loop_move_velocity, 15, 23);
-    //     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 15, 23);
-    //     move_all_direction_position(acceleration, open_loop_move_velocity, -15, -23);
-    //     move_all_direction_position_delay(acceleration, open_loop_move_velocity, -15, -45);
-    //     HAL_Delay(3000);
-    // }
-    // while(1)
-    // {
-    //     single_line_circle_adjust("CC");
-    //     HAL_Delay(3000);
+    //     HAL_Delay(100); 
     // }
 
 
@@ -1166,6 +1160,51 @@ void get_and_put_in_spin_plate_cricle_all(int times)
     // HAL_Delay(300);
 }
 
+/// @brief 将物料放置在转盘色环上的全流程函数（重写版本，实现单次识别单次放置 //TODO 需要考虑到容易掉落的物料，放慢速度
+/// @param times 
+void get_and_put_in_spin_plate_cricle_all_new(int times)
+{
+    // 发信号开始调整位置
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"HH", strlen("HH"), 50);
+    HAL_UART_Transmit(&huart3, (uint8_t*)"LL", strlen("LL"), 50);
+    int add_count = 0;
+    if(times == 2)
+    {
+        add_count = 3;
+    }
+
+    // 先张开看去调整
+    put_claw_down();
+    open_claw_180();
+
+    servo_adjust_status = 1;
+    is_servo_adjust = 1; //! 
+    while (is_servo_adjust != 0 ) //等待接收0x39
+    {
+        adjust_position_with_camera(x_camera_error, y_camera_error,1); 
+        HAL_Delay(adjust_position_with_camera_time); 
+    }
+
+    //发信号开始准备放置
+    for(int i = 0; i < 3; i++) 
+    {
+        //TODO 发信号
+        is_put_plate = 0;
+        while(is_put_plate != 1 ) //等待接受信号就放
+        {
+            HAL_Delay(50);
+        }
+        // get_and_put_spin_plate(target_colour[i+add_count]);
+        get_and_pre_put_spin_plate_avoid_collide(target_colour[i+add_count]); 
+        open_claw_180(); //放下后张开
+    }
+
+
+}
+
+
+
+
 /// @brief 国赛初赛使用的物料放置和夹取函数
 /// @param times 
 /// @param is_pile_up 
@@ -1544,6 +1583,7 @@ void single_get_and_put_some_with_load( int times, int is_load,int is_pile_up,in
     HAL_Delay(10);
 }
 
+
 /// @brief 从转盘抓物料的动作（需要提前完成夹爪放低的动作，这个函数的第一个动作就是抓取）
 /// @param  
 void get_from_plate_all_movement(void)
@@ -1766,7 +1806,7 @@ void get_from_ground_in_random_position(int times)
         temp_add = 3;
     }
     int temp_get_order[3] = {2,1,3};//本次抓取的位置顺序，123对应的是右中左
-    for(int i = 0 ; i < 3 ; i++)
+    for(int i = 0 ; i < 3 ; i++) //核心代码判断
     {
         for(int j = 0 ; j < 3 ; j++)
         {

@@ -47,7 +47,7 @@ const int feet_acc = 210; //TODO 待修改
 const int feet_acc_claw_up_down = 0;
 const int feet_acc_put_down_ground_slightly = 240;
 const int feet_acc_claw_spin = 0;
-
+const int feet_acc_claw_spin_slight = 100;
 
 //? 初赛物料升降参数（一号舵机）  
 const int servo_1_add_num = -12; //! 
@@ -587,7 +587,7 @@ void get_and_load_openloop_avoid(int position,int is_default_position)
 
 
 
-/// @brief 省赛决赛版本，功能为从地上抓取物料
+/// @brief 省赛决赛版本，功能为从地上抓取物料（待新版本优化动作速度）
 /// @param position 
 /// @param state_position 
 void get_and_load_openloop_with_temp_put(int position,int state_position)
@@ -726,7 +726,7 @@ void get_and_load_openloop(int position,int is_default_position)
 }
 
 
-/// @brief 省赛决赛版本，在转盘上放置
+/// @brief 原省赛决赛版本，在转盘上放置(新优化了动作和速度)
 /// @param position 
 void get_and_pre_put_spin_plate_avoid_collide(int position)
 {
@@ -739,22 +739,22 @@ void get_and_pre_put_spin_plate_avoid_collide(int position)
     arm_shrink(); //TODO 待区分
     HAL_Delay(500);
     claw_spin_state_without_claw();
-    HAL_Delay(600);
+    HAL_Delay(400);
     put_claw_down_state();
     state_spin_without_claw(position);
-    HAL_Delay(700); //400
+    HAL_Delay(300); //400
     close_claw();
     HAL_Delay(600);
     put_claw_up_top();
     HAL_Delay(500); //200
-    feetech_servo_move(2,claw_spin_position_front,3500,feet_acc);
+    claw_spin_front();
     feetech_servo_move(4,temp_r_servo_position_plate,4000,feet_acc);
     feetech_servo_move(3,temp_theta_servo_position_plate,4000,feet_acc);
     r_servo_now = temp_r_servo_position_plate;
     theta_servo_now = temp_theta_servo_position_plate;
     HAL_Delay(400);
     put_claw_down();
-    HAL_Delay(300);
+    HAL_Delay(500);
 }
 
 /// @brief 在转盘上放置
@@ -769,23 +769,56 @@ void get_and_pre_put_spin_plate(int position)
     int temp_theta_servo_position_plate = theta_servo_now;
     arm_shrink(); //TODO 待区分
     HAL_Delay(500);
-    claw_spin_state();
+    claw_spin_state_without_claw();
     // feetech_servo_move(3,middle_3,2000,feet_acc);    
-    HAL_Delay(700);
+    HAL_Delay(600);
     put_claw_down_state();
-    HAL_Delay(700); //400
+    HAL_Delay(600); //? 根据物料高度进行抓取
     close_claw();
-    HAL_Delay(400);
+    HAL_Delay(400);//? 根据物料高度进行调整
     put_claw_up_top();
-    HAL_Delay(500); //200
+    HAL_Delay(200); 
+    claw_spin_front_slight(); //? 调整加速度
+    feetech_servo_move(4,temp_r_servo_position_plate,4000,feet_acc);
+    feetech_servo_move(3,temp_theta_servo_position_plate,4000,feet_acc);
+    r_servo_now = temp_r_servo_position_plate;
+    theta_servo_now = temp_theta_servo_position_plate;
+    HAL_Delay(200);
+    put_claw_down_slightly();
+    HAL_Delay(400);
+    open_claw();
+    HAL_Delay(300);
+}
+
+/// @brief 在转盘上放置（新版本）
+/// @param position 
+void get_and_put_spin_plate(int position)
+{
+    state_spin(position);
+    open_claw();
+    put_claw_up_top();
+    // HAL_Delay(500); //TODO 可能会撞到物料
+    int temp_r_servo_position_plate = r_servo_now;
+    int temp_theta_servo_position_plate = theta_servo_now;
+    arm_shrink(); //TODO 待区分
+    HAL_Delay(500);
+    claw_spin_state();
+    HAL_Delay(400);
+    put_claw_down_state();
+    HAL_Delay(400); 
+    close_claw();
+    HAL_Delay(300);
+    put_claw_up_top();
+    HAL_Delay(300); 
     claw_spin_front(); //TODO 是否可能撞到
     feetech_servo_move(4,temp_r_servo_position_plate,4000,feet_acc);
     feetech_servo_move(3,temp_theta_servo_position_plate,4000,feet_acc);
     r_servo_now = temp_r_servo_position_plate;
     theta_servo_now = temp_theta_servo_position_plate;
     HAL_Delay(200);
-    put_claw_down_near_plate();
-    HAL_Delay(300);
+    put_claw_down();
+    HAL_Delay(400);
+    open_claw_180();
     // if(is_pile_up != 1)
     // {
     // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
@@ -1331,6 +1364,14 @@ void put_claw_down(void)
     feetech_servo_move(1,put_claw_down_position,4095,feet_acc_claw_up_down);
 }
 
+/// @brief 放到转盘上缓速版本
+/// @param  
+void put_claw_down_slightly(void)
+{
+    feetech_servo_move(1,put_claw_down_position,4095,feet_acc_put_down_ground_slightly);
+}
+
+
 /// @brief 绳驱转盘转动，夹爪上升
 /// @param  
 void put_claw_up(void)
@@ -1351,6 +1392,20 @@ void claw_spin_front(void)
     if(ReadPos(2) > claw_spin_position_state - 800)
     {
         feetech_servo_move(2,claw_spin_position_front,4000,feet_acc_claw_spin);
+    }
+    else
+    {
+        HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_back", strlen("claw_tooooo_back"), 50);
+    }
+}
+
+/// @brief 夹爪缓慢旋转到朝向前方
+/// @param  
+void claw_spin_front_slight(void)
+{
+    if(ReadPos(2) > claw_spin_position_state - 800)
+    {
+        feetech_servo_move(2,claw_spin_position_front,4000,feet_acc_claw_spin_slight);
     }
     else
     {

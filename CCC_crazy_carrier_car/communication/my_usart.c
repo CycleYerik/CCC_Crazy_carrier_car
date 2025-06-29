@@ -505,7 +505,7 @@ void UART_receive_process_3(void)
             }
         }
 
-        //? 转盘放置，接收到直接放
+        //? 转盘放置，接收到直接放（用于往转盘上放置）
         if(is_put_plate == 0)
         {
             if(rxdata_u3[0] == '?' && rxdata_u3[1] == 0x77)
@@ -695,7 +695,7 @@ void UART_receive_process_3(void)
             }
         }
 
-        // 在从转盘抓取
+        //?在从转盘抓取（用于给出是否该从转盘上抓取）
         if (is_start_get_plate == 1) 
         {
             if (rxdata_u3[1] == 0x07 && rxdata_u3[0] == '?') //! 此处可以加入更复杂的校验位
