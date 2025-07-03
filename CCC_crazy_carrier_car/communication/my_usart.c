@@ -484,6 +484,11 @@ void UART_receive_process_1(void)
 /// @brief 处理树莓派数据
 void UART_receive_process_3(void)
 {
+    //!树莓派对应的引脚（USB端口在前，风扇在后）25.7.3
+    //! 灰色：左列由后往前第三个
+    //! 蓝色：右列由后往前第四个
+    //! 橙色：右列由前往后第六个
+    
     // if (rxflag_u3 > 0)
     if(1) //! 由于使用了空闲中断，故不需要原先中断的判断
     {
@@ -677,15 +682,15 @@ void UART_receive_process_3(void)
             {
                 y_plate_error = (int) (rxdata_u3[4] <<8 | rxdata_u3[5]);
                 y_plate_error *= y_plate_k;
-                is_adjust_plate_servo = 0;
+                
 
             }
             else if(rxdata_u3[3] == 0x02)
             {
                 y_plate_error = - (int) (rxdata_u3[4] <<8 | rxdata_u3[5]);
                 y_plate_error *= y_plate_k;
-                is_adjust_plate_servo = 0;
             }
+            is_adjust_plate_servo = 0;
         }
         if(start_judge_empty == 1)
         {

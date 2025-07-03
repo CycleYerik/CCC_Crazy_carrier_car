@@ -58,7 +58,10 @@
 /* USER CODE BEGIN PV */
 
 /**************************************各种全局变量区*****************************************/
-
+//!树莓派对应的引脚（USB端口在前，风扇在后）25.7.3
+//! 灰色：左列由后往前第三个
+//! 蓝色：右列由后往前第四个
+//! 橙色：右列由前往后第六个
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -78,11 +81,12 @@ int is_single_route_test = 0; // 1则单独路径移动
 volatile int target_colour[6] = {2,3,1,1,3,2}; // 物料颜色序列(1红,2绿,3蓝)
 volatile int material_place[3] = {0,0,0}; //从暂存区夹取随机位置的物料时用的数组
 
-
+//! 默认暂存区物料顺序
+const material_order default_material_order = { .left = 3, .middle = 2, .right = 1};
 
 
 //!底盘调整相关参数
-const float Kp_slight_move = 0.5;  // 底盘前后左右微调PID参数
+const float Kp_slight_move = 0.6;  // 底盘前后左右微调PID参数
 const float Ki_slight_move = 0.01;
 const float Kd_slight_move = 0.9;
 
@@ -91,7 +95,7 @@ const float Ki_line_spin = 0.1;
 const float Kd_line_spin = 0.5;
 
 const float xy_move_k = 0.2; //底盘微调时xy乘上的比例 
-const float adjust_spin_scale = 1; // 底盘微调时旋转和移动的比例
+const float adjust_spin_scale = 0.8; // 底盘微调时旋转和移动的比例
 const float adjust_move_scale = 1;
 
 
@@ -106,7 +110,7 @@ int open_loop_move_velocity = 180;    // 开环前进速度180
 int open_loop_spin_velocity = 150;    // 开环旋转速度150
 
 // 步进电机加速度
-float acceleration = 210;          // 直线运动加速度170  180会出现明显的震荡类似丢步
+float acceleration = 180;          // 直线运动加速度170  180会出现明显的震荡类似丢步
 float acceleration_spin = 180;     // 旋转运动加速度180
 float acceleration_adjust = 180;
 int motor_pos_move_mode = 0; //如果是0则是位置模式按照上一条指令的目标位置进行相对移动；2则是按照当前的实际位置进行相对移动
@@ -159,7 +163,7 @@ int adjust_position_with_camera_time = 10; //机械臂细调的延时时间
 
 //机械臂转盘单次微调系数
 const float x_plate_k = 1;   // 转盘处机械臂微调系数
-const float y_plate_k = 7;
+const float y_plate_k = 5;
 
 
 //! 调整的超时时间
@@ -235,6 +239,8 @@ int is_servo_adjust= 0; // 当在视觉闭环微调舵机时置1
 extern volatile int  r_servo_now ; // 机械臂伸缩舵机的位置
 extern volatile int  theta_servo_now ; // 机械臂中板旋转舵机的位置
 
+extern const int feet_acc;
+
 extern int left_2, left_3, left_4;
 extern int middle_2, middle_3, middle_4;
 extern int right_2, right_3, right_4;
@@ -297,7 +303,7 @@ void SystemClock_Config(void);
 /************************************函数声明及定义区****************************************/
 
 // printf重定向，用于串口屏的显示
-
+void print_to_screen(int t_num,char *pData);
 void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size);
 int fputc(int ch, FILE *f)
 {
@@ -493,21 +499,87 @@ int main(void)
 
 
     /*****************单独调试程序***********************/
-    // HAL_Delay(1000);
-    // int rand_num_1, rand_num_2;
+    HAL_Delay(2000);
+
+    // //? 单独测试色环
+    // put_claw_up();
+    // single_line_circle_adjust("CC12");  // 校正车身位置对准色环
+    // single_get_and_put_some_with_load_first(1,0,1);  // 执行放置动作序列
+    // // print_to_screen(1,"r_limit");
     // while(1)
     // {
-    //     single_line_circle_adjust("CC4");  // 校正车身位置对准色环
-    //     HAL_Delay(2000);
+    //     HAL_Delay(1000);
+    // }
+
+
+    // //? 单独调试底盘
+    // int rand_num_1, rand_num_2;
+    // put_claw_up();
+    // while(1)
+    // {
+    //     single_line_circle_adjust("CC12");  // 校正车身位置对准色环
+    //     single_get_and_put_some_with_load_first(1,0,1);
+    //     // HAL_Delay(2000);
     //     // 生成 -5 到 5 的随机整数（共11个可能值）
-    //     rand_num_1 = rand() % 11 - 5;  // [0,10] -5 -> [-5,5]
-    //     rand_num_2 = rand() % 11 - 5;  // [0,10] -5 -> [-5,5]
+    //     rand_num_1 = rand() % 5 - 2;  // [0,10] -5 -> [-5,5]
+    //     rand_num_2 = rand() % 5 - 2;  // [0,10] -5 -> [-5,5]
     //     move_all_direction_position(acceleration, open_loop_move_velocity, rand_num_1, rand_num_2);
     //     move_all_direction_position_delay(acceleration, open_loop_move_velocity, rand_num_1, rand_num_2);
     //     put_claw_up();
-    //     HAL_Delay(1000);    
+    //     // HAL_Delay(1000);    
+    //     // 随机旋转动作
+    //     int rand_spin = rand() % 2; // 0或1
+    //     if(rand_spin == 0)
+    //     {
+    //         spin_left_180(open_loop_spin_velocity,acceleration_spin);
+    //         HAL_Delay(1500);
+    //         spin_left_180(open_loop_spin_velocity,acceleration_spin);
+    //         HAL_Delay(1500);
+    //     }
+    //     else
+    //     {
+    //         spin_right_180(open_loop_spin_velocity,acceleration_spin);
+    //         HAL_Delay(1500);
+    //         spin_right_180(open_loop_spin_velocity,acceleration_spin);
+    //         HAL_Delay(1500);
+    //     }
     // }
 
+    // //?测试180
+    // while(1)
+    // {
+    //     spin_right_90(open_loop_spin_velocity,acceleration_spin);
+    //     HAL_Delay(1000);
+    // }
+
+    // HAL_Delay(3000);
+    // adjust_plate(300,-95);
+    // while(1)
+    // {
+    //     HAL_Delay(1000);
+    // }
+
+
+    // //? 单独测试转盘
+    // put_claw_down();
+    // HAL_Delay(1000);
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"BB1", strlen("BB1"), 50);  // 通知树莓派开始识别转盘
+    // theta_servo_now = middle_arm;
+    // get_from_plate_all_movement();
+    // while(1)
+    // {
+    //     HAL_Delay(1000);
+    // }
+
+    
+    //? 数字舵机测试程序
+    // while(1)
+    // {
+    //     state_spin_angles(25);
+    //     HAL_Delay(3000);
+    //     state_spin_angles(125);
+    //     HAL_Delay(3000);
+    // }
     
     // get_and_put_in_spin_plate_cricle_all_new(1);
     // while(1)
@@ -531,6 +603,7 @@ int main(void)
 
     is_adjust_motor_in_tim = 0;
     motor_state = 1;
+
     HAL_Delay(1000); // 等待电机初始化
     if(is_single_route_test != 1)
     {
@@ -649,7 +722,7 @@ int main(void)
     // HAL_Delay(3000);
 
     spin_right_180(open_loop_spin_velocity,acceleration_spin);  // 旋转180度面向色环
-    HAL_Delay(2000); 
+    HAL_Delay(1500); 
 
 
     if(is_single_route_test != 1)
@@ -729,7 +802,7 @@ int main(void)
 
     if(is_single_route_test != 1)
     {
-    HAL_UART_Transmit(&huart3, (uint8_t*)"BB1", strlen("BB1"), 50);  // 通知树莓派开始识别转盘
+    HAL_UART_Transmit(&huart3, (uint8_t*)"BB2", strlen("BB2"), 50);  // 通知树莓派开始识别转盘
     }
     HAL_Delay(100);
 
@@ -774,7 +847,7 @@ int main(void)
     put_claw_up();//! 姿态的恢复
 
     spin_right_180(open_loop_spin_velocity,acceleration_spin);  // 旋转180度面向色环
-    HAL_Delay(2000);
+    HAL_Delay(1500);
 
     if(is_single_route_test != 1)
     {
@@ -946,6 +1019,20 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
+
+/// @brief 串口屏调试函数
+/// @param t_num 串口屏里的tx
+/// @param pData 要发送的字符串
+void print_to_screen(int t_num,char *pData)
+{
+    char temp_data[40];
+    // t_num 对应"tnum.txt=\"%s\"\xff\xff\xff"
+    sprintf(temp_data, "t%d.txt=\"%s\"\xff\xff\xff", t_num, pData);
+    printf("%s", temp_data);
+    HAL_Delay(20);
+}
+
+
 /// @brief 串口空闲中断回调函数
 /// @param huart 
 /// @param Size 
@@ -1056,7 +1143,7 @@ void get_and_put_in_spin_plate_cricle_all(int times)
         }
         
         
-        get_and_pre_put_spin_plate_avoid_collide(target_colour[i+add_count]);
+        get_and_pre_put_spin_plate_avoid_collide(target_colour[i+add_count], &default_material_order);
         is_put_material_in_plate = 0;
         is_third_preput = 0;
         
@@ -1195,7 +1282,7 @@ void get_and_put_in_spin_plate_cricle_all_new(int times)
             HAL_Delay(50);
         }
         // get_and_put_spin_plate(target_colour[i+add_count]);
-        get_and_pre_put_spin_plate_avoid_collide(target_colour[i+add_count]); 
+        get_and_pre_put_spin_plate_avoid_collide(target_colour[i+add_count], &default_material_order); 
         open_claw_180(); //放下后张开
     }
 
@@ -1226,7 +1313,7 @@ void single_get_and_put_some_with_load_first( int times,int is_pile_up,int is_lo
         for (int i = 0; i < 3; i++)
         {
             
-            get_and_pre_put(target_colour[i+times_count], 1);
+            get_and_pre_put(target_colour[i+times_count],is_pile_up, &default_material_order); //夹着物料放置
             servo_adjust_status = target_colour[i+times_count];
             is_servo_adjust = 1;
             tim3_count = 0;
@@ -1243,7 +1330,7 @@ void single_get_and_put_some_with_load_first( int times,int is_pile_up,int is_lo
     {
         for (int i = 0; i < 3; i++) 
         {
-            get_and_pre_put(target_colour[i+times_count], is_pile_up); //夹着物料放置
+            get_and_pre_put(target_colour[i+times_count], is_pile_up, &default_material_order); //夹着物料放置
             servo_adjust_status = target_colour[i+times_count];
             is_servo_adjust = 1;
             tim3_count = 0;
@@ -1315,7 +1402,7 @@ void single_get_and_put_some_with_load( int times, int is_load,int is_pile_up,in
     // - is_pile_up和is_pile_adjust组合导致复杂分支
     
     // 3. 时序控制问题:
-    // - 大量硬编码的延时数值(HAL_Delay)
+    // -  大量硬编码的延时数值(HAL_Delay)
     // - 延时值缺乏注释说明原因
     // - 部分延时值前后不一致(如300/500/600ms)
     
@@ -1362,7 +1449,7 @@ void single_get_and_put_some_with_load( int times, int is_load,int is_pile_up,in
             }
             else
             {
-                get_and_pre_put(target_colour[i+times_count], 1);
+                get_and_pre_put_with_state_find_position(target_colour[i+times_count], 0, &default_material_order); //夹着物料放置
             }        
             servo_adjust_status = target_colour[i+times_count];
             is_servo_adjust = 1;
@@ -1386,7 +1473,7 @@ void single_get_and_put_some_with_load( int times, int is_load,int is_pile_up,in
         for (int i = 0; i < 3; i++)
         {
             
-            get_and_pre_put_void(target_colour[i+times_count], 1); //不夹着物料放置
+            get_and_pre_put_void(target_colour[i+times_count], 1, &default_material_order); //不夹着物料放置
             put_claw_down_near_ground();
             servo_adjust_status = target_colour[i+times_count];
             is_servo_adjust = 1;
@@ -1469,7 +1556,7 @@ void single_get_and_put_some_with_load( int times, int is_load,int is_pile_up,in
             {
                 if(is_avoid_collide == 0)
                 {
-                    get_and_pre_put(target_colour[i+times_count], is_pile_up); //夹着物料放置
+                    get_and_pre_put_with_state_find_position(target_colour[i+times_count], is_pile_up, &default_material_order); //夹着物料放置
                 }
                 else
                 {
@@ -1478,7 +1565,7 @@ void single_get_and_put_some_with_load( int times, int is_load,int is_pile_up,in
             }
             else
             {
-                get_and_pre_put_void(target_colour[i+times_count], is_pile_up); //不夹着物料放置
+                get_and_pre_put_void(target_colour[i+times_count], is_pile_up, &default_material_order); //不夹着物料放置
             }
             servo_adjust_status = target_colour[i+times_count];
             is_servo_adjust = 1;
@@ -1589,6 +1676,9 @@ void single_get_and_put_some_with_load( int times, int is_load,int is_pile_up,in
 void get_from_plate_all_movement(void)
 {
     is_start_get_plate = 1; //开始从转盘抓取物料
+    int r_servo_now_temp = 0;
+    int theta_servo_now_temp = 0;
+    int is_first_get = 1;
     while(get_plate_count < 3 ) //TODO 从转盘抓取三个色环或者超时，如果empty抓空，是否能给一个延时后直接离开
     {
         is_adjust_plate_servo = 1; //开始根据物料在转盘上的位置调整机械臂
@@ -1601,6 +1691,12 @@ void get_from_plate_all_movement(void)
             get_plate = 0;
             HAL_Delay(50);
             adjust_plate(x_plate_error, y_plate_error);
+
+            //将x_plate_error和y_plate_error printf
+            char temp[20];
+            sprintf(temp, "t0.txt=\"%d,%d\"\xff\xff\xff", x_plate_error, y_plate_error); 
+            printf("%s", temp);
+
             x_plate_error = 0;
             y_plate_error = 0;
             state_spin_without_claw(temp_plate);
@@ -1625,7 +1721,13 @@ void get_from_plate_all_movement(void)
             }
             else
             {
-                int r_servo_now_temp = r_servo_now;
+                if(is_first_get == 1)
+                {
+                    r_servo_now_temp = r_servo_now;
+                    theta_servo_now_temp = theta_servo_now;
+                    is_first_get = 0; //第一次抓取时记录r_servo_now
+                }
+                
                 is_get_empty_finish = 1;
                 arm_shrink();
                 HAL_Delay(300);
@@ -1641,8 +1743,11 @@ void get_from_plate_all_movement(void)
                 HAL_Delay(400); 
                 claw_spin_front();
                 open_claw_180();
+                // feetech_servo_move(4,r_servo_now_temp,4000,feet_acc);
+                // feetech_servo_move(3,theta_servo_now_temp,4000,feet_acc);
                 HAL_Delay(500);
                 arm_stretch();
+                whole_arm_spin(1); //TODO 可能会撞到物料
                 get_plate_count++;
                 if(temp_plate == 1)
                 {
@@ -1678,7 +1783,7 @@ void get_from_plate_all_movement(void)
 
 
 
-/// @brief 转盘抓取（带有判断空抓）（先回到物料盘再判断）（需要提前完成爪子放低的动作）
+/// @brief （未优化）转盘抓取（带有判断空抓）（先回到物料盘再判断）（需要提前完成爪子放低的动作）
 /// @param  
 void get_from_plate_all_movement_with_back_check(void)
 {
@@ -1791,7 +1896,7 @@ void get_from_ground_in_random_position(int times)
     HAL_Delay(1000);
     HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //开始识别最中间的物料
     is_get_material_from_temp_area = 2; 
-    get_and_pre_put_void(1,0); //看最右侧的物料
+    get_and_pre_put_void(1,0, &default_material_order); //看最右侧的物料
     HAL_Delay(500);
     HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //识别最右侧的物料
     while(is_get_material_from_temp_area != 3) //等待树莓派返回识别结果
@@ -1828,6 +1933,13 @@ void get_from_ground_in_random_position(int times)
 }
 
 
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+//!      以下皆是单独功能测试程序
 
 
 
@@ -1865,3 +1977,5 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
+

@@ -8,7 +8,13 @@
 
 //50ms
 
+typedef struct {
+    int left;
+    int middle;
+    int right;
+} material_order;
 
+void servo_move_with_limit(int d_theta_move_position,int d_r_move_position);
 
 void adjust_plate(int x_plate_error_in,int y_plate_error_in);
 
@@ -70,11 +76,11 @@ void get_and_pre_put_v3(int position,int near_ground_position,int state_position
 void get_and_pre_put_avoid(int position,int is_pile_up);
 void get_and_pre_put_spin_plate(int position);
 void get_and_put_spin_plate(int position);
-void get_and_pre_put(int position,int is_pile_up);
-void get_and_pre_put_void(int position,int is_pile_up);
+void get_and_pre_put(int position, int is_pile_up, const material_order* order);
+void get_and_pre_put_void(int position,int is_pile_up, const material_order* order);
 void get_and_put_different_position_pileup(int position);
-void get_and_pre_put_with_state_find_position(int position,int is_pile_up);
-void get_and_pre_put_spin_plate_avoid_collide(int position);
+void get_and_pre_put_with_state_find_position(int position,int is_pile_up, const material_order* order);
+void get_and_pre_put_spin_plate_avoid_collide(int position, const material_order* order);
 
 
 #endif

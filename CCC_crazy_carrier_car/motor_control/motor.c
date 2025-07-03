@@ -838,9 +838,9 @@ void move_all_direction_position_delay(uint8_t acc,uint16_t velocity, float x_mo
     //     timey = 1000*sqrt(y_move_length *(256-acc) /20.0 / speed_ratio);
     // }
 
-    char temp_print[30];
-    sprintf(temp_print,"t0.txt=\"%d,%d\"\xff\xff\xff",timex,timey);
-    HAL_UART_Transmit(&huart5, (uint8_t *)temp_print, strlen(temp_print), 1000);
+    // char temp_print[30];
+    // sprintf(temp_print,"t0.txt=\"%d,%d\"\xff\xff\xff",timex,timey);
+    // HAL_UART_Transmit(&huart5, (uint8_t *)temp_print, strlen(temp_print), 1000);
 
     int delay_time = timex > timey ? timex : timey;
     HAL_Delay(delay_time);
@@ -1559,7 +1559,7 @@ void spin_right(uint16_t vel,uint8_t acc, uint32_t angle)
 
 void spin_right_180(uint16_t vel,uint8_t acc)
 {
-    uint32_t clk = (uint32_t)((float)181.5 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
+    uint32_t clk = (uint32_t)((float)180.8 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
     Emm_V5_Pos_Control(1, 0, vel, acc,clk, motor_pos_move_mode,1);
     HAL_Delay(10);
     Emm_V5_Pos_Control(2, 0, vel, acc, clk, motor_pos_move_mode, 1);
@@ -1589,7 +1589,7 @@ void spin_right_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop)
 
 void spin_left_180(uint16_t vel,uint8_t acc)
 {
-    uint32_t clk = (uint32_t)((float)181.5 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
+    uint32_t clk = (uint32_t)((float)180.8 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
     Emm_V5_Pos_Control(1, 1, vel, acc,clk, motor_pos_move_mode,1);
     HAL_Delay(10);
     Emm_V5_Pos_Control(2, 1, vel, acc, clk, motor_pos_move_mode, 1);
