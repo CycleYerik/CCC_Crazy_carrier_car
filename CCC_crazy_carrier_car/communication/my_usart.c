@@ -14,6 +14,15 @@ uint8_t rxdata_u2[50],rxdata_u3[50],rxdata_u1[128],rxdata_u4[50],rxdata_u5[50]; 
 uint8_t received_rxdata_u2,received_rxdata_u3,received_rxdata_u1,received_rxdata_u4,received_rxdata_u5; // 暂存usart1,2,3接收到的数据
 uchar rxflag_u2,rxflag_u3,rxflag_u1,rxflag_u4,rxflag_u5; // usart1,2,3接收到的数据的标志位
 
+
+//串口屏打印数组
+extern volatile char print_screen_buffer_xy[][4];
+extern volatile char print_screen_buffer_thetar[][4]; // 串口屏打印缓冲区
+extern volatile int print_screen_buffer_index_xy; // 串口屏打印缓冲区索引
+extern volatile int print_screen_buffer_index_thetar; // 串口屏打印缓冲区索引
+extern int is_show_origin_xy_data ;
+extern int is_show_origin_theta_data ;
+
 extern float volatile gyro_z;
 
 extern int servo_adjust_status;
@@ -476,9 +485,6 @@ void UART_receive_process_1(void)
         rxflag_u1 = 0;
         memset(rxdata_u1, 0, 128);
     }
-
-
-    
 }
 
 /// @brief 处理树莓派数据
@@ -744,6 +750,12 @@ void UART_receive_process_3(void)
         {
             if(rxdata_u3[0] == 0x01)
             {
+                if(is_show_origin_xy_data == 1)
+                {
+                    print_screen_buffer_xy[print_screen_buffer_index_xy][0] = (int)rxdata_u3[1];
+                }
+                
+
                 temp_spin_which_direction = Kp_line_spin * (float)rxdata_u3[1] + Ki_line_spin * ((float)rxdata_u3[1] +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(float)rxdata_u3[1]+ line_spin_error_2);
                 if(temp_spin_which_direction > spin_limit_max)
                 {
@@ -762,6 +774,12 @@ void UART_receive_process_3(void)
             }
             else if(rxdata_u3[0] == 0x02)
             {
+                if(is_show_origin_xy_data == 1)
+                {
+                    print_screen_buffer_xy[print_screen_buffer_index_xy][0] = -(int)rxdata_u3[1];
+                }
+
+
                 temp_spin_which_direction = Kp_line_spin * (-(float)rxdata_u3[1]) + Ki_line_spin * ((-(float)rxdata_u3[1]) +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(-(float)rxdata_u3[1])+ line_spin_error_2);
                 if(temp_spin_which_direction < -spin_limit_max)
                 {
@@ -795,14 +813,20 @@ void UART_receive_process_3(void)
             {
                 y_move_position = - (float)  ( rxdata_u3[6]<<8 | rxdata_u3[7]);
             }
-		    x_move_position *= xy_move_k;  //TODO magic number
+            if(is_show_origin_xy_data == 1)
+            {
+                print_screen_buffer_xy[print_screen_buffer_index_xy][1] = (int)x_move_position;
+                print_screen_buffer_xy[print_screen_buffer_index_xy][2] = (int)y_move_position;
+            }
+            x_move_position *= xy_move_k;  //TODO magic number
             y_move_position *= xy_move_k;
-            x_err_1 = x_move_position;
-            y_err_1 = y_move_position;
-            x_err_2 = x_err_1;
-            y_err_2 = y_err_1;
             x_err_3 = x_err_2;
             y_err_3 = y_err_2;
+            x_err_2 = x_err_1;
+            y_err_2 = y_err_1;
+            x_err_1 = x_move_position;
+            y_err_1 = y_move_position;
+            
             x_move_position = Kp_slight_move * (x_err_1) + Ki_slight_move * (x_err_1+x_err_2 + x_err_3) + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2)/2.0;
             y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + x_err_2 + x_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2.0 ;
             if(x_move_position > move_limit_max)
@@ -836,6 +860,16 @@ void UART_receive_process_3(void)
             if(y_move_position > -move_limit_min && y_move_position <0)
             {
                 y_move_position = -move_limit_min;
+            }
+
+
+            if(print_screen_buffer_index_xy < max_data_length - 1)
+            {
+                print_screen_buffer_index_xy++;
+            }
+            else
+            {
+                print_screen_buffer_index_xy = 0;
             }
         }
 
@@ -1105,6 +1139,19 @@ void UART_receive_process_3(void)
                 y_camera_error = - (int) (rxdata_u3[4] << 8 | rxdata_u3[5]);
                 is_find_circle = 1;
                 // y_move_position = -10;
+            }
+            if(is_show_origin_xy_data == 1)
+            {
+                print_screen_buffer_xy[print_screen_buffer_index_xy][1] = x_camera_error;
+                print_screen_buffer_xy[print_screen_buffer_index_xy][2] = y_camera_error;
+                if(print_screen_buffer_index_xy < max_data_length - 1)
+                {
+                    print_screen_buffer_index_xy++;
+                }
+                else
+                {
+                    print_screen_buffer_index_xy = 0;
+                }
             }
         }
 

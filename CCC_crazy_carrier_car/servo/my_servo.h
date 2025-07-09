@@ -8,11 +8,7 @@
 
 //50ms
 
-typedef struct {
-    int left;
-    int middle;
-    int right;
-} material_order;
+
 
 void servo_move_with_limit(int d_theta_move_position,int d_r_move_position);
 
@@ -33,6 +29,7 @@ void servo_move(int servo_ID, int angle);
 void put_claw_down_pile(void);
 void put_claw_down_ground(void);
 void put_claw_down_ground_slightly(void);
+void put_claw_down_pile_slightly(void);
 void put_claw_down_near_ground(void);
 void put_claw_down_state(void);
 void put_claw_down(void);
@@ -67,18 +64,15 @@ void state_spin_without_claw_avoid_collide(int state_position);
 
 
 
-void get_and_load_openloop(int position,int is_default_position);
+void get_and_load_openloop(int position,int is_default_position,material_order* order);
 void get_and_load_openloop_with_temp_put(int position,int state_position);
-void get_and_load_openloop_avoid(int position,int is_default_position);
+void get_and_load_openloop_avoid(int position,int is_default_position,material_order* order);
 
-
-void get_and_pre_put_v3(int position,int near_ground_position,int state_position_tall,int state_position_short, int pile_up_position,int is_pile_up);
-void get_and_pre_put_avoid(int position,int is_pile_up);
+void get_and_pre_put_avoid(int position,int is_pile_up, int is_default_position, const material_order* order);
 void get_and_pre_put_spin_plate(int position);
 void get_and_put_spin_plate(int position);
-void get_and_pre_put(int position, int is_pile_up, const material_order* order);
+void get_and_pre_put(int position,int is_pile_up, int is_default_position, const material_order* order);
 void get_and_pre_put_void(int position,int is_pile_up, const material_order* order);
-void get_and_put_different_position_pileup(int position);
 void get_and_pre_put_with_state_find_position(int position,int is_pile_up, const material_order* order);
 void get_and_pre_put_spin_plate_avoid_collide(int position, const material_order* order);
 

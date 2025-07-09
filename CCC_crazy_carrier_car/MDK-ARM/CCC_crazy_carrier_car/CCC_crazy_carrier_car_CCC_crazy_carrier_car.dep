@@ -1,8 +1,8 @@
 Dependencies for Project 'CCC_crazy_carrier_car', Target 'CCC_crazy_carrier_car': (DO NOT MODIFY !)
 CompilerVersion: 5060960::V5.06 update 7 (build 960)::.\ARMCC
 F (startup_stm32f407xx.s)(0x673C535E)(--cpu Cortex-M4.fp.sp -g --apcs=interwork --pd "__MICROLIB SETA 1"-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include--pd "__UVISION_VERSION SETA 536" --pd "_RTE_ SETA 1" --pd "STM32F407xx SETA 1" --pd "_RTE_ SETA 1"--list startup_stm32f407xx.lst --xref -o ccc_crazy_carrier_car\startup_stm32f407xx.o --depend ccc_crazy_carrier_car\startup_stm32f407xx.d)
-F (../Core/Src/main.c)(0x68668A66)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\main.o --omf_browse ccc_crazy_carrier_car\main.crf --depend ccc_crazy_carrier_car\main.d)
-I (../Core/Inc/main.h)(0x6832EB2E)
+F (../Core/Src/main.c)(0x686D2B8C)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\main.o --omf_browse ccc_crazy_carrier_car\main.crf --depend ccc_crazy_carrier_car\main.d)
+I (../Core/Inc/main.h)(0x686D27BA)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x66E3B91C)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x670A32BB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x66E3B91C)
@@ -45,7 +45,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_usart.h)(0x66E3B91C)
 I (../screen/uart_screen.h)(0x66F947CD)
 I (../communication/my_timer.h)(0x670FE3B6)
 I (../sensor/my_gyroscope.h)(0x67222E71)
-I (../servo/my_servo.h)(0x68650957)
+I (../servo/my_servo.h)(0x6868F61D)
 I (../servo/SCServo.h)(0x62188159)
 I (../servo/INST.h)(0x62187F76)
 I (../servo/SCS.h)(0x62432D6A)
@@ -53,7 +53,7 @@ I (../servo/SMS_STS.h)(0x61D677BB)
 I (../servo/uart.h)(0x5F06F1F4)
 F (../Core/Src/gpio.c)(0x673C4BEF)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\gpio.o --omf_browse ccc_crazy_carrier_car\gpio.crf --depend ccc_crazy_carrier_car\gpio.d)
 I (../Core/Inc/gpio.h)(0x66E54B16)
-I (../Core/Inc/main.h)(0x6832EB2E)
+I (../Core/Inc/main.h)(0x686D27BA)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x66E3B91C)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x670A32BB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x66E3B91C)
@@ -88,7 +88,7 @@ I (D:\MDK\ARM\ARMCC\include\stdio.h)(0x60252374)
 I (D:\MDK\ARM\ARMCC\include\string.h)(0x6025237E)
 F (../Core/Src/tim.c)(0x673C535D)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\tim.o --omf_browse ccc_crazy_carrier_car\tim.crf --depend ccc_crazy_carrier_car\tim.d)
 I (../Core/Inc/tim.h)(0x673C4BFC)
-I (../Core/Inc/main.h)(0x6832EB2E)
+I (../Core/Inc/main.h)(0x686D27BA)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x66E3B91C)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x670A32BB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x66E3B91C)
@@ -123,7 +123,7 @@ I (D:\MDK\ARM\ARMCC\include\stdio.h)(0x60252374)
 I (D:\MDK\ARM\ARMCC\include\string.h)(0x6025237E)
 F (../Core/Src/usart.c)(0x67470482)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\usart.o --omf_browse ccc_crazy_carrier_car\usart.crf --depend ccc_crazy_carrier_car\usart.d)
 I (../Core/Inc/usart.h)(0x6722019F)
-I (../Core/Inc/main.h)(0x6832EB2E)
+I (../Core/Inc/main.h)(0x686D27BA)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x66E3B91C)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x670A32BB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x66E3B91C)
@@ -157,7 +157,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x66E3B91C)
 I (D:\MDK\ARM\ARMCC\include\stdio.h)(0x60252374)
 I (D:\MDK\ARM\ARMCC\include\string.h)(0x6025237E)
 F (../Core/Src/stm32f4xx_it.c)(0x673C4BFC)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\stm32f4xx_it.o --omf_browse ccc_crazy_carrier_car\stm32f4xx_it.crf --depend ccc_crazy_carrier_car\stm32f4xx_it.d)
-I (../Core/Inc/main.h)(0x6832EB2E)
+I (../Core/Inc/main.h)(0x686D27BA)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x66E3B91C)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x670A32BB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x66E3B91C)
@@ -193,7 +193,7 @@ I (D:\MDK\ARM\ARMCC\include\string.h)(0x6025237E)
 I (../Core/Inc/stm32f4xx_it.h)(0x673C4BFC)
 I (../Core/Inc/usart.h)(0x6722019F)
 F (../Core/Src/stm32f4xx_hal_msp.c)(0x66E54B16)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\stm32f4xx_hal_msp.o --omf_browse ccc_crazy_carrier_car\stm32f4xx_hal_msp.crf --depend ccc_crazy_carrier_car\stm32f4xx_hal_msp.d)
-I (../Core/Inc/main.h)(0x6832EB2E)
+I (../Core/Inc/main.h)(0x686D27BA)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x66E3B91C)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x670A32BB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x66E3B91C)
@@ -833,9 +833,9 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x66E3B91C)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x66E3B91C)
 I (..\servo\uart.h)(0x5F06F1F4)
 F (..\servo\uart.h)(0x5F06F1F4)()
-F (..\servo\my_servo.c)(0x686653E6)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\my_servo.o --omf_browse ccc_crazy_carrier_car\my_servo.crf --depend ccc_crazy_carrier_car\my_servo.d)
-I (..\servo\my_servo.h)(0x68650957)
-I (../Core/Inc/main.h)(0x6832EB2E)
+F (..\servo\my_servo.c)(0x686BCD94)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\my_servo.o --omf_browse ccc_crazy_carrier_car\my_servo.crf --depend ccc_crazy_carrier_car\my_servo.d)
+I (..\servo\my_servo.h)(0x6868F61D)
+I (../Core/Inc/main.h)(0x686D27BA)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x66E3B91C)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x670A32BB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x66E3B91C)
@@ -874,10 +874,10 @@ I (..\servo\SCS.h)(0x62432D6A)
 I (..\servo\SMS_STS.h)(0x61D677BB)
 I (..\servo\uart.h)(0x5F06F1F4)
 I (D:\MDK\ARM\ARMCC\include\stdlib.h)(0x60252374)
-F (..\servo\my_servo.h)(0x68650957)()
-F (..\motor_control\motor.c)(0x68639EE2)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\motor.o --omf_browse ccc_crazy_carrier_car\motor.crf --depend ccc_crazy_carrier_car\motor.d)
+F (..\servo\my_servo.h)(0x6868F61D)()
+F (..\motor_control\motor.c)(0x686A6E50)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\motor.o --omf_browse ccc_crazy_carrier_car\motor.crf --depend ccc_crazy_carrier_car\motor.d)
 I (..\motor_control\motor.h)(0x684048EF)
-I (../Core/Inc/main.h)(0x6832EB2E)
+I (../Core/Inc/main.h)(0x686D27BA)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x66E3B91C)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x670A32BB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x66E3B91C)
@@ -922,7 +922,7 @@ I (D:\MDK\ARM\ARMCC\include\math.h)(0x60252378)
 F (..\motor_control\motor.h)(0x684048EF)()
 F (..\sensor\my_gyroscope.c)(0x672F4103)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\my_gyroscope.o --omf_browse ccc_crazy_carrier_car\my_gyroscope.crf --depend ccc_crazy_carrier_car\my_gyroscope.d)
 I (..\sensor\my_gyroscope.h)(0x67222E71)
-I (../Core/Inc/main.h)(0x6832EB2E)
+I (../Core/Inc/main.h)(0x686D27BA)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x66E3B91C)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x670A32BB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x66E3B91C)
@@ -956,9 +956,9 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x66E3B91C)
 I (D:\MDK\ARM\ARMCC\include\stdio.h)(0x60252374)
 I (D:\MDK\ARM\ARMCC\include\string.h)(0x6025237E)
 F (..\sensor\my_gyroscope.h)(0x67222E71)()
-F (..\communication\my_usart.c)(0x68667268)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\my_usart.o --omf_browse ccc_crazy_carrier_car\my_usart.crf --depend ccc_crazy_carrier_car\my_usart.d)
+F (..\communication\my_usart.c)(0x686D1650)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\my_usart.o --omf_browse ccc_crazy_carrier_car\my_usart.crf --depend ccc_crazy_carrier_car\my_usart.d)
 I (..\communication\my_usart.h)(0x6724911A)
-I (../Core/Inc/main.h)(0x6832EB2E)
+I (../Core/Inc/main.h)(0x686D27BA)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x66E3B91C)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x670A32BB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x66E3B91C)
@@ -1002,7 +1002,7 @@ I (../sensor/my_gyroscope.h)(0x67222E71)
 F (..\communication\my_usart.h)(0x6724911A)()
 F (..\communication\my_timer.c)(0x683D9DBE)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include -I ../motor_control -I ../screen -I ../usart -I ../servo -I ../MPU6050 -I ../sensor -I ../communication -I ..\wifi-I.\RTE\_CCC_crazy_carrier_car-ID:\MDK\ARM\CMSIS\5.8.0\CMSIS\Core\Include-ID:\MDK\Keil\STM32F4xx_DFP\2.17.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include-D__UVISION_VERSION="536" -D_RTE_ -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -DUSE_USART2_-o ccc_crazy_carrier_car\my_timer.o --omf_browse ccc_crazy_carrier_car\my_timer.crf --depend ccc_crazy_carrier_car\my_timer.d)
 I (..\communication\my_timer.h)(0x670FE3B6)
-I (../Core/Inc/main.h)(0x6832EB2E)
+I (../Core/Inc/main.h)(0x686D27BA)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x66E3B91C)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x670A32BB)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h)(0x66E3B91C)

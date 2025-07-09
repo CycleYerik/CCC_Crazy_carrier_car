@@ -45,6 +45,8 @@ volatile int motor_vel_target_1 = 0, motor_vel_target_2 = 0, motor_vel_target_3 
 
 extern int motor_pos_move_mode;
 
+float min_motor_velocity = 1.0f; // 可根据需要调整
+
 void slight_spin_plate_line(void)
 {
 
@@ -193,20 +195,48 @@ void move_leftright_front_with_spin(int left_or_right, float vel  , float R_spin
 /// @param  调参的思路：x/y_move_position乘了一个偏差量，最后直线的参数也乘了一个偏差量，通过修改这两个偏差量使得直线和圆的调整比例合适，同时也控制各自的数值不会过大
 void slight_spin_and_move(void)
 {
-    motor_vel_target_1 = (int)(adjust_spin_scale *spin_which_direction + adjust_move_scale * (-x_move_position - y_move_position));
-    motor_vel_target_2 = (int)(adjust_spin_scale *spin_which_direction + adjust_move_scale * (-x_move_position + y_move_position));
-    motor_vel_target_3 = (int)(adjust_spin_scale *spin_which_direction + adjust_move_scale * (x_move_position - y_move_position));
-    motor_vel_target_4 = (int)(adjust_spin_scale *spin_which_direction + adjust_move_scale * (x_move_position + y_move_position));
+    float vel_target_1_f = adjust_spin_scale *spin_which_direction + adjust_move_scale * (-x_move_position - y_move_position);
+    float vel_target_2_f = adjust_spin_scale *spin_which_direction + adjust_move_scale * (-x_move_position + y_move_position);
+    float vel_target_3_f = adjust_spin_scale *spin_which_direction + adjust_move_scale * (x_move_position - y_move_position);
+    float vel_target_4_f = adjust_spin_scale *spin_which_direction + adjust_move_scale * (x_move_position + y_move_position);
 
+    // 限幅
+    if(vel_target_1_f > motor_vel_adjust_with_spin) vel_target_1_f = motor_vel_adjust_with_spin;
+    if(vel_target_2_f > motor_vel_adjust_with_spin) vel_target_2_f = motor_vel_adjust_with_spin;
+    if(vel_target_3_f > motor_vel_adjust_with_spin) vel_target_3_f = motor_vel_adjust_with_spin;
+    if(vel_target_4_f > motor_vel_adjust_with_spin) vel_target_4_f = motor_vel_adjust_with_spin;
+    if(vel_target_1_f < -motor_vel_adjust_with_spin) vel_target_1_f = -motor_vel_adjust_with_spin;
+    if(vel_target_2_f < -motor_vel_adjust_with_spin) vel_target_2_f = -motor_vel_adjust_with_spin;
+    if(vel_target_3_f < -motor_vel_adjust_with_spin) vel_target_3_f = -motor_vel_adjust_with_spin;
+    if(vel_target_4_f < -motor_vel_adjust_with_spin) vel_target_4_f = -motor_vel_adjust_with_spin;
 
-        if(motor_vel_target_1 > motor_vel_adjust_with_spin) motor_vel_target_1 = motor_vel_adjust_with_spin;
-        if(motor_vel_target_2 > motor_vel_adjust_with_spin) motor_vel_target_2 = motor_vel_adjust_with_spin;
-        if(motor_vel_target_3 > motor_vel_adjust_with_spin) motor_vel_target_3 = motor_vel_adjust_with_spin;
-        if(motor_vel_target_4 > motor_vel_adjust_with_spin) motor_vel_target_4 = motor_vel_adjust_with_spin;
-        if(motor_vel_target_1 < -motor_vel_adjust_with_spin) motor_vel_target_1 = -motor_vel_adjust_with_spin;
-        if(motor_vel_target_2 < -motor_vel_adjust_with_spin) motor_vel_target_2 = -motor_vel_adjust_with_spin;
-        if(motor_vel_target_3 < -motor_vel_adjust_with_spin) motor_vel_target_3 = -motor_vel_adjust_with_spin;
-        if(motor_vel_target_4 < -motor_vel_adjust_with_spin) motor_vel_target_4 = -motor_vel_adjust_with_spin;
+    // 保证最小速度为min_motor_velocity
+    if(vel_target_1_f > 0 && vel_target_1_f < min_motor_velocity) vel_target_1_f = min_motor_velocity;
+    if(vel_target_1_f < 0 && vel_target_1_f > -min_motor_velocity) vel_target_1_f = -min_motor_velocity;
+    if(vel_target_2_f > 0 && vel_target_2_f < min_motor_velocity) vel_target_2_f = min_motor_velocity;
+    if(vel_target_2_f < 0 && vel_target_2_f > -min_motor_velocity) vel_target_2_f = -min_motor_velocity;
+    if(vel_target_3_f > 0 && vel_target_3_f < min_motor_velocity) vel_target_3_f = min_motor_velocity;
+    if(vel_target_3_f < 0 && vel_target_3_f > -min_motor_velocity) vel_target_3_f = -min_motor_velocity;
+    if(vel_target_4_f > 0 && vel_target_4_f < min_motor_velocity) vel_target_4_f = min_motor_velocity;
+    if(vel_target_4_f < 0 && vel_target_4_f > -min_motor_velocity) vel_target_4_f = -min_motor_velocity;
+
+    // 最后转为int
+    motor_vel_target_1 = (int)vel_target_1_f;
+    motor_vel_target_2 = (int)vel_target_2_f;
+    motor_vel_target_3 = (int)vel_target_3_f;
+    motor_vel_target_4 = (int)vel_target_4_f;
+
+    // 保证最小速度为min_motor_velocity
+    if(motor_vel_target_1 > 0 && motor_vel_target_1 < min_motor_velocity) motor_vel_target_1 = (int)min_motor_velocity;
+    if(motor_vel_target_1 < 0 && motor_vel_target_1 > -min_motor_velocity) motor_vel_target_1 = (int)-min_motor_velocity;
+    if(motor_vel_target_2 > 0 && motor_vel_target_2 < min_motor_velocity) motor_vel_target_2 = (int)min_motor_velocity;
+    if(motor_vel_target_2 < 0 && motor_vel_target_2 > -min_motor_velocity) motor_vel_target_2 = (int)-min_motor_velocity;
+    if(motor_vel_target_3 > 0 && motor_vel_target_3 < min_motor_velocity) motor_vel_target_3 = (int)min_motor_velocity;
+    if(motor_vel_target_3 < 0 && motor_vel_target_3 > -min_motor_velocity) motor_vel_target_3 = (int)-min_motor_velocity;
+    if(motor_vel_target_4 > 0 && motor_vel_target_4 < min_motor_velocity) motor_vel_target_4 = (int)min_motor_velocity;
+    if(motor_vel_target_4 < 0 && motor_vel_target_4 > -min_motor_velocity) motor_vel_target_4 = (int)-min_motor_velocity;
+
+    
 
 
 

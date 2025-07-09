@@ -27,44 +27,22 @@ Project File Date:  03/19/2025
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling my_servo.c...
-..\servo\my_servo.c(364): warning:  #177-D: variable "x_origin"  was declared but never referenced
-      int x_origin = x_error;
-..\servo\my_servo.c(365): warning:  #177-D: variable "y_origin"  was declared but never referenced
-      int y_origin = y_error;
-..\servo\my_servo.c(1559): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-      int position = (int)(50 + (200* (float)angle / 270.0));
-..\servo\my_servo.c: 3 warnings, 0 errors
-compiling my_usart.c...
-..\communication\my_usart.c(806): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-              x_move_position = Kp_slight_move * (x_err_1) + Ki_slight_move * (x_err_1+x_err_2 + x_err_3) + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2)/2.0;
-..\communication\my_usart.c(807): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-              y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + x_err_2 + x_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2.0 ;
-..\communication\my_usart.c(963): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-              x_move_position *= 0.4;  //TODO magic number 原先�?0.1
-..\communication\my_usart.c(964): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-              y_move_position *= 0.4;
-..\communication\my_usart.c(974): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-              x_move_position = Kp_slight_move * (x_err_1) + Ki_slight_move * (x_err_1+x_err_2 + x_err_3) + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2)/2.0;
-..\communication\my_usart.c(975): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-              y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + x_err_2 + x_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2.0 ;
-..\communication\my_usart.c(997): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-              if(x_move_position < 0.5 && x_move_position >0)
-..\communication\my_usart.c(1001): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-              if(y_move_position < 0.5 && y_move_position >0)
-..\communication\my_usart.c: 8 warnings, 0 errors
 compiling main.c...
-../Core/Src/main.c(957): warning:  #128-D: loop is not reachable
+../Core/Src/main.c(319): warning:  #1295-D: Deprecated declaration print_clear_screen - give arg types
+  void print_clear_screen();
+../Core/Src/main.c(1087): warning:  #128-D: loop is not reachable
       while (1)
-../Core/Src/main.c(1679): warning:  #550-D: variable "r_servo_now_temp"  was set but never used
+../Core/Src/main.c(735): warning:  #177-D: label "chusai"  was declared but never referenced
+      chusai:
+../Core/Src/main.c(1771): warning:  #550-D: variable "r_servo_now_temp"  was set but never used
       int r_servo_now_temp = 0;
-../Core/Src/main.c(1680): warning:  #550-D: variable "theta_servo_now_temp"  was set but never used
+../Core/Src/main.c(1772): warning:  #550-D: variable "theta_servo_now_temp"  was set but never used
       int theta_servo_now_temp = 0;
-../Core/Src/main.c: 3 warnings, 0 errors
+../Core/Src/main.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=23960 RO-data=572 RW-data=532 ZI-data=2708  
+Program Size: Code=22816 RO-data=548 RW-data=540 ZI-data=2612  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 14 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -88,7 +66,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:03
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>

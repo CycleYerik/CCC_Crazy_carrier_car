@@ -45,6 +45,33 @@ typedef uint64_t u64;
 /* USER CODE BEGIN ET */
 
 typedef enum {FALSE = 0,TRUE = 1} bool;
+
+#define max_data_length 100
+
+/// @brief 物料位置和颜色的关系
+typedef struct {
+    int left;
+    int middle;
+    int right;
+} material_order;
+
+
+// 定义一个物料抓放的结构体
+typedef struct
+{
+    int times; // 运行次数
+    int is_avoid_collide; // 是否从侧面过
+    int is_load; //是否放完后抓起来 
+    int is_pile_up; // 是否码垛
+    int is_adjust_without_material;
+    int is_none_pile_up_put_adjust; //不进行码垛时放置是否调整
+    int is_pile_up_adjust; //码垛时放置是否调整
+    int is_get_from_car_plate_update; //从车身载物盘抓取物料时是否进行中心位置更新（用于物料中心与夹爪中心不重合的情况）
+    int is_get_from_ground_check; //从地面抓取物料时是否进行空抓判断
+} material_get_and_put_struct;
+
+
+
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/

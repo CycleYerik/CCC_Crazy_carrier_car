@@ -47,6 +47,7 @@ typedef enum {
 }SysParams_t;
 
 extern float x_velocity, y_velocity; // x、y轴速度
+extern float min_motor_velocity;
 
 void slight_spin_and_move(void);
 uint32_t get_clk(float distance);
