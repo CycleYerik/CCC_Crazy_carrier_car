@@ -226,15 +226,15 @@ void slight_spin_and_move(void)
     motor_vel_target_3 = (int)vel_target_3_f;
     motor_vel_target_4 = (int)vel_target_4_f;
 
-    // 保证最小速度为min_motor_velocity
-    if(motor_vel_target_1 > 0 && motor_vel_target_1 < min_motor_velocity) motor_vel_target_1 = (int)min_motor_velocity;
-    if(motor_vel_target_1 < 0 && motor_vel_target_1 > -min_motor_velocity) motor_vel_target_1 = (int)-min_motor_velocity;
-    if(motor_vel_target_2 > 0 && motor_vel_target_2 < min_motor_velocity) motor_vel_target_2 = (int)min_motor_velocity;
-    if(motor_vel_target_2 < 0 && motor_vel_target_2 > -min_motor_velocity) motor_vel_target_2 = (int)-min_motor_velocity;
-    if(motor_vel_target_3 > 0 && motor_vel_target_3 < min_motor_velocity) motor_vel_target_3 = (int)min_motor_velocity;
-    if(motor_vel_target_3 < 0 && motor_vel_target_3 > -min_motor_velocity) motor_vel_target_3 = (int)-min_motor_velocity;
-    if(motor_vel_target_4 > 0 && motor_vel_target_4 < min_motor_velocity) motor_vel_target_4 = (int)min_motor_velocity;
-    if(motor_vel_target_4 < 0 && motor_vel_target_4 > -min_motor_velocity) motor_vel_target_4 = (int)-min_motor_velocity;
+    // // 保证最小速度为min_motor_velocity
+    // if(motor_vel_target_1 > 0 && motor_vel_target_1 < min_motor_velocity) motor_vel_target_1 = (int)min_motor_velocity;
+    // if(motor_vel_target_1 < 0 && motor_vel_target_1 > -min_motor_velocity) motor_vel_target_1 = (int)-min_motor_velocity;
+    // if(motor_vel_target_2 > 0 && motor_vel_target_2 < min_motor_velocity) motor_vel_target_2 = (int)min_motor_velocity;
+    // if(motor_vel_target_2 < 0 && motor_vel_target_2 > -min_motor_velocity) motor_vel_target_2 = (int)-min_motor_velocity;
+    // if(motor_vel_target_3 > 0 && motor_vel_target_3 < min_motor_velocity) motor_vel_target_3 = (int)min_motor_velocity;
+    // if(motor_vel_target_3 < 0 && motor_vel_target_3 > -min_motor_velocity) motor_vel_target_3 = (int)-min_motor_velocity;
+    // if(motor_vel_target_4 > 0 && motor_vel_target_4 < min_motor_velocity) motor_vel_target_4 = (int)min_motor_velocity;
+    // if(motor_vel_target_4 < 0 && motor_vel_target_4 > -min_motor_velocity) motor_vel_target_4 = (int)-min_motor_velocity;
 
     
 

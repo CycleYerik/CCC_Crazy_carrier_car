@@ -116,14 +116,14 @@ const int shrink_arm_all = 1860;
 //? 左中右三个动作对应的各自舵机参数
 //TODO 待测量（全部）
 const int left_2 = 3328; 
-const int left_3 = middle_arm-830;  
+const int left_3 = middle_arm-852;  
 const int left_3_pileup = left_3;
 const int left_4 =  3010; 
 
 const int right_2 = 3328; 
-const int right_3 = middle_arm+842; 
+const int right_3 = middle_arm+827; 
 const int right_3_pileup = right_3;
-const int right_4 =  2930; 
+const int right_4 =  2960; 
 
 const int middle_2 = 3328;
 const int middle_3 = middle_arm;
@@ -386,23 +386,23 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
     int is_theta_ok = 0, is_r_ok = 0;
     int x_origin = x_error;
     int y_origin = y_error;
-    int max_servo_movement = 100;
+    int max_servo_movement = 50; //! 一直用的100
 
-    if(x_error > 300 )
+    if(x_error > 150 )
     {
-        x_error = 300;
+        x_error = 150;
     }
-    if(y_error > 300)
+    if(y_error > 150)
     {
-        y_error = 300;
+        y_error = 150;
     }
-    if(x_error < -300)
+    if(x_error < -150)
     {
-        x_error = -300;
+        x_error = -150;
     }
-    if(y_error < -300)
+    if(y_error < -150)
     {
-        y_error = -300;
+        y_error = -150;
     }
     x_camera_error = 0; //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     y_camera_error = 0; //TODO 这里需要取消注释（如果是）
@@ -455,7 +455,7 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
         }
     }
     // sprintf(temp_function_char, "  No:%d,  x:%d,y:%d  theta:%.2f,r:%.2f    ", UART_count,x_origin, y_origin,theta_adjust_values,r_adjust_values);
-    // HAL_UART_Transmit(&huart3, (uint8_t*)temp_function_char, strlen(temp_function_char), 50); //发给树莓派，开始校正
+    // HAL_UART_Transmit(&huart3, (uint8_t*)temp_function_char, strlen(temp_function_char), 1000); //发给树莓派，开始校正
     // HAL_Delay(50);
     UART_count++;
     if(UART_count > 1000000)
@@ -492,7 +492,7 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
 
 
     // sprintf(temp_function_char,"    theta:%.2f, r:%.2f    ",theta_adjust_values,r_adjust_values);
-    // HAL_UART_Transmit(&huart3, (uint8_t*)temp_function_char, strlen(temp_function_char), 50);
+    // HAL_UART_Transmit(&huart3, (uint8_t*)temp_function_char, strlen(temp_function_char), 1000);
     //! 原先版本，限位不够
     // if((theta_servo_now + theta_adjust_values < theta_right_position_limit) && (theta_servo_now + theta_adjust_values > theta_left_position_limit) && (r_servo_now + r_adjust_values < r_front_position_limit) && (r_servo_now + r_adjust_values > r_back_position_limit))
     // {
@@ -504,7 +504,7 @@ int adjust_position_with_camera(int x_error, int y_error,int is_min_1 )
     // }
     // else
     // {
-    //     // HAL_UART_Transmit(&huart3, (uint8_t*)"limit", strlen("limit"), 50);
+    //     // HAL_UART_Transmit(&huart3, (uint8_t*)"limit", strlen("limit"), 1000);
     //     //TODO 加入通知的功能
     // }
 
@@ -937,7 +937,7 @@ void get_and_put_spin_plate(int position)
     open_claw_180();
     // if(is_pile_up != 1)
     // {
-    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 1000); //发给树莓派，开始校正
     // }
 }
 
@@ -1023,7 +1023,7 @@ void get_and_pre_put_avoid(int position,int is_pile_up, int is_default_position,
     close_claw();
     HAL_Delay(700);
     put_claw_up_top();
-    // HAL_UART_Transmit(&huart3, (uint8_t*)"update", strlen("update"), 50); //! 更新中心值的功能
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"update", strlen("update"), 1000); //! 更新中心值的功能
     // HAL_Delay(800); //200
     if(is_pile_up == 1)  
     {
@@ -1150,7 +1150,7 @@ void get_and_pre_put_void(int position,int is_pile_up, const material_order* ord
     }
     if(is_pile_up != 1)
     {
-    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 1000); //发给树莓派，开始校正
     }
 }
 
@@ -1231,7 +1231,7 @@ void get_and_pre_put(int position,int is_pile_up, int is_default_position,const 
     close_claw();
     HAL_Delay(200);
     put_claw_up_top();
-    // HAL_UART_Transmit(&huart3, (uint8_t*)"update", strlen("update"), 50); //! 更新中心值的功能
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"update", strlen("update"), 1000); //! 更新中心值的功能
     // HAL_Delay(800); //200
     HAL_Delay(200); //200
     claw_spin_front(); //TODO 是否可能撞到
@@ -1289,7 +1289,7 @@ void get_and_pre_put(int position,int is_pile_up, int is_default_position,const 
     }
     if(is_pile_up != 1)
     {
-    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 1000); //发给树莓派，开始校正
     }
 }
 
@@ -1378,7 +1378,7 @@ void get_and_pre_put_with_state_find_position(int position,int is_pile_up, const
     }
     if(is_pile_up != 1)
     {
-    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 50); //发给树莓派，开始校正
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 1000); //发给树莓派，开始校正
     }
 }
 
@@ -1607,7 +1607,7 @@ void claw_spin_front(void)
     }
     else
     {
-        HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_back", strlen("claw_tooooo_back"), 50);
+        HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_back", strlen("claw_tooooo_back"), 1000);
     }
 }
 
@@ -1621,7 +1621,7 @@ void claw_spin_front_slight(void)
     }
     else
     {
-        HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_back", strlen("claw_tooooo_back"), 50);
+        HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_back", strlen("claw_tooooo_back"), 1000);
     }
 }
 
@@ -1636,7 +1636,7 @@ void claw_spin_state(void)
     }
     else
     {
-        HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_right", strlen("claw_tooooo_right"), 50);
+        HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_right", strlen("claw_tooooo_right"), 1000);
     }
 }
 

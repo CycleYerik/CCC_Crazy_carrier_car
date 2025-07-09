@@ -27,22 +27,18 @@ Project File Date:  03/19/2025
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling main.c...
-../Core/Src/main.c(319): warning:  #1295-D: Deprecated declaration print_clear_screen - give arg types
-  void print_clear_screen();
-../Core/Src/main.c(1087): warning:  #128-D: loop is not reachable
-      while (1)
-../Core/Src/main.c(735): warning:  #177-D: label "chusai"  was declared but never referenced
-      chusai:
-../Core/Src/main.c(1771): warning:  #550-D: variable "r_servo_now_temp"  was set but never used
-      int r_servo_now_temp = 0;
-../Core/Src/main.c(1772): warning:  #550-D: variable "theta_servo_now_temp"  was set but never used
-      int theta_servo_now_temp = 0;
-../Core/Src/main.c: 5 warnings, 0 errors
+compiling my_servo.c...
+..\servo\my_servo.c(387): warning:  #177-D: variable "x_origin"  was declared but never referenced
+      int x_origin = x_error;
+..\servo\my_servo.c(388): warning:  #177-D: variable "y_origin"  was declared but never referenced
+      int y_origin = y_error;
+..\servo\my_servo.c(1683): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      int position = (int)(50 + (200* (float)angle / 270.0));
+..\servo\my_servo.c: 3 warnings, 0 errors
 linking...
-Program Size: Code=22816 RO-data=548 RW-data=540 ZI-data=2612  
+Program Size: Code=25632 RO-data=548 RW-data=548 ZI-data=2612  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 5 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 3 Warning(s).
 
 <h2>Software Packages used:</h2>
 
