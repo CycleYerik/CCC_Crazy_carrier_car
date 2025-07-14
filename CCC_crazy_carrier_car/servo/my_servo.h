@@ -50,6 +50,7 @@ void open_claw_180(void);
 void open_claw_bigger(void);
 void open_claw(void);
 void close_claw(void);
+void close_claw_2(void);
 void close_bit(void);
 
 void arm_stretch(void);

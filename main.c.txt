@@ -62,18 +62,15 @@
 
 //树莓派对应的引脚（USB端口在前，风扇在后）25.7.3
 // 灰色：左列由后往前第三个 gnd
-// 蓝色：右列由后往前第四个 tx pi  
+// 蓝色：右列由后往前第四个 tx pi
 // 橙色：右列由前往后第六个 rx
-// PB10 TX
-
-
 
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 //!      重要变量（可能要根据不同情况进行修改的）
 
-//?至码垛运行时间 3.01  2.52   2.55   3.07  2.55  3.15  3.06  2.30（最快）   3.35（最慢）  3.05（2.12离开转盘）  3.03  2.53  3.09  2.58  3.06 2.41  2.31  2.54 3.10  2.31  3.14
+//?至码垛运行时间 3.01  2.52   2.55   3.07  2.55  3.15  3.06  2.30（最快）   3.35（最慢）  3.05（2.12离开转盘）  3.03  2.53  3.09
 
 int start = 0; //! 是否运行全流程
 
@@ -345,7 +342,7 @@ int fgetc(FILE *f)
     return ch;
 }
 
-HAL_StatusTypeDef Reliable_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
+
 void single_line_adjust(char *pData);
 void single_line_circle_adjust(char *pData);
 void get_from_plate_all_movement(void);
@@ -524,7 +521,7 @@ int main(void)
     claw_spin_front();           // 机械爪旋转到正前方
     open_claw_180();             // 机械爪完全张开
     state_spin_without_claw(1);  // 载物盘旋转到1号位
-    HAL_Delay(900); // TODO等待电机初始化完成，本该是4000ms,目前暂时减少时间
+    // HAL_Delay(900); // TODO等待电机初始化完成，本该是4000ms,目前暂时减少时间
     is_raspi_get_massage = 0; //空闲中断标志位清零
     for(int i = 0 ; i < 4 ; i++)
     {
@@ -541,12 +538,6 @@ int main(void)
 
     /*****************单独调试程序***********************/
     HAL_Delay(3000);
-
-    // while(1)
-    // {
-    //     HAL_UART_Transmit(&huart3, (uint8_t*)"near ground", strlen("near ground"), 1000); 
-    //     HAL_Delay(1000);
-    // }
     // put_claw_up_top();
     // HAL_Delay(5000);
     // put_claw_down();
@@ -564,46 +555,9 @@ int main(void)
     // {
     // HAL_Delay(1000);
     // }
-    // arm_shrink();
-
-    // close_claw();
-    // HAL_Delay(1000);
-    // close_claw_2(); 
-    // put_claw_up_top();
-    //     HAL_Delay(1000);
-    // claw_spin_state();
-    // HAL_Delay(1000);
-    // put_claw_down_state();
-
-    // 载物盘
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, 173);
-    // 夹爪
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 80);
-    // HAL_Delay(1000);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 80);
-    // HAL_Delay(3000);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 109);
-    // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, 2500);
-    // close_claw(); // 夹爪闭合
-
-    //?????????
-    // get_and_load_openloop(2,1,&default_material_order);
 
 
-
-    // while(1)
-    // {
-    //     put_claw_down_ground();
-    //     HAL_Delay(1500);
-    //     open_claw_180();
-    //     HAL_Delay(1500);
-    //     close_claw();
-    //     HAL_Delay(1000);
-    //     put_claw_up_top();
-    //     HAL_Delay(1000); // 等待放置完成
-
-    //     // HAL_Delay(1000); // 等待放置完成
-    // }
+    
 
     // //? 决赛功能测试
     // material_get_and_put_struct struct_1  = 
@@ -671,8 +625,8 @@ int main(void)
     // put_claw_up();
     // while(1)
     // {
-    //     single_line_circle_adjust("CC12");  // 校正车身位置对准色环
-    //     old_material_get_and_put_some_with_load_first(1,0,1);
+    //     single_line_circle_adjust("CC4");  // 校正车身位置对准色环
+    //     // old_material_get_and_put_some_with_load_first(1,0,1);
     //     // HAL_Delay(2000);
     //     // 生成 -5 到 5 的随机整数（共11个可能值）
     //     rand_num_1 = rand() % 5 - 2;  // [0,10] -5 -> [-5,5]
@@ -684,21 +638,21 @@ int main(void)
     //     // 随机旋转动作
 
 
-    //     int rand_spin = rand() % 2; // 0或1
-    //     if(rand_spin == 0)
-    //     {
-    //         spin_left_180(open_loop_spin_velocity,acceleration_spin);
-    //         HAL_Delay(1500);
-    //         spin_left_180(open_loop_spin_velocity,acceleration_spin);
-    //         HAL_Delay(1500);
-    //     }
-    //     else
-    //     {
-    //         spin_right_180(open_loop_spin_velocity,acceleration_spin);
-    //         HAL_Delay(1500);
-    //         spin_right_180(open_loop_spin_velocity,acceleration_spin);
-    //         HAL_Delay(1500);
-    //     }
+    //     // int rand_spin = rand() % 2; // 0或1
+    //     // if(rand_spin == 0)
+    //     // {
+    //     //     spin_left_180(open_loop_spin_velocity,acceleration_spin);
+    //     //     HAL_Delay(1500);
+    //     //     spin_left_180(open_loop_spin_velocity,acceleration_spin);
+    //     //     HAL_Delay(1500);
+    //     // }
+    //     // else
+    //     // {
+    //     //     spin_right_180(open_loop_spin_velocity,acceleration_spin);
+    //     //     HAL_Delay(1500);
+    //     //     spin_right_180(open_loop_spin_velocity,acceleration_spin);
+    //     //     HAL_Delay(1500);
+    //     // }
     // }
 
     // ? 单独测试直线
@@ -738,15 +692,14 @@ int main(void)
     //     HAL_Delay(1000);
     // }
 
-    //? 单独测试底盘直线情况
-    
+    //? 
+    // move_all_direction_position(acceleration,open_loop_move_velocity,-50,0);
+    // move_all_direction_position_delay(acceleration,open_loop_move_velocity,-50,0);
+    // move_all_direction_position(acceleration,open_loop_move_velocity,50,0);
+    // move_all_direction_position_delay(acceleration,open_loop_move_velocity,50,0);
     // while(1)
     // {
-    //     move_all_direction_position(acceleration,open_loop_move_velocity,0,100);
-    // move_all_direction_position_delay(acceleration,open_loop_move_velocity,0,100);
-    // move_all_direction_position(acceleration,open_loop_move_velocity,0,-100);
-    // move_all_direction_position_delay(acceleration,open_loop_move_velocity,0,-100);
-    //     HAL_Delay(2000);
+    //     HAL_Delay(1000);
     // }
 
 
@@ -763,13 +716,13 @@ int main(void)
 
     
     // ? 数字舵机测试程序
-    // while(1)
-    // {
-    //     // state_spin_angles(70);
-    //     HAL_Delay(3000);
-    //     // state_spin_angles(125);
-    //     HAL_Delay(3000);
-    // }
+    while(1)
+    {
+        state_spin_angles(70);
+        HAL_Delay(3000);
+        // state_spin_angles(125);
+        HAL_Delay(3000);
+    }
     
 
     //? 转盘放置
@@ -786,7 +739,6 @@ int main(void)
 
     // close_claw();
     // HAL_Delay(600);
-    // close_claw_2(); 
     // put_claw_up_top();
     // arm_shrink();
     // HAL_Delay(300);
@@ -828,30 +780,29 @@ int main(void)
     // HAL_Delay(1000); //TODO 7.9去除，为了加快速度
     if(is_single_route_test != 1)
     {
-        // HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 1000);  // 开始识别二维码
-        Reliable_UART_Transmit(&huart3,(uint8_t*)"AA", strlen("AA"), 1000); // 通知树莓派开始识别二维码
+        HAL_UART_Transmit(&huart3, (uint8_t*)"AA", strlen("AA"), 1000);  // 开始识别二维码
     }
     
 
     //! wifi接收（不用的话保持注释）
     //TODO 仍待优化和测试
     // HAL_Delay(2000);
-    // Reliable_UART_Transmit(&huart3, (uint8_t*)"MM", strlen("MM"), 1000);
+    // HAL_UART_Transmit(&huart3, (uint8_t*)"MM", strlen("MM"), 1000);
     // char temp_wifi_printf[50];
-    // Reliable_UART_Transmit(&huart4, (uint8_t*)"AT+CIPMUX=0\r\n", strlen("AT+CIPMUX=0\r\n"), 1000);
+    // HAL_UART_Transmit(&huart4, (uint8_t*)"AT+CIPMUX=0\r\n", strlen("AT+CIPMUX=0\r\n"), 1000);
     // HAL_Delay(500);
-    // Reliable_UART_Transmit(&huart4, (uint8_t*)"AT+CIPMODE=1\r\n", strlen("AT+CIPMODE=1\r\n"), 1000);
+    // HAL_UART_Transmit(&huart4, (uint8_t*)"AT+CIPMODE=1\r\n", strlen("AT+CIPMODE=1\r\n"), 1000);
     // HAL_Delay(500);
-    // Reliable_UART_Transmit(&huart4, (uint8_t*)"AT+CIPSTART=\"TCP\",\"192.168.43.42\",8089\r\n", strlen("AT+CIPSTART=\"TCP\",\"192.168.43.42\",8089\r\n"), 1000);
+    // HAL_UART_Transmit(&huart4, (uint8_t*)"AT+CIPSTART=\"TCP\",\"192.168.43.42\",8089\r\n", strlen("AT+CIPSTART=\"TCP\",\"192.168.43.42\",8089\r\n"), 1000);
     // HAL_Delay(500);
-    // Reliable_UART_Transmit(&huart4, (uint8_t*)"AT+CIPMODE=1\r\n", strlen("AT+CIPMODE=1\r\n"), 1000);
+    // HAL_UART_Transmit(&huart4, (uint8_t*)"AT+CIPMODE=1\r\n", strlen("AT+CIPMODE=1\r\n"), 1000);
     // HAL_Delay(500);
     // while(is_wifi_already_get_message != 1)
     // {
     //     HAL_Delay(100);
     // } 
     // sprintf(temp_wifi_printf, "%s",wifi_massage);
-    // Reliable_UART_Transmit(&huart3, (uint8_t*)temp_wifi_printf, strlen(temp_wifi_printf), 1000); //发送wifi数据
+    // HAL_UART_Transmit(&huart3, (uint8_t*)temp_wifi_printf, strlen(temp_wifi_printf), 1000); //发送wifi数据
     // HAL_Delay(100);
 
 
@@ -887,13 +838,12 @@ int main(void)
     print_to_screen(0,target_colour_str);
 
 
-    spin_right(open_loop_spin_velocity,acceleration_spin,90);  // 右转90度面向转盘
+    spin_right(open_loop_spin_velocity,acceleration_spin,91);  // 右转90度面向转盘
 
 
     if(is_single_route_test != 1)
     {
-        // HAL_UART_Transmit(&huart3, (uint8_t*)"BB1", strlen("BB1"), 1000);  // 通知树莓派开始识别转盘
-        Reliable_UART_Transmit(&huart3, (uint8_t*)"BB1", strlen("BB1"), 1000);  // 通知树莓派开始识别转盘
+        HAL_UART_Transmit(&huart3, (uint8_t*)"BB1", strlen("BB1"), 1000);  // 通知树莓派开始识别转盘
     }
 
 
@@ -938,11 +888,11 @@ int main(void)
     
     //移动到粗加工区参数
     float move_right_length_1 = 40; 
-    float move_front_length_1 = 170;  
+    float move_front_length_1 = 171;  
 
 
-    move_all_direction_position(acceleration-20, open_loop_x_move_velocity, move_right_length_1,0);  // 向右移动到中轴线
-    move_all_direction_position_delay(acceleration-20, open_loop_x_move_velocity, move_right_length_1,0);
+    move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_1,0);  // 向右移动到中轴线
+    move_all_direction_position_delay(acceleration, open_loop_x_move_velocity, move_right_length_1,0);
 
 
     single_line_adjust("EE");  // 校正车身姿态与直线平行
@@ -1064,12 +1014,12 @@ int main(void)
 
 
     //移动到粗加工区参数
-    float move_right_length_3 = 40; 
-    float move_front_length_3 = 170;  
+    float move_right_length_3 = 41; 
+    float move_front_length_3 = 172;  
 
 
-    move_all_direction_position(acceleration-20, open_loop_x_move_velocity, move_right_length_3,0);  // 向右移动到中轴线
-    move_all_direction_position_delay(acceleration-20, open_loop_x_move_velocity, move_right_length_3,0);
+    move_all_direction_position(acceleration, open_loop_x_move_velocity, move_right_length_3,0);  // 向右移动到中轴线
+    move_all_direction_position_delay(acceleration, open_loop_x_move_velocity, move_right_length_3,0);
 
 
     single_line_adjust("EE");
@@ -1167,7 +1117,7 @@ int main(void)
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, move_45_length_5_x, move_45_length_5_y);
 
 
-    Reliable_UART_Transmit(&huart3, (uint8_t*)"end", strlen("end"), 1000);
+    HAL_UART_Transmit(&huart3, (uint8_t*)"end", strlen("end"), 1000);
 
     while(1)
     {
@@ -1205,6 +1155,7 @@ int main(void)
     }
   /* USER CODE END 3 */
 }
+
 
 /**
   * @brief System Clock Configuration
@@ -1253,51 +1204,6 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 
-
-/// @brief 带有重试机制的UART发送函数
-/// @param huart 
-/// @param pData 
-/// @param Size 
-/// @param Timeout 
-/// @return 
-HAL_StatusTypeDef Reliable_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout)
-{
-    HAL_StatusTypeDef status = HAL_ERROR; // 初始状态设置为非OK，确保进入循环
-    int retry_count = 0;
-
-    while (status != HAL_OK && retry_count < 10)
-    {
-        if (retry_count > 0)
-        {
-            // 如果不是第一次尝试，打印重试信息 (可选，需要有调试输出功能)
-            // 例如：printf("UART Transmit failed (Status: %d). Retrying %d/%d...\r\n", status, retry_count, MAX_UART_TRANSMIT_RETRIES);
-            // 或者在调试器中观察 retry_count
-            HAL_Delay(50); // 等待一小段时间再重试
-        }
-
-        // 调用 HAL 发送函数
-        status = HAL_UART_Transmit(huart, pData, Size, Timeout);
-
-        if (status != HAL_OK)
-        {
-            retry_count++;
-        }
-    }
-
-    if (status != HAL_OK)
-    {
-        // 达到最大重试次数后仍未成功，打印失败信息 (可选)
-        // 例如：printf("UART Transmit failed after %d retries (Final Status: %d).\r\n", MAX_UART_TRANSMIT_RETRIES, status);
-    }
-    else
-    {
-        // 成功发送 (可选)
-        // 例如：printf("UART Transmit successful after %d retries.\r\n", retry_count);
-    }
-
-    // 返回最终的状态
-    return status;
-}
 
 /// @brief 国赛初赛决赛使用 串口屏调试函数
 /// @param t_num 串口屏里的tx
@@ -1442,7 +1348,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
 void single_line_adjust(char *pData)
 {
     static int adjust_delay = 0; //TODO 原先为50
-    Reliable_UART_Transmit(&huart3, (uint8_t*)pData, strlen(pData), 1000); // 发送传入的字符串
+    HAL_UART_Transmit(&huart3, (uint8_t*)pData, strlen(pData), 1000); // 发送传入的字符串
     is_slight_spin_and_move = 1;
     // HAL_Delay(10);
     tim3_count = 0;
@@ -1475,7 +1381,7 @@ void single_line_adjust(char *pData)
 void single_line_circle_adjust(char *pData)
 {
     static int adjust_delay = 50; //TODO 原先为50
-    Reliable_UART_Transmit(&huart3, (uint8_t*)pData, strlen(pData), 1000);
+    HAL_UART_Transmit(&huart3, (uint8_t*)pData, strlen(pData), 1000);
     is_slight_spin_and_move = 1;
     // HAL_Delay(100);
     tim3_count = 0;
@@ -1583,7 +1489,6 @@ void get_and_put_in_spin_plate_cricle_all(int times)
     // }
     // close_claw();
     // HAL_Delay(600);
-    // //close_claw_2(); 
     // put_claw_up_top();
     // HAL_Delay(500); //200
 
@@ -1629,7 +1534,6 @@ void get_and_put_in_spin_plate_cricle_all(int times)
     // // HAL_Delay(400);
     // // put_claw_up_top();
     // // HAL_Delay(500); //200
-    // // close_claw_2(); 
     // // claw_spin_front(); //TODO 是否可能撞到
     // // feetech_servo_move(4,temp_r_servo_position_plate,4000,feet_acc);
     // // feetech_servo_move(3,temp_theta_servo_position_plate,4000,feet_acc);
@@ -1960,7 +1864,6 @@ void get_from_plate_all_movement(void)
                 start_judge_empty = 1; //首次抓取则开始判断是否抓空
             }
             HAL_Delay(600);
-            // close_claw_2(); //! 暂时使用，
             put_claw_up_top();
             HAL_Delay(10); //delate
             if(is_get_empty_finish == 0) //首次抓取则延时1.5s，判断是否抓空
@@ -2065,7 +1968,6 @@ void get_from_plate_all_movement_with_back_check(void)
                 int r_servo_now_temp = r_servo_now;
                 arm_shrink();
                 HAL_Delay(300);
-                // close_claw_2(); 
                 claw_spin_state_without_claw();
                 HAL_Delay(700); 
 
@@ -2233,3 +2135,5 @@ void assert_failed(uint8_t *file, uint32_t line)
   /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
+
+

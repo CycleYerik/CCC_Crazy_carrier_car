@@ -19,16 +19,17 @@ extern void print_to_screen(int t_num,char *pData);
 //!      夹爪PD13  载物盘PD15 机械臂PD12
 //!      普通舵机转动120°对应给定数据为44.44
 //!      普通舵机参数范围25-125  对应0-270°
+//!      参数范围对应改为500-2500
 
 
 
 //? 夹爪舵机参数
-const int open_claw_avoid_collide_position = 108; //从物料的侧面过的张开角度 //TODO 待修改
-const int open_claw_180_position = 104;  
-const int open_claw_position = 86; 
-const int open_claw_bigger_position = 92; 
-const int close_claw_position = 73; 
-const int close_bit_position = 78; //略微夹紧
+const int open_claw_avoid_collide_position = 110; //从物料的侧面过的张开角度 //TODO 待修改
+const int open_claw_180_position = 110; //49+30 
+const int open_claw_position = 92; 
+const int open_claw_bigger_position = 98; 
+const int close_claw_position = 79; 
+const int close_bit_position = 84; //略微夹紧
 
 //? 载物盘舵机参数 
 const int state_spin_position_1 = 25;  //TODO 待修改
@@ -60,21 +61,20 @@ const int feet_acc_claw_spin = 0;
 const int feet_acc_claw_spin_slight = 100;
 
 //? 初赛物料升降参数（一号舵机）  
-const int servo_1_add_num = -12; //! 应对位置变化的调整量
+const int servo_1_add_num = 0; //! 应对位置变化的调整量
 
 //TODO 待修改（全部重新测）
 // //! 测量新值后务必注意有没有负值
 
 //! 初赛物料
-const int put_claw_down_pile_position = 1878+servo_1_add_num; //码垛位置 
-// const int put_claw_down_state_position = 777 +servo_1_add_num; //!从车的经典载物盘上 与放在地上相差2230
-const int put_claw_down_state_position = 742 + servo_1_add_num;
-const int put_claw_down_position = 1701+servo_1_add_num;  // 从转盘上取物料  
-const int put_claw_down_ground_position = 3010+servo_1_add_num; // 放在地上 3144
-const int put_claw_up_top_position =280+servo_1_add_num; // 最高点  
-const int put_claw_up_position =1667+servo_1_add_num; //  看粗调移动底盘的位置
-const int put_claw_down_near_ground_position = 2770+servo_1_add_num; //!细调放置的位置
-const int put_claw_down_near_plate_position = 1600+servo_1_add_num; //转盘放置细调的位置
+const int put_claw_down_pile_position = 2664+servo_1_add_num; //码垛位置 
+const int put_claw_down_state_position = 1528 + servo_1_add_num;
+const int put_claw_down_position = 2487+servo_1_add_num;  // 从转盘上取物料  
+const int put_claw_down_ground_position = 3796+servo_1_add_num; // 放在地上 3144  3796    +786
+const int put_claw_up_top_position =1066+servo_1_add_num; // 最高点  
+const int put_claw_up_position =2453+servo_1_add_num; //  看粗调移动底盘的位置
+const int put_claw_down_near_ground_position = 3556+servo_1_add_num; //!细调放置的位置
+const int put_claw_down_near_plate_position = 2386+servo_1_add_num; //转盘放置细调的位置
 
 //! 新物料
 // const int put_claw_down_pile_position = 1878+servo_1_add_num-60; //码垛位置 
@@ -863,6 +863,7 @@ void get_and_pre_put_spin_plate_avoid_collide(int position, const material_order
     HAL_Delay(600);
     put_claw_up_top();
     HAL_Delay(500); //200
+    // close_claw_2(); 
     claw_spin_front();
     feetech_servo_move(4,temp_r_servo_position_plate,4000,feet_acc);
     feetech_servo_move(3,temp_theta_servo_position_plate,4000,feet_acc);
@@ -894,6 +895,8 @@ void get_and_pre_put_spin_plate(int position)
     HAL_Delay(400);//? 根据物料高度进行调整
     put_claw_up_top();
     HAL_Delay(200); 
+    // close_claw_2(); 
+    
     claw_spin_front_slight(); //? 调整加速度
     feetech_servo_move(4,temp_r_servo_position_plate,4000,feet_acc);
     feetech_servo_move(3,temp_theta_servo_position_plate,4000,feet_acc);
@@ -926,6 +929,7 @@ void get_and_put_spin_plate(int position)
     HAL_Delay(300);
     put_claw_up_top();
     HAL_Delay(300); 
+    // close_claw_2(); 
     claw_spin_front(); //TODO 是否可能撞到
     feetech_servo_move(4,temp_r_servo_position_plate,4000,feet_acc);
     feetech_servo_move(3,temp_theta_servo_position_plate,4000,feet_acc);
@@ -1023,6 +1027,7 @@ void get_and_pre_put_avoid(int position,int is_pile_up, int is_default_position,
     close_claw();
     HAL_Delay(700);
     put_claw_up_top();
+    // close_claw_2(); 
     // HAL_UART_Transmit(&huart3, (uint8_t*)"update", strlen("update"), 1000); //! 更新中心值的功能
     // HAL_Delay(800); //200
     if(is_pile_up == 1)  
@@ -1234,6 +1239,7 @@ void get_and_pre_put(int position,int is_pile_up, int is_default_position,const 
     // HAL_UART_Transmit(&huart3, (uint8_t*)"update", strlen("update"), 1000); //! 更新中心值的功能
     // HAL_Delay(800); //200
     HAL_Delay(200); //200
+    // close_claw_2(); 
     claw_spin_front(); //TODO 是否可能撞到
     if(position == order->right) 
     {
@@ -1347,6 +1353,7 @@ void get_and_pre_put_with_state_find_position(int position,int is_pile_up, const
     close_claw();
     HAL_Delay(300);
     put_claw_up_top();
+    // close_claw_2(); 
 
     claw_spin_front(); //TODO 是否可能撞到
     if(position == order->right) 
@@ -1441,6 +1448,11 @@ void close_claw(void)
     __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, close_claw_position);
 }
 
+void close_claw_2(void)
+{
+    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, close_claw_position+1);
+}
+
 
 /// @brief 机械臂运动到抓物料
 /// @param  
@@ -1498,7 +1510,8 @@ void state_spin(int state_position)
     }
 }
 
-/// @brief 载物盘旋转到对应的位置(适用于机械臂不动的放置)
+
+/// @ brief 载物盘旋转到对应的位置(适用于机械臂不动的放置)
 void state_spin_without_claw(int state_position)
 {
     if(state_position == 1)
