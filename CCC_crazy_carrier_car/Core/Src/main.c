@@ -102,8 +102,8 @@ material_order default_material_order = { .left = 3, .middle = 2, .right = 1};
 
 //!底盘调整相关参数
 const float Kp_slight_move = 0.56;  // 底盘前后左右微调PID参数
-const float Ki_slight_move = 0;
-const float Kd_slight_move = 0;
+const float Ki_slight_move = 0.01;
+const float Kd_slight_move = 0.25;
 
 const float Kp_line_spin = 1;      // 直线校正PID参数
 const float Ki_line_spin = 0.1;
@@ -127,7 +127,7 @@ int open_loop_spin_velocity = 150;    // 开环旋转速度150
 // 步进电机加速度
 float acceleration = 200;          // 直线运动加速度170  180会出现明显的震荡类似丢步
 float acceleration_spin = 180;     // 旋转运动加速度180
-float acceleration_adjust = 180;
+float acceleration_adjust = 0; //一直用的180
 int motor_pos_move_mode = 0; //如果是0则是位置模式按照上一条指令的目标位置进行相对移动；2则是按照当前的实际位置进行相对移动
 
 
@@ -140,7 +140,7 @@ int motor_pos_move_mode = 0; //如果是0则是位置模式按照上一条指令
 //? 以下是旧版本的PID控制参数（配合adjust_position_with_camera）
 const float Kp_theta = 0.32;  // 机械臂旋转PID参数
 const float Ki_theta = 0.01;
-const float Kd_theta = 0.4;
+const float Kd_theta = 0.45;
 const float Kp_r = 0.35;     // 机械臂伸缩PID参数
 const float Ki_r = 0.01;
 const float Kd_r = 0.3;
@@ -174,7 +174,7 @@ const float small_limit = 10;
 
 //! 机械臂通用调整参数
 
-int adjust_position_with_camera_time = 10; //机械臂细调的延时时间
+int adjust_position_with_camera_time = 0; //机械臂细调的延时时间
 
 //机械臂转盘单次微调系数
 const float x_plate_k = 1;   // 转盘处机械臂微调系数
@@ -588,39 +588,39 @@ int main(void)
 
 
     //? 单独调试底盘
-    // int rand_num_1, rand_num_2;
-    // put_claw_up();
-    // while(1)
-    // {
-    //     single_line_circle_adjust("CC12\n");  // 校正车身位置对准色环
-    //     old_material_get_and_put_some_with_load_first(1,0,1);
-    //     // HAL_Delay(2000);
-    //     // 生成 -5 到 5 的随机整数（共11个可能值）
-    //     rand_num_1 = rand() % 5 - 2;  // [0,10] -5 -> [-5,5]
-    //     rand_num_2 = rand() % 5 - 2;  // [0,10] -5 -> [-5,5]
-    //     move_all_direction_position(acceleration, open_loop_move_velocity, rand_num_1, rand_num_2);
-    //     move_all_direction_position_delay(acceleration, open_loop_move_velocity, rand_num_1, rand_num_2);
-    //     put_claw_up();
-    //     // HAL_Delay(1000);    
-    //     // 随机旋转动作
+    int rand_num_1, rand_num_2;
+    put_claw_up();
+    while(1)
+    {
+        single_line_circle_adjust("CC12\n");  // 校正车身位置对准色环
+        old_material_get_and_put_some_with_load_first(1,0,1);
+        // HAL_Delay(2000);
+        // 生成 -5 到 5 的随机整数（共11个可能值）
+        rand_num_1 = rand() % 5 - 2;  // [0,10] -5 -> [-5,5]
+        rand_num_2 = rand() % 5 - 2;  // [0,10] -5 -> [-5,5]
+        move_all_direction_position(acceleration, open_loop_move_velocity, rand_num_1, rand_num_2);
+        move_all_direction_position_delay(acceleration, open_loop_move_velocity, rand_num_1, rand_num_2);
+        put_claw_up();
+        // HAL_Delay(1000);    
+        // 随机旋转动作
 
 
-    //     int rand_spin = rand() % 2; // 0或1
-    //     if(rand_spin == 0)
-    //     {
-    //         spin_left_180(open_loop_spin_velocity,acceleration_spin);
-    //         HAL_Delay(1500);
-    //         spin_left_180(open_loop_spin_velocity,acceleration_spin);
-    //         HAL_Delay(1500);
-    //     }
-    //     else
-    //     {
-    //         spin_right_180(open_loop_spin_velocity,acceleration_spin);
-    //         HAL_Delay(1500);
-    //         spin_right_180(open_loop_spin_velocity,acceleration_spin);
-    //         HAL_Delay(1500);
-    //     }
-    // }
+        int rand_spin = rand() % 2; // 0或1
+        if(rand_spin == 0)
+        {
+            spin_left_180(open_loop_spin_velocity,acceleration_spin);
+            HAL_Delay(1500);
+            spin_left_180(open_loop_spin_velocity,acceleration_spin);
+            HAL_Delay(1500);
+        }
+        else
+        {
+            spin_right_180(open_loop_spin_velocity,acceleration_spin);
+            HAL_Delay(1500);
+            spin_right_180(open_loop_spin_velocity,acceleration_spin);
+            HAL_Delay(1500);
+        }
+    }
 
     // ? 单独测试直线
     // put_claw_up();
@@ -1461,6 +1461,7 @@ void single_line_adjust(char *pData)
     is_slight_spin_and_move = 1;
     // HAL_Delay(10);
     tim3_count = 0;
+    clear_motor_error();
     while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit_line)
     // while(is_slight_spin_and_move != 0 )
     {
@@ -1490,17 +1491,19 @@ void single_line_adjust(char *pData)
 /// @param  
 void single_line_circle_adjust(char *pData)
 {
-    static int adjust_delay = 50; //TODO 原先为50
+    static int adjust_delay = 0; //TODO 原先为50
     Reliable_UART_Transmit(&huart3, (uint8_t*)pData, strlen(pData), 1000);
     is_slight_spin_and_move = 1;
     // HAL_Delay(100);
     tim3_count = 0;
+    clear_motor_error();
     while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
     // while(is_slight_spin_and_move != 0 )
     {
         slight_spin_and_move(1,1); // 直线和圆环一起调整
         HAL_Delay(adjust_delay);
     }
+    //将电机的误差清零
     stop();
     is_slight_spin_and_move = 0;
     // HAL_Delay(3000);
@@ -1523,6 +1526,7 @@ void single_circle_adjust(char* pData)
     is_slight_spin_and_move = 1;
     // HAL_Delay(100);
     tim3_count = 0;
+    clear_motor_error();
     while(is_slight_spin_and_move != 0 && tim3_count < timeout_limit)
     // while(is_slight_spin_and_move != 0 )
     {

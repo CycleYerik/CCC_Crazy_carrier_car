@@ -87,7 +87,7 @@ const int claw_spin_without_claw_position_state = 1600; //与上面一样
 //? 中板整体旋转参数（三号舵机）
 //! 测量新值后务必注意有没有负值
 // 左：-1083 右： +953
-const int middle_arm = 1930;  // 舵机3在不进行动作时的默认位置
+const int middle_arm = 1925;  // 舵机3在不进行动作时的默认位置
 const int theta_left_position_limit = middle_arm-1083;
 const int theta_right_position_limit = middle_arm+953 ;
 const int theta_right_position_rlimit = middle_arm + 550; 
@@ -107,14 +107,14 @@ const int shrink_arm_all = 1860;
 //? 左中右三个动作对应的各自舵机参数
 //TODO 待测量（全部）
 const int left_2 = 3328; 
-const int left_3 = middle_arm-840;  
+const int left_3 = middle_arm-845;  
 const int left_3_pileup = left_3;
 const int left_4 =  3010; 
 
 const int right_2 = 3328; 
-const int right_3 = middle_arm+820; 
+const int right_3 = middle_arm+819; 
 const int right_3_pileup = right_3;
-const int right_4 =  2960; 
+const int right_4 =  2964; 
 
 const int middle_2 = 3328;
 const int middle_3 = middle_arm;

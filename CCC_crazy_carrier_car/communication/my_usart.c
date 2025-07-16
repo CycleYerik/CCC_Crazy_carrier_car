@@ -58,12 +58,12 @@ extern volatile int material_place[3];
 
 volatile int test_slight_move = 1;
 
-int x_err_1 = 0;
-int x_err_2 = 0;
-int x_err_3 = 0;
-int y_err_1 = 0;
-int y_err_2 = 0;
-int y_err_3 = 0;
+volatile int x_err_1 = 0;
+volatile int x_err_2 = 0;
+volatile int x_err_3 = 0;
+volatile int y_err_1 = 0;
+volatile int y_err_2 = 0;
+volatile int y_err_3 = 0;
 
 float pos_motor_1 = 0, pos_motor_2 = 0, pos_motor_3 = 0, pos_motor_4 = 0;
 float angle_motor_1 = 0, angle_motor_2 = 0, angle_motor_3 = 0, angle_motor_4 = 0;
@@ -490,6 +490,7 @@ void UART_receive_process_1(void)
 /// @brief 处理树莓派数据
 void UART_receive_process_3(void)
 {
+        
     //!树莓派对应的引脚（USB端口在前，风扇在后）25.7.3
     //! 灰色：左列由后往前第三个
     //! 蓝色：右列由后往前第四个
@@ -775,144 +776,165 @@ void UART_receive_process_3(void)
             
         // }
 
-        //! 旧的直线和圆一起调 
-        if(is_slight_spin_and_move == 1 && rxdata_u3[8] == '!')
-        {
-            if(rxdata_u3[0] == 0x01)
-            {
-                if(is_show_origin_xy_data == 1)
-                {
-                    print_screen_buffer_xy[print_screen_buffer_index_xy][0] = (int)rxdata_u3[1];
-                }
-                
-
-                temp_spin_which_direction = Kp_line_spin * (float)rxdata_u3[1] + Ki_line_spin * ((float)rxdata_u3[1] +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(float)rxdata_u3[1]+ line_spin_error_2);
-                if(temp_spin_which_direction > spin_limit_max)
-                {
-                    spin_which_direction = spin_limit_max;
-                }
-                else if(temp_spin_which_direction < spin_limit_min)
-                {
-                    spin_which_direction = spin_limit_min;
-                }
-                else
-                {
-                    spin_which_direction = temp_spin_which_direction;
-                }
-
-                if((int)rxdata_u3[1] == 0)
-                {
-                    spin_which_direction = 0; // 如果是0则不转
-                }
-                line_spin_error_2 = line_spin_error_1;
-                line_spin_error_1 = (float)rxdata_u3[1];
-                
-            }
-            else if(rxdata_u3[0] == 0x02)
-            {
-                if(is_show_origin_xy_data == 1)
-                {
-                    print_screen_buffer_xy[print_screen_buffer_index_xy][0] = -(int)rxdata_u3[1];
-                }
-
-
-                temp_spin_which_direction = Kp_line_spin * (-(float)rxdata_u3[1]) + Ki_line_spin * ((-(float)rxdata_u3[1]) +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(-(float)rxdata_u3[1])+ line_spin_error_2);
-                if(temp_spin_which_direction < -spin_limit_max)
-                {
-                    spin_which_direction = -spin_limit_max;
-                }
-                else if(temp_spin_which_direction > -spin_limit_min)
-                {
-                    spin_which_direction = -spin_limit_min;
-                }
-                else
-                {
-                    spin_which_direction = temp_spin_which_direction;
-                }
-
-                if((int)rxdata_u3[1] == 0)
-                {
-                    spin_which_direction = 0; // 如果是0则不转
-                }
-                line_spin_error_2 = line_spin_error_1;
-                line_spin_error_1 = -(float)rxdata_u3[1];
-                
-            }
-            if(rxdata_u3[2] == 0x01)
-            {
-                x_move_position = (float)( rxdata_u3[3]<<8 | rxdata_u3[4]);
-            }
-            else if(rxdata_u3[2] == 0x02)
-            {
-                x_move_position = - (float) ( rxdata_u3[3]<<8 | rxdata_u3[4]);
-            }
-            if(rxdata_u3[5] == 0x01)
-            {
-                y_move_position = (float) ( rxdata_u3[6]<<8 | rxdata_u3[7]);
-            }
-            else if(rxdata_u3[5] == 0x02)
-            {
-                y_move_position = - (float)  ( rxdata_u3[6]<<8 | rxdata_u3[7]);
-            }
-            if(is_show_origin_xy_data == 1)
-            {
-                print_screen_buffer_xy[print_screen_buffer_index_xy][1] = (int)x_move_position;
-                print_screen_buffer_xy[print_screen_buffer_index_xy][2] = (int)y_move_position;
-            }
-            x_move_position *= xy_move_k;  //TODO magic number
-            y_move_position *= xy_move_k;
-            x_err_3 = x_err_2;
-            y_err_3 = y_err_2;
-            x_err_2 = x_err_1;
-            y_err_2 = y_err_1;
-            x_err_1 = x_move_position;
-            y_err_1 = y_move_position;
-            
-            x_move_position = Kp_slight_move * (x_err_1) + Ki_slight_move * (x_err_1+x_err_2 + x_err_3) + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2)/2.0;
-            y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + y_err_2 + y_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2.0 ;
-            if(x_move_position > move_limit_max)
-            {
-                x_move_position = move_limit_max;
-            }
-            if(y_move_position > move_limit_max)
-            {
-                y_move_position = move_limit_max;
-            }
-            if(x_move_position < -move_limit_max)
-            {
-                x_move_position = -move_limit_max;
-            }
-            if(y_move_position < -move_limit_max)
-            {
-                y_move_position = -move_limit_max;
-            }
-            if(x_move_position < move_limit_min && x_move_position >0)
-            {
-                x_move_position = move_limit_min;
-            }
-            if(y_move_position < move_limit_min && y_move_position >0)
-            {
-                y_move_position = move_limit_min;
-            }
-            if(x_move_position > -move_limit_min && x_move_position <0)
-            {
-                x_move_position = -move_limit_min;
-            }
-            if(y_move_position > -move_limit_min && y_move_position <0)
-            {
-                y_move_position = -move_limit_min;
-            }
-
-
-            if(print_screen_buffer_index_xy < max_data_length - 1)
-            {
-                print_screen_buffer_index_xy++;
-            }
-            else
-            {
-                print_screen_buffer_index_xy = 0;
-            }
+        //! 又新版
+        if(rxdata_u3[0] == 0x01) {
+            line_spin_error_1 = (int)rxdata_u3[1];
+        } else if(rxdata_u3[0] == 0x02) {
+            line_spin_error_1 = -(int)rxdata_u3[1];
         }
+        if(rxdata_u3[2] == 0x01) {
+            x_err_1 = (int)(rxdata_u3[3]<<8 | rxdata_u3[4]);
+            x_err_1 *= xy_move_k;
+        } else if(rxdata_u3[2] == 0x02) {
+            x_err_1 = -(int)(rxdata_u3[3]<<8 | rxdata_u3[4]);
+            x_err_1 *= xy_move_k;
+        }
+        if(rxdata_u3[5] == 0x01) {
+            y_err_1 = (int)(rxdata_u3[6]<<8 | rxdata_u3[7]);
+            y_err_1 *= xy_move_k;
+        } else if(rxdata_u3[5] == 0x02) {
+            y_err_1 = -(int)(rxdata_u3[6]<<8 | rxdata_u3[7]);
+            y_err_1 *= xy_move_k;
+        }
+
+        // //! 旧的直线和圆一起调 
+        // if(is_slight_spin_and_move == 1 && rxdata_u3[8] == '!')
+        // {
+        //     if(rxdata_u3[0] == 0x01)
+        //     {
+        //         if(is_show_origin_xy_data == 1)
+        //         {
+        //             print_screen_buffer_xy[print_screen_buffer_index_xy][0] = (int)rxdata_u3[1];
+        //         }
+                
+
+        //         temp_spin_which_direction = Kp_line_spin * (float)rxdata_u3[1] + Ki_line_spin * ((float)rxdata_u3[1] +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(float)rxdata_u3[1]+ line_spin_error_2);
+        //         if(temp_spin_which_direction > spin_limit_max)
+        //         {
+        //             spin_which_direction = spin_limit_max;
+        //         }
+        //         else if(temp_spin_which_direction < spin_limit_min)
+        //         {
+        //             spin_which_direction = spin_limit_min;
+        //         }
+        //         else
+        //         {
+        //             spin_which_direction = temp_spin_which_direction;
+        //         }
+
+        //         if((int)rxdata_u3[1] == 0)
+        //         {
+        //             spin_which_direction = 0; // 如果是0则不转
+        //         }
+        //         line_spin_error_2 = line_spin_error_1;
+        //         line_spin_error_1 = (float)rxdata_u3[1];
+                
+        //     }
+        //     else if(rxdata_u3[0] == 0x02)
+        //     {
+        //         if(is_show_origin_xy_data == 1)
+        //         {
+        //             print_screen_buffer_xy[print_screen_buffer_index_xy][0] = -(int)rxdata_u3[1];
+        //         }
+
+
+        //         temp_spin_which_direction = Kp_line_spin * (-(float)rxdata_u3[1]) + Ki_line_spin * ((-(float)rxdata_u3[1]) +line_spin_error_1 + line_spin_error_2) + Kd_line_spin * (-2*line_spin_error_1 +(-(float)rxdata_u3[1])+ line_spin_error_2);
+        //         if(temp_spin_which_direction < -spin_limit_max)
+        //         {
+        //             spin_which_direction = -spin_limit_max;
+        //         }
+        //         else if(temp_spin_which_direction > -spin_limit_min)
+        //         {
+        //             spin_which_direction = -spin_limit_min;
+        //         }
+        //         else
+        //         {
+        //             spin_which_direction = temp_spin_which_direction;
+        //         }
+
+        //         if((int)rxdata_u3[1] == 0)
+        //         {
+        //             spin_which_direction = 0; // 如果是0则不转
+        //         }
+        //         line_spin_error_2 = line_spin_error_1;
+        //         line_spin_error_1 = -(float)rxdata_u3[1];
+                
+        //     }
+        //     if(rxdata_u3[2] == 0x01)
+        //     {
+        //         x_move_position = (float)( rxdata_u3[3]<<8 | rxdata_u3[4]);
+        //     }
+        //     else if(rxdata_u3[2] == 0x02)
+        //     {
+        //         x_move_position = - (float) ( rxdata_u3[3]<<8 | rxdata_u3[4]);
+        //     }
+        //     if(rxdata_u3[5] == 0x01)
+        //     {
+        //         y_move_position = (float) ( rxdata_u3[6]<<8 | rxdata_u3[7]);
+        //     }
+        //     else if(rxdata_u3[5] == 0x02)
+        //     {
+        //         y_move_position = - (float)  ( rxdata_u3[6]<<8 | rxdata_u3[7]);
+        //     }
+        //     if(is_show_origin_xy_data == 1)
+        //     {
+        //         print_screen_buffer_xy[print_screen_buffer_index_xy][1] = (int)x_move_position;
+        //         print_screen_buffer_xy[print_screen_buffer_index_xy][2] = (int)y_move_position;
+        //     }
+        //     x_move_position *= xy_move_k;  //TODO magic number
+        //     y_move_position *= xy_move_k;
+        //     x_err_3 = x_err_2;
+        //     y_err_3 = y_err_2;
+        //     x_err_2 = x_err_1;
+        //     y_err_2 = y_err_1;
+        //     x_err_1 = x_move_position;
+        //     y_err_1 = y_move_position;
+            
+        //     x_move_position = Kp_slight_move * (x_err_1) + Ki_slight_move * (x_err_1+x_err_2 + x_err_3) + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2)/2.0;
+        //     y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + y_err_2 + y_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2.0 ;
+        //     if(x_move_position > move_limit_max)
+        //     {
+        //         x_move_position = move_limit_max;
+        //     }
+        //     if(y_move_position > move_limit_max)
+        //     {
+        //         y_move_position = move_limit_max;
+        //     }
+        //     if(x_move_position < -move_limit_max)
+        //     {
+        //         x_move_position = -move_limit_max;
+        //     }
+        //     if(y_move_position < -move_limit_max)
+        //     {
+        //         y_move_position = -move_limit_max;
+        //     }
+        //     if(x_move_position < move_limit_min && x_move_position >0)
+        //     {
+        //         x_move_position = move_limit_min;
+        //     }
+        //     if(y_move_position < move_limit_min && y_move_position >0)
+        //     {
+        //         y_move_position = move_limit_min;
+        //     }
+        //     if(x_move_position > -move_limit_min && x_move_position <0)
+        //     {
+        //         x_move_position = -move_limit_min;
+        //     }
+        //     if(y_move_position > -move_limit_min && y_move_position <0)
+        //     {
+        //         y_move_position = -move_limit_min;
+        //     }
+
+
+        //     if(print_screen_buffer_index_xy < max_data_length - 1)
+        //     {
+        //         print_screen_buffer_index_xy++;
+        //     }
+        //     else
+        //     {
+        //         print_screen_buffer_index_xy = 0;
+        //     }
+        // }
 
         if(rxdata_u3[1] == 0x44 && is_slight_spin_and_move == 1 && rxdata_u3[0] == '?')
         {

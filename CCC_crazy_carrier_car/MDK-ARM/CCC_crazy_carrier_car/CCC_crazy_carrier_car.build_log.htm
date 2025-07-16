@@ -27,24 +27,22 @@ Project File Date:  07/13/2025
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling main.c...
-../Core/Src/main.c(1113): warning:  #128-D: loop is not reachable
-      while (1)
-../Core/Src/main.c(1976): warning:  #550-D: variable "r_servo_now_temp"  was set but never used
-      int r_servo_now_temp = 0;
-../Core/Src/main.c(1977): warning:  #550-D: variable "theta_servo_now_temp"  was set but never used
-      int theta_servo_now_temp = 0;
-../Core/Src/main.c(2087): warning:  #177-D: variable "r_servo_now_temp"  was declared but never referenced
-      int r_servo_now_temp = 0;
-../Core/Src/main.c(2088): warning:  #177-D: variable "theta_servo_now_temp"  was declared but never referenced
-      int theta_servo_now_temp = 0;
-../Core/Src/main.c(2089): warning:  #177-D: variable "is_first_get"  was declared but never referenced
-      int is_first_get = 1;
-../Core/Src/main.c: 6 warnings, 0 errors
+compiling my_servo.c...
+..\servo\my_servo.c(378): warning:  #177-D: variable "x_origin"  was declared but never referenced
+      int x_origin = x_error;
+..\servo\my_servo.c(379): warning:  #177-D: variable "y_origin"  was declared but never referenced
+      int y_origin = y_error;
+..\servo\my_servo.c(1125): warning:  #223-D: function "Reliable_UART_Transmit" declared implicitly
+          Reliable_UART_Transmit(&huart3, (uint8_t*)"update\n",strlen("update\n"), 1000); //! 更新中心值的功能
+..\servo\my_servo.c(1477): warning:  #223-D: function "Reliable_UART_Transmit" declared implicitly
+      Reliable_UART_Transmit(&huart3, (uint8_t*)"update\n", strlen("update\n"), 1000); //! 更新中心值的功能
+..\servo\my_servo.c(1933): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      int position = (int)(50 + (200* (float)angle / 270.0));
+..\servo\my_servo.c: 5 warnings, 0 errors
 linking...
-Program Size: Code=25724 RO-data=548 RW-data=548 ZI-data=2612  
+Program Size: Code=25940 RO-data=548 RW-data=556 ZI-data=2612  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 6 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 5 Warning(s).
 
 <h2>Software Packages used:</h2>
 

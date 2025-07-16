@@ -205,100 +205,101 @@ void move_leftright_front_with_spin(int left_or_right, float vel  , float R_spin
 
 }
 
+/// @brief 清空电机误差
+void clear_motor_error(void)
+{
+    line_spin_error_1 = 0;
+    line_spin_error_2 = 0;
+    line_spin_error_3 = 0;
+    x_err_1 = 0;
+    x_err_2 = 0;
+    x_err_3 = 0;
+    y_err_1 = 0;
+    y_err_2 = 0;
+    y_err_3 = 0;
+    spin_which_direction = 0;
+    x_move_position = 0;
+    y_move_position = 0;
+}
+
 /// @brief 直线和圆一起调
 /// @param  调参的思路：x/y_move_position乘了一个偏差量，最后直线的参数也乘了一个偏差量，通过修改这两个偏差量使得直线和圆的调整比例合适，同时也控制各自的数值不会过大
 void slight_spin_and_move(int is_spin,int is_move)
 {
-    // spin_which_direction = 0; // 初始化
-    // x_move_position = 0;
-    // y_move_position = 0;
-    
-    // if(is_spin == 1)
-    // {
-    //     float temp_spin_which_direction = 0;
-    //     temp_spin_which_direction = Kp_line_spin * line_spin_error_1 + Ki_line_spin *(line_spin_error_1 + line_spin_error_2 + line_spin_error_3) + Kd_line_spin * (line_spin_error_1 - line_spin_error_2)/2;
+    extern float Kp_line_spin, Ki_line_spin, Kd_line_spin;
+    extern const float spin_limit_max, spin_limit_min, move_limit_max, move_limit_min;
+    extern float adjust_spin_scale, adjust_move_scale;
+    extern float acceleration_adjust;
+    extern int motor_vel_adjust_with_spin;
+    extern int min_motor_velocity;
+    // extern int motor_vel_target_1, motor_vel_target_2, motor_vel_target_3, motor_vel_target_4;
+    // extern float spin_which_direction, x_move_position, y_move_position;
+    extern int line_spin_error_1, line_spin_error_2, line_spin_error_3;
+    extern int x_err_2, x_err_3, y_err_2, y_err_3;
+    extern float xy_move_k;
 
-    //     if(temp_spin_which_direction > spin_limit_max)
-    //     {
-    //         spin_which_direction = spin_limit_max;
-    //     }
-    //     else if(temp_spin_which_direction < -spin_limit_max)
-    //     {
-    //         spin_which_direction = -spin_limit_max;
-    //     }    
-    //     line_spin_error_3 = line_spin_error_2;
-    //     line_spin_error_2 = line_spin_error_1;
-    // }
-    
-    
 
-    // if(is_move == 1)
-    // {
-        
-    //     x_move_position = Kp_slight_move * x_err_1 + Ki_slight_move * (x_err_1 + x_err_2 + x_err_3) + Kd_slight_move * (x_err_1 - x_err_2)/2;
 
-    //     y_move_position = Kp_slight_move * y_err_1 + Ki_slight_move * (y_err_1 + y_err_2 + y_err_3) + Kd_slight_move * (y_err_1 - y_err_2)/2;
 
-    //     if(x_move_position > move_limit_max)
-    //     {
-    //         x_move_position = move_limit_max;
-    //     }
-    //     if(y_move_position > move_limit_max)
-    //     {
-    //         y_move_position = move_limit_max;
-    //     }
-    //     if(x_move_position < -move_limit_max)
-    //     {
-    //         x_move_position = -move_limit_max;
-    //     }
-    //     if(y_move_position < -move_limit_max)
-    //     {
-    //         y_move_position = -move_limit_max;
-    //     }
-    //     if(x_move_position < move_limit_min && x_move_position >0)
-    //     {
-    //         x_move_position = move_limit_min;
-    //     }
-    //     if(y_move_position < move_limit_min && y_move_position >0)
-    //     {
-    //         y_move_position = move_limit_min;
-    //     }
-    //     if(x_move_position > -move_limit_min && x_move_position <0)
-    //     {
-    //         x_move_position = -move_limit_min;
-    //     }
-    //     if(y_move_position > -move_limit_min && y_move_position <0)
-    //     {
-    //         y_move_position = -move_limit_min;
-    //     }
 
-    //     if(x_err_1 == 0 && y_err_1 == 0)
-    //     {
-    //         x_move_position = 0;
-    //         y_move_position = 0;
-    //     }
-        
-    //     //进行参数更新
-    //     x_err_3 = x_err_2;
-    //     y_err_3 = y_err_2;
-    //     x_err_2 = x_err_1;
-    //     y_err_2 = y_err_1;
-    // }
-    
-    if(is_spin == 0)
-    {
-        spin_which_direction = 0; // 如果不需要旋转，则将旋转速度设置为0
-    }
-    if(is_move == 0)
-    {
-        x_move_position = 0; // 如果不需要移动，则将移动速度设置为0
+
+    // 更新误差
+    line_spin_error_3 = line_spin_error_2;
+    line_spin_error_2 = line_spin_error_1;
+
+    // 旋转PID
+    float temp_spin_which_direction = Kp_line_spin * line_spin_error_1
+        + Ki_line_spin * (line_spin_error_1 + line_spin_error_2 + line_spin_error_3)
+        + Kd_line_spin * (-2 * line_spin_error_1 + line_spin_error_2 + line_spin_error_3);
+    if(temp_spin_which_direction > spin_limit_max && temp_spin_which_direction > 0)
+        spin_which_direction = spin_limit_max;
+    else if(temp_spin_which_direction  < -spin_limit_max && temp_spin_which_direction < 0)
+        spin_which_direction = -spin_limit_max;
+    else if(temp_spin_which_direction < spin_limit_min && temp_spin_which_direction > 0)
+        spin_which_direction = spin_limit_min;
+    else if(temp_spin_which_direction > -spin_limit_min && temp_spin_which_direction < 0)
+        spin_which_direction = -spin_limit_min;
+    else
+        spin_which_direction = temp_spin_which_direction;
+
+    if(is_spin == 0 || line_spin_error_1 == 0)
+        spin_which_direction = 0;
+
+
+
+    // x/y三阶误差
+    x_err_3 = x_err_2;
+    y_err_3 = y_err_2;
+    x_err_2 = x_err_1;
+    y_err_2 = y_err_1;
+
+    // x/y PID
+    float x_pid = Kp_slight_move * x_err_1 + Ki_slight_move * (x_err_1 + x_err_2 + x_err_3)
+        + Kd_slight_move * (x_err_3 + x_err_1 - 2 * x_err_2) / 2.0;
+    float y_pid = Kp_slight_move * y_err_1 + Ki_slight_move * (y_err_1 + y_err_2 + y_err_3)
+        + Kd_slight_move * (y_err_3 + y_err_1 - 2 * y_err_2) / 2.0;
+    x_move_position = x_pid;
+    y_move_position = y_pid;
+    // 限幅
+    if(x_move_position > move_limit_max) x_move_position = move_limit_max;
+    if(y_move_position > move_limit_max) y_move_position = move_limit_max;
+    if(x_move_position < -move_limit_max) x_move_position = -move_limit_max;
+    if(y_move_position < -move_limit_max) y_move_position = -move_limit_max;
+    if(x_move_position < move_limit_min && x_move_position > 0) x_move_position = move_limit_min;
+    if(y_move_position < move_limit_min && y_move_position > 0) y_move_position = move_limit_min;
+    if(x_move_position > -move_limit_min && x_move_position < 0) x_move_position = -move_limit_min;
+    if(y_move_position > -move_limit_min && y_move_position < 0) y_move_position = -move_limit_min;
+
+
+    if((x_err_1 == 0 && y_err_1 == 0) || is_move == 0) {
+        x_move_position = 0;
         y_move_position = 0;
     }
-    
-    float vel_target_1_f = adjust_spin_scale *spin_which_direction + adjust_move_scale * (-x_move_position - y_move_position);
-    float vel_target_2_f = adjust_spin_scale *spin_which_direction + adjust_move_scale * (-x_move_position + y_move_position);
-    float vel_target_3_f = adjust_spin_scale *spin_which_direction + adjust_move_scale * (x_move_position - y_move_position);
-    float vel_target_4_f = adjust_spin_scale *spin_which_direction + adjust_move_scale * (x_move_position + y_move_position);
+
+    float vel_target_1_f = adjust_spin_scale * spin_which_direction + adjust_move_scale * (-x_move_position - y_move_position);
+    float vel_target_2_f = adjust_spin_scale * spin_which_direction + adjust_move_scale * (-x_move_position + y_move_position);
+    float vel_target_3_f = adjust_spin_scale * spin_which_direction + adjust_move_scale * (x_move_position - y_move_position);
+    float vel_target_4_f = adjust_spin_scale * spin_which_direction + adjust_move_scale * (x_move_position + y_move_position);
 
     // 限幅
     if(vel_target_1_f > motor_vel_adjust_with_spin) vel_target_1_f = motor_vel_adjust_with_spin;
@@ -327,7 +328,9 @@ void slight_spin_and_move(int is_spin,int is_move)
     motor_vel_target_4 = (int)vel_target_4_f;
 
 
-    
+    x_move_position = 0;
+    y_move_position = 0;
+    spin_which_direction = 0;
 
 
 
@@ -1680,7 +1683,7 @@ void spin_right(uint16_t vel,uint8_t acc, uint32_t angle)
 
 void spin_right_180(uint16_t vel,uint8_t acc)
 {
-    uint32_t clk = (uint32_t)((float)180.8 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
+    uint32_t clk = (uint32_t)((float)180 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
     Emm_V5_Pos_Control(1, 0, vel, acc,clk, motor_pos_move_mode,1);
     HAL_Delay(10);
     Emm_V5_Pos_Control(2, 0, vel, acc, clk, motor_pos_move_mode, 1);
@@ -1710,7 +1713,7 @@ void spin_right_180_y42(float vel,uint16_t acc_start, uint16_t acc_stop)
 
 void spin_left_180(uint16_t vel,uint8_t acc)
 {
-    uint32_t clk = (uint32_t)((float)180.8 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
+    uint32_t clk = (uint32_t)((float)180 / 360 * spin_radius_180 * 2 * pi / wheel_circumference * pulse_per_circle);
     Emm_V5_Pos_Control(1, 1, vel, acc,clk, motor_pos_move_mode,1);
     HAL_Delay(10);
     Emm_V5_Pos_Control(2, 1, vel, acc, clk, motor_pos_move_mode, 1);
