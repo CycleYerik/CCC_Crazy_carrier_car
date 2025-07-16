@@ -30,7 +30,21 @@ extern float acceleration_adjust;
 extern float adjust_spin_scale; // 旋转和移动的比例
 extern float adjust_move_scale;
 
+extern int line_spin_error_1, line_spin_error_2, line_spin_error_3; // 直线微调时的误差值
+extern int x_err_1;
+extern int x_err_2;
+extern int x_err_3;
+extern int y_err_1;
+extern int y_err_2;
+extern int y_err_3;
 
+extern const float spin_limit_max;   // 旋转速度的最大值
+extern const float spin_limit_min;  // 旋转速度的最小值
+extern const float move_limit_max;   // 移动速度的最大值
+extern const float move_limit_min;  // 移动速度的最小值
+
+extern float Kp_line_spin,Kd_line_spin,Ki_line_spin;
+extern const float Kp_slight_move,Ki_slight_move,Kd_slight_move;
 
 /// @brief x、y轴移动速度（根据树莓派发送的偏差值进行调整）
 float volatile x_move_position = 0, y_move_position = 0; 
@@ -45,7 +59,7 @@ volatile int motor_vel_target_1 = 0, motor_vel_target_2 = 0, motor_vel_target_3 
 
 extern int motor_pos_move_mode;
 
-float min_motor_velocity = 1.0f; // 可根据需要调整
+int min_motor_velocity = 1; // 可根据需要调整
 
 void slight_spin_plate_line(void)
 {
@@ -193,8 +207,94 @@ void move_leftright_front_with_spin(int left_or_right, float vel  , float R_spin
 
 /// @brief 直线和圆一起调
 /// @param  调参的思路：x/y_move_position乘了一个偏差量，最后直线的参数也乘了一个偏差量，通过修改这两个偏差量使得直线和圆的调整比例合适，同时也控制各自的数值不会过大
-void slight_spin_and_move(void)
+void slight_spin_and_move(int is_spin,int is_move)
 {
+    // spin_which_direction = 0; // 初始化
+    // x_move_position = 0;
+    // y_move_position = 0;
+    
+    // if(is_spin == 1)
+    // {
+    //     float temp_spin_which_direction = 0;
+    //     temp_spin_which_direction = Kp_line_spin * line_spin_error_1 + Ki_line_spin *(line_spin_error_1 + line_spin_error_2 + line_spin_error_3) + Kd_line_spin * (line_spin_error_1 - line_spin_error_2)/2;
+
+    //     if(temp_spin_which_direction > spin_limit_max)
+    //     {
+    //         spin_which_direction = spin_limit_max;
+    //     }
+    //     else if(temp_spin_which_direction < -spin_limit_max)
+    //     {
+    //         spin_which_direction = -spin_limit_max;
+    //     }    
+    //     line_spin_error_3 = line_spin_error_2;
+    //     line_spin_error_2 = line_spin_error_1;
+    // }
+    
+    
+
+    // if(is_move == 1)
+    // {
+        
+    //     x_move_position = Kp_slight_move * x_err_1 + Ki_slight_move * (x_err_1 + x_err_2 + x_err_3) + Kd_slight_move * (x_err_1 - x_err_2)/2;
+
+    //     y_move_position = Kp_slight_move * y_err_1 + Ki_slight_move * (y_err_1 + y_err_2 + y_err_3) + Kd_slight_move * (y_err_1 - y_err_2)/2;
+
+    //     if(x_move_position > move_limit_max)
+    //     {
+    //         x_move_position = move_limit_max;
+    //     }
+    //     if(y_move_position > move_limit_max)
+    //     {
+    //         y_move_position = move_limit_max;
+    //     }
+    //     if(x_move_position < -move_limit_max)
+    //     {
+    //         x_move_position = -move_limit_max;
+    //     }
+    //     if(y_move_position < -move_limit_max)
+    //     {
+    //         y_move_position = -move_limit_max;
+    //     }
+    //     if(x_move_position < move_limit_min && x_move_position >0)
+    //     {
+    //         x_move_position = move_limit_min;
+    //     }
+    //     if(y_move_position < move_limit_min && y_move_position >0)
+    //     {
+    //         y_move_position = move_limit_min;
+    //     }
+    //     if(x_move_position > -move_limit_min && x_move_position <0)
+    //     {
+    //         x_move_position = -move_limit_min;
+    //     }
+    //     if(y_move_position > -move_limit_min && y_move_position <0)
+    //     {
+    //         y_move_position = -move_limit_min;
+    //     }
+
+    //     if(x_err_1 == 0 && y_err_1 == 0)
+    //     {
+    //         x_move_position = 0;
+    //         y_move_position = 0;
+    //     }
+        
+    //     //进行参数更新
+    //     x_err_3 = x_err_2;
+    //     y_err_3 = y_err_2;
+    //     x_err_2 = x_err_1;
+    //     y_err_2 = y_err_1;
+    // }
+    
+    if(is_spin == 0)
+    {
+        spin_which_direction = 0; // 如果不需要旋转，则将旋转速度设置为0
+    }
+    if(is_move == 0)
+    {
+        x_move_position = 0; // 如果不需要移动，则将移动速度设置为0
+        y_move_position = 0;
+    }
+    
     float vel_target_1_f = adjust_spin_scale *spin_which_direction + adjust_move_scale * (-x_move_position - y_move_position);
     float vel_target_2_f = adjust_spin_scale *spin_which_direction + adjust_move_scale * (-x_move_position + y_move_position);
     float vel_target_3_f = adjust_spin_scale *spin_which_direction + adjust_move_scale * (x_move_position - y_move_position);
@@ -226,15 +326,6 @@ void slight_spin_and_move(void)
     motor_vel_target_3 = (int)vel_target_3_f;
     motor_vel_target_4 = (int)vel_target_4_f;
 
-    // // 保证最小速度为min_motor_velocity
-    // if(motor_vel_target_1 > 0 && motor_vel_target_1 < min_motor_velocity) motor_vel_target_1 = (int)min_motor_velocity;
-    // if(motor_vel_target_1 < 0 && motor_vel_target_1 > -min_motor_velocity) motor_vel_target_1 = (int)-min_motor_velocity;
-    // if(motor_vel_target_2 > 0 && motor_vel_target_2 < min_motor_velocity) motor_vel_target_2 = (int)min_motor_velocity;
-    // if(motor_vel_target_2 < 0 && motor_vel_target_2 > -min_motor_velocity) motor_vel_target_2 = (int)-min_motor_velocity;
-    // if(motor_vel_target_3 > 0 && motor_vel_target_3 < min_motor_velocity) motor_vel_target_3 = (int)min_motor_velocity;
-    // if(motor_vel_target_3 < 0 && motor_vel_target_3 > -min_motor_velocity) motor_vel_target_3 = (int)-min_motor_velocity;
-    // if(motor_vel_target_4 > 0 && motor_vel_target_4 < min_motor_velocity) motor_vel_target_4 = (int)min_motor_velocity;
-    // if(motor_vel_target_4 < 0 && motor_vel_target_4 > -min_motor_velocity) motor_vel_target_4 = (int)-min_motor_velocity;
 
     
 

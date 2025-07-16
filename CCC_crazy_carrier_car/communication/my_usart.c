@@ -58,12 +58,12 @@ extern volatile int material_place[3];
 
 volatile int test_slight_move = 1;
 
-float x_err_1 = 0;
-float x_err_2 = 0;
-float x_err_3 = 0;
-float y_err_1 = 0;
-float y_err_2 = 0;
-float y_err_3 = 0;
+int x_err_1 = 0;
+int x_err_2 = 0;
+int x_err_3 = 0;
+int y_err_1 = 0;
+int y_err_2 = 0;
+int y_err_3 = 0;
 
 float pos_motor_1 = 0, pos_motor_2 = 0, pos_motor_3 = 0, pos_motor_4 = 0;
 float angle_motor_1 = 0, angle_motor_2 = 0, angle_motor_3 = 0, angle_motor_4 = 0;
@@ -76,7 +76,7 @@ extern int x_move_before_slight_move ;
 
 extern int is_slight_spin_and_move;
 
-float line_spin_error_1 = 0, line_spin_error_2 = 0;
+int line_spin_error_1 = 0, line_spin_error_2 = 0,line_spin_error_3 = 0; 
 
 extern float Kp_line_spin,Kd_line_spin,Ki_line_spin;
 
@@ -743,9 +743,39 @@ void UART_receive_process_3(void)
         //         is_start_judge_move_before_slight_adjust = 0;
         //     }
         // }
+        // //! 新版直线和圆一起调
+        // if(is_slight_spin_and_move == 1 && rxdata_u3[8] == '!')
+        // {
+        //     if(rxdata_u3[0] == 0x01)
+        //     {
+        //         line_spin_error_1 = (int)rxdata_u3[1];
+        //     }
+        //     else if(rxdata_u3[0] == 0x02)
+        //     {
+        //         line_spin_error_1 = -(int)rxdata_u3[1];
+        //     }
+        //     if(rxdata_u3[2] == 0x01)
+        //     {
+        //         x_err_1 = (int)( rxdata_u3[3]<<8 | rxdata_u3[4]);
+        //     }
+        //     else if(rxdata_u3[2] == 0x02)
+        //     {
+        //         x_err_1 = - (int) ( rxdata_u3[3]<<8 | rxdata_u3[4]);
+        //     }
+        //     if(rxdata_u3[5] == 0x01)
+        //     {
+        //         y_err_1 = (int) ( rxdata_u3[6]<<8 | rxdata_u3[7]);
+        //     }
+        //     else if(rxdata_u3[5] == 0x02)
+        //     {
+        //         y_err_1 = - (int)  ( rxdata_u3[6]<<8 | rxdata_u3[7]);
+        //     }
+        //     x_err_1 *= xy_move_k;  //TODO magic number
+        //     y_err_1 *= xy_move_k;
+            
+        // }
 
-
-        //! 直线和圆一起调 
+        //! 旧的直线和圆一起调 
         if(is_slight_spin_and_move == 1 && rxdata_u3[8] == '!')
         {
             if(rxdata_u3[0] == 0x01)
@@ -769,8 +799,14 @@ void UART_receive_process_3(void)
                 {
                     spin_which_direction = temp_spin_which_direction;
                 }
-                line_spin_error_1 = (float)rxdata_u3[1];
+
+                if((int)rxdata_u3[1] == 0)
+                {
+                    spin_which_direction = 0; // 如果是0则不转
+                }
                 line_spin_error_2 = line_spin_error_1;
+                line_spin_error_1 = (float)rxdata_u3[1];
+                
             }
             else if(rxdata_u3[0] == 0x02)
             {
@@ -794,8 +830,13 @@ void UART_receive_process_3(void)
                     spin_which_direction = temp_spin_which_direction;
                 }
 
-                line_spin_error_1 = -(float)rxdata_u3[1];
+                if((int)rxdata_u3[1] == 0)
+                {
+                    spin_which_direction = 0; // 如果是0则不转
+                }
                 line_spin_error_2 = line_spin_error_1;
+                line_spin_error_1 = -(float)rxdata_u3[1];
+                
             }
             if(rxdata_u3[2] == 0x01)
             {
@@ -828,7 +869,7 @@ void UART_receive_process_3(void)
             y_err_1 = y_move_position;
             
             x_move_position = Kp_slight_move * (x_err_1) + Ki_slight_move * (x_err_1+x_err_2 + x_err_3) + Kd_slight_move * (x_err_3+x_err_1 - 2*x_err_2)/2.0;
-            y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + x_err_2 + x_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2.0 ;
+            y_move_position = Kp_slight_move * (y_err_1) + Ki_slight_move * (y_err_1 + y_err_2 + y_err_3) + Kd_slight_move * (y_err_3+y_err_1 - 2*y_err_2)/2.0 ;
             if(x_move_position > move_limit_max)
             {
                 x_move_position = move_limit_max;

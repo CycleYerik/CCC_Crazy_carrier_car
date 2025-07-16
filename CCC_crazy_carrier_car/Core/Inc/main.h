@@ -60,6 +60,7 @@ typedef struct {
 typedef struct
 {
     int times; // 运行次数
+    int run_round_number; //运行3轮还是1轮（测试用）
     int is_avoid_collide; // 是否从侧面过
     int is_load; //是否放完后抓起来 
     int is_pile_up; // 是否码垛
@@ -70,7 +71,13 @@ typedef struct
     int is_get_from_ground_check; //从地面抓取物料时是否进行空抓判断
 } material_get_and_put_struct;
 
-
+// 定义一个在转盘抓放的结构体
+typedef struct
+{
+    int is_avoid;
+    int empty_check;
+    int back_check;
+} plate_get_struct;
 
 /* USER CODE END ET */
 

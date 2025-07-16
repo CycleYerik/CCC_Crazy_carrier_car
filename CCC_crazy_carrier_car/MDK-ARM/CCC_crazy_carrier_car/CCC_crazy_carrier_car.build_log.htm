@@ -28,19 +28,23 @@ Project File Date:  07/13/2025
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
 compiling main.c...
-../Core/Src/main.c(333): warning:  #1295-D: Deprecated declaration print_clear_screen - give arg types
-  void print_clear_screen();
-../Core/Src/main.c(1192): warning:  #128-D: loop is not reachable
+../Core/Src/main.c(1113): warning:  #128-D: loop is not reachable
       while (1)
-../Core/Src/main.c(1926): warning:  #550-D: variable "r_servo_now_temp"  was set but never used
+../Core/Src/main.c(1976): warning:  #550-D: variable "r_servo_now_temp"  was set but never used
       int r_servo_now_temp = 0;
-../Core/Src/main.c(1927): warning:  #550-D: variable "theta_servo_now_temp"  was set but never used
+../Core/Src/main.c(1977): warning:  #550-D: variable "theta_servo_now_temp"  was set but never used
       int theta_servo_now_temp = 0;
-../Core/Src/main.c: 4 warnings, 0 errors
+../Core/Src/main.c(2087): warning:  #177-D: variable "r_servo_now_temp"  was declared but never referenced
+      int r_servo_now_temp = 0;
+../Core/Src/main.c(2088): warning:  #177-D: variable "theta_servo_now_temp"  was declared but never referenced
+      int theta_servo_now_temp = 0;
+../Core/Src/main.c(2089): warning:  #177-D: variable "is_first_get"  was declared but never referenced
+      int is_first_get = 1;
+../Core/Src/main.c: 6 warnings, 0 errors
 linking...
-Program Size: Code=25268 RO-data=548 RW-data=544 ZI-data=2608  
+Program Size: Code=25724 RO-data=548 RW-data=548 ZI-data=2612  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 4 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 6 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -64,7 +68,7 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:02
+Build Time Elapsed:  00:00:01
 </pre>
 </body>
 </html>
