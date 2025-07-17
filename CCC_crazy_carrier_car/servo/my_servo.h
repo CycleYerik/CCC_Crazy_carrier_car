@@ -77,7 +77,7 @@ void get_and_pre_put(int position,int is_pile_up, int is_default_position, const
 void new_get_and_pre_put(int position,int is_pile_up, int is_default_position,int is_update, material_order* order);
 void new_get_and_pre_put_void(int position,int is_pile_up, const material_order* order);
 void new_get_and_pre_put_with_state_find_position(int position,int is_pile_up, const material_order* order);
-void new_get_and_pre_put_spin_plate_avoid_collide(int position, const material_order* order);
+void new_get_and_pre_put_spin_plate_avoid_collide(int position);
 
 
 #endif

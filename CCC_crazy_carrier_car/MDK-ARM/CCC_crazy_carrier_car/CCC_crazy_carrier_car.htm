@@ -3,9 +3,9 @@
 <title>Static Call Graph - [CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Jul 16 20:33:52 2025
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Thu Jul 17 12:57:44 2025
 <BR><P>
-<H3>Maximum Stack Usage =        296 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
+<H3>Maximum Stack Usage =        304 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
 main &rArr; old_material_get_and_put_some_with_load_first &rArr; get_and_load_openloop &rArr; claw_spin_front &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
 <P>
@@ -386,20 +386,14 @@ Global Symbols
 <LI><a href="#[8b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_RCC_GetSysClockFreq
 </UL>
 
-<P><STRONG><a name="[100]"></a>rand</STRONG> (Thumb, 20 bytes, Stack size 0 bytes, rand.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-</UL>
-
-<P><STRONG><a name="[120]"></a>srand</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, rand.o(.text), UNUSED)
-
 <P><STRONG><a name="[67]"></a>__aeabi_memset</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, memseta.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_memset$wrapper
 <LI><a href="#[66]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
 </UL>
 
-<P><STRONG><a name="[121]"></a>__aeabi_memset4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
+<P><STRONG><a name="[120]"></a>__aeabi_memset4</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
 
-<P><STRONG><a name="[122]"></a>__aeabi_memset8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
+<P><STRONG><a name="[121]"></a>__aeabi_memset8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
 
 <P><STRONG><a name="[66]"></a>__aeabi_memclr</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, memseta.o(.text))
 <BR><BR>[Calls]<UL><LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memset
@@ -416,15 +410,15 @@ Global Symbols
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemClock_Config
 </UL>
 
-<P><STRONG><a name="[123]"></a>__aeabi_memclr8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
+<P><STRONG><a name="[122]"></a>__aeabi_memclr8</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, memseta.o(.text), UNUSED)
 
 <P><STRONG><a name="[68]"></a>_memset$wrapper</STRONG> (Thumb, 18 bytes, Stack size 8 bytes, memseta.o(.text), UNUSED)
 <BR><BR>[Calls]<UL><LI><a href="#[67]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memset
 </UL>
 
 <P><STRONG><a name="[113]"></a>strlen</STRONG> (Thumb, 14 bytes, Stack size 0 bytes, strlen.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
-<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
+<BR><BR>[Called By]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
 </UL>
 
 <P><STRONG><a name="[69]"></a>__aeabi_dadd</STRONG> (Thumb, 322 bytes, Stack size 48 bytes, dadd.o(.text))
@@ -436,10 +430,10 @@ Global Symbols
 <LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 <BR>[Called By]<UL><LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;slight_spin_and_move
-<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
+<LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_receive_process_3
 <LI><a href="#[6e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_drsub
 <LI><a href="#[6d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dsub
-<LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_receive_process_3
 </UL>
 
 <P><STRONG><a name="[6d]"></a>__aeabi_dsub</STRONG> (Thumb, 6 bytes, Stack size 0 bytes, dadd.o(.text), UNUSED)
@@ -455,9 +449,9 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
-<BR>[Called By]<UL><LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
+<BR>[Called By]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
 <LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;slight_spin_and_move
-<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;print_show_origin_data
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_receive_process_3
 </UL>
@@ -467,7 +461,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_round
 </UL>
-<BR>[Called By]<UL><LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
+<BR>[Called By]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;print_show_origin_data
 </UL>
 
@@ -476,7 +470,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
-<BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
+<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;print_show_origin_data
 </UL>
 
@@ -485,7 +479,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
-<BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
+<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
 </UL>
 
 <P><STRONG><a name="[73]"></a>__aeabi_d2iz</STRONG> (Thumb, 62 bytes, Stack size 16 bytes, dfixi.o(.text))
@@ -493,7 +487,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsr
 </UL>
-<BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
+<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;print_show_origin_data
 </UL>
 
@@ -502,11 +496,11 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[64]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_llsr
 </UL>
-<BR>[Called By]<UL><LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
+<BR>[Called By]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
 </UL>
 
 <P><STRONG><a name="[d9]"></a>__aeabi_f2d</STRONG> (Thumb, 38 bytes, Stack size 0 bytes, f2d.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
+<BR><BR>[Called By]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
 <LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;slight_spin_and_move
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_receive_process_3
 </UL>
@@ -520,49 +514,49 @@ Global Symbols
 <LI><a href="#[d8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UART_receive_process_3
 </UL>
 
-<P><STRONG><a name="[124]"></a>__aeabi_uidiv</STRONG> (Thumb, 0 bytes, Stack size 12 bytes, uidiv.o(.text), UNUSED)
+<P><STRONG><a name="[123]"></a>__aeabi_uidiv</STRONG> (Thumb, 0 bytes, Stack size 12 bytes, uidiv.o(.text), UNUSED)
 
 <P><STRONG><a name="[e3]"></a>__aeabi_uidivmod</STRONG> (Thumb, 44 bytes, Stack size 12 bytes, uidiv.o(.text), UNUSED)
 <BR><BR>[Called By]<UL><LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
 </UL>
 
 <P><STRONG><a name="[65]"></a>__aeabi_llsl</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, llshl.o(.text))
-<BR><BR>[Called By]<UL><LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
-<LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
+<BR><BR>[Called By]<UL><LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 
-<P><STRONG><a name="[125]"></a>_ll_shift_l</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llshl.o(.text), UNUSED)
+<P><STRONG><a name="[124]"></a>_ll_shift_l</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llshl.o(.text), UNUSED)
 
 <P><STRONG><a name="[64]"></a>__aeabi_llsr</STRONG> (Thumb, 32 bytes, Stack size 0 bytes, llushr.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
-<LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 <LI><a href="#[63]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_uldivmod
 <LI><a href="#[74]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2uiz
+<LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 
-<P><STRONG><a name="[126]"></a>_ll_ushift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llushr.o(.text), UNUSED)
+<P><STRONG><a name="[125]"></a>_ll_ushift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llushr.o(.text), UNUSED)
 
 <P><STRONG><a name="[6a]"></a>__aeabi_lasr</STRONG> (Thumb, 36 bytes, Stack size 0 bytes, llsshr.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 </UL>
 
-<P><STRONG><a name="[127]"></a>_ll_sshift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llsshr.o(.text), UNUSED)
+<P><STRONG><a name="[126]"></a>_ll_sshift_r</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, llsshr.o(.text), UNUSED)
 
-<P><STRONG><a name="[128]"></a>__I$use$fp</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, iusefp.o(.text), UNUSED)
+<P><STRONG><a name="[127]"></a>__I$use$fp</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, iusefp.o(.text), UNUSED)
 
 <P><STRONG><a name="[76]"></a>_float_round</STRONG> (Thumb, 18 bytes, Stack size 0 bytes, fepilogue.o(.text))
 <BR><BR>[Called By]<UL><LI><a href="#[75]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2f
 </UL>
 
-<P><STRONG><a name="[129]"></a>_float_epilogue</STRONG> (Thumb, 92 bytes, Stack size 4 bytes, fepilogue.o(.text), UNUSED)
+<P><STRONG><a name="[128]"></a>_float_epilogue</STRONG> (Thumb, 92 bytes, Stack size 4 bytes, fepilogue.o(.text), UNUSED)
 
 <P><STRONG><a name="[6c]"></a>_double_round</STRONG> (Thumb, 30 bytes, Stack size 8 bytes, depilogue.o(.text))
 <BR><BR>[Stack]<UL><LI>Max Depth = 8<LI>Call Chain = _double_round
 </UL>
 <BR>[Called By]<UL><LI><a href="#[70]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ddiv
-<LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
+<LI><a href="#[6b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_double_epilogue
 </UL>
 
 <P><STRONG><a name="[6b]"></a>_double_epilogue</STRONG> (Thumb, 156 bytes, Stack size 32 bytes, depilogue.o(.text))
@@ -584,11 +578,11 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[61]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_main_scatterload
 </UL>
 
-<P><STRONG><a name="[12a]"></a>__scatterload_rt2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, init.o(.text), UNUSED)
+<P><STRONG><a name="[129]"></a>__scatterload_rt2</STRONG> (Thumb, 0 bytes, Stack size 0 bytes, init.o(.text), UNUSED)
 
-<P><STRONG><a name="[12b]"></a>__decompress</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __dczerorl.o(.text), UNUSED)
+<P><STRONG><a name="[12a]"></a>__decompress</STRONG> (Thumb, 0 bytes, Stack size unknown bytes, __dczerorl.o(.text), UNUSED)
 
-<P><STRONG><a name="[12c]"></a>__decompress0</STRONG> (Thumb, 58 bytes, Stack size unknown bytes, __dczerorl.o(.text), UNUSED)
+<P><STRONG><a name="[12b]"></a>__decompress0</STRONG> (Thumb, 58 bytes, Stack size unknown bytes, __dczerorl.o(.text), UNUSED)
 
 <P><STRONG><a name="[78]"></a>Ack</STRONG> (Thumb, 84 bytes, Stack size 16 bytes, scs.o(i.Ack))
 <BR><BR>[Stack]<UL><LI>Max Depth = 112<LI>Call Chain = Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
@@ -614,11 +608,10 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;usart_SendCmd_u1
 </UL>
-<BR>[Called By]<UL><LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_90
-<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_180
-<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
-<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_left_180
-<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position
+<BR>[Called By]<UL><LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_90
+<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_180
+<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position
 </UL>
 
 <P><STRONG><a name="[7d]"></a>Emm_V5_Stop_Now</STRONG> (Thumb, 48 bytes, Stack size 24 bytes, motor.o(i.Emm_V5_Stop_Now))
@@ -635,12 +628,11 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[7c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;usart_SendCmd_u1
 </UL>
-<BR>[Called By]<UL><LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_90
-<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_180
-<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
-<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_left_180
+<BR>[Called By]<UL><LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_90
+<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_180
+<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
 <LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;slight_spin_and_move
-<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position
 <LI><a href="#[ac]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_all_direction_tim
 <LI><a href="#[ae]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_tim
 </UL>
@@ -684,22 +676,23 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
 <BR>[Called By]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;stop
-<LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_90
-<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_180
-<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
-<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_left_180
+<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_90
+<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_180
+<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
 <LI><a href="#[115]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;slight_spin_and_move
-<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
-<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position
+<LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_load_openloop
-<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
-<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
+<LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
 <LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;print_to_screen
 <LI><a href="#[10e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;print_show_origin_data
 <LI><a href="#[10f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;print_clear_screen
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_in_spin_plate_cricle_all_v2
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Reliable_UART_Transmit
 <LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_move_with_limit
@@ -1056,6 +1049,7 @@ Global Symbols
 <LI><a href="#[81]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_GetTick
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;claw_spin_front
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_in_spin_plate_cricle_all_v2
 <LI><a href="#[5f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;fputc
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Reliable_UART_Transmit
 <LI><a href="#[dc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Uart_Send
@@ -1217,9 +1211,9 @@ Global Symbols
 <LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;print_to_screen
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
-<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<BR>[Called By]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -1403,7 +1397,7 @@ Global Symbols
 <BR><BR>[Calls]<UL><LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
 </UL>
 
-<P><STRONG><a name="[12d]"></a>__1printf$3</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0printf$3), UNUSED)
+<P><STRONG><a name="[12c]"></a>__1printf$3</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0printf$3), UNUSED)
 
 <P><STRONG><a name="[110]"></a>__2printf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0printf$3))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = __2printf
@@ -1418,27 +1412,29 @@ Global Symbols
 <LI><a href="#[e1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;_printf_core
 </UL>
 
-<P><STRONG><a name="[12e]"></a>__1sprintf$3</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0sprintf$3), UNUSED)
+<P><STRONG><a name="[12d]"></a>__1sprintf$3</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0sprintf$3), UNUSED)
 
-<P><STRONG><a name="[105]"></a>__2sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0sprintf$3))
+<P><STRONG><a name="[100]"></a>__2sprintf</STRONG> (Thumb, 0 bytes, Stack size 24 bytes, printf3.o(i.__0sprintf$3))
 <BR><BR>[Stack]<UL><LI>Max Depth = 24<LI>Call Chain = __2sprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;print_to_screen
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[12f]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)
+<P><STRONG><a name="[12e]"></a>__scatterload_copy</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_copy), UNUSED)
 
-<P><STRONG><a name="[130]"></a>__scatterload_null</STRONG> (Thumb, 2 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_null), UNUSED)
+<P><STRONG><a name="[12f]"></a>__scatterload_null</STRONG> (Thumb, 2 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_null), UNUSED)
 
-<P><STRONG><a name="[131]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
+<P><STRONG><a name="[130]"></a>__scatterload_zeroinit</STRONG> (Thumb, 14 bytes, Stack size unknown bytes, handlers.o(i.__scatterload_zeroinit), UNUSED)
 
 <P><STRONG><a name="[e4]"></a>adjust_plate</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, my_servo.o(i.adjust_plate))
 <BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = adjust_plate &rArr; servo_move_with_limit &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_move_with_limit
 </UL>
-<BR>[Called By]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<BR>[Called By]<UL><LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_in_spin_plate_cricle_all_v2
 </UL>
 
 <P><STRONG><a name="[e6]"></a>adjust_position_with_camera</STRONG> (Thumb, 448 bytes, Stack size 16 bytes, my_servo.o(i.adjust_position_with_camera))
@@ -1446,7 +1442,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_move_with_limit
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<BR>[Called By]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
 </UL>
 
 <P><STRONG><a name="[e7]"></a>arm_shrink</STRONG> (Thumb, 26 bytes, Stack size 8 bytes, my_servo.o(i.arm_shrink))
@@ -1454,9 +1450,10 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
+<BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_load_openloop
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
 </UL>
 
 <P><STRONG><a name="[e9]"></a>arm_stretch</STRONG> (Thumb, 40 bytes, Stack size 8 bytes, my_servo.o(i.arm_stretch))
@@ -1465,8 +1462,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ReadPos
 <LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<BR>[Called By]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -1486,9 +1483,10 @@ Global Symbols
 <LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ReadPos
 <LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
+<BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_load_openloop
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -1499,7 +1497,8 @@ Global Symbols
 <LI><a href="#[cf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;ReadPos
 <LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
+<BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
 </UL>
 
 <P><STRONG><a name="[ec]"></a>claw_spin_state_without_claw</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, my_servo.o(i.claw_spin_state_without_claw))
@@ -1508,18 +1507,19 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 </UL>
 <BR>[Called By]<UL><LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_load_openloop
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
 </UL>
 
 <P><STRONG><a name="[114]"></a>clear_motor_error</STRONG> (Thumb, 58 bytes, Stack size 0 bytes, motor.o(i.clear_motor_error))
-<BR><BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
-<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
+<BR><BR>[Called By]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
 </UL>
 
 <P><STRONG><a name="[f1]"></a>close_claw</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, my_servo.o(i.close_claw))
-<BR><BR>[Called By]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
+<BR><BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_load_openloop
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
 </UL>
 
 <P><STRONG><a name="[e8]"></a>feetech_servo_move</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, my_servo.o(i.feetech_servo_move))
@@ -1529,11 +1529,12 @@ Global Symbols
 </UL>
 <BR>[Called By]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;whole_arm_spin
 <LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_up_top
-<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_up
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_up
 <LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down_state
 <LI><a href="#[f7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down_near_ground
 <LI><a href="#[10d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down_ground_slightly
-<LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down
+<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down
+<LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
 <LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_load_openloop
 <LI><a href="#[ec]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;claw_spin_state_without_claw
@@ -1580,7 +1581,7 @@ Global Symbols
 <LI><a href="#[f0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down_ground
 <LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<BR>[Called By]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
 </UL>
 
 <P><STRONG><a name="[f5]"></a>get_and_pre_put</STRONG> (Thumb, 332 bytes, Stack size 32 bytes, my_servo.o(i.get_and_pre_put))
@@ -1599,33 +1600,32 @@ Global Symbols
 <LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 <LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;claw_spin_state
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<BR>[Called By]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
 </UL>
 
-<P><STRONG><a name="[10b]"></a>get_clk</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, motor.o(i.get_clk))
-<BR><BR>[Called By]<UL><LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position
+<P><STRONG><a name="[10a]"></a>get_clk</STRONG> (Thumb, 26 bytes, Stack size 0 bytes, motor.o(i.get_clk))
+<BR><BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position
 </UL>
 
-<P><STRONG><a name="[10c]"></a>get_distance_time</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, motor.o(i.get_distance_time))
-<BR><BR>[Called By]<UL><LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
+<P><STRONG><a name="[10b]"></a>get_distance_time</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, motor.o(i.get_distance_time))
+<BR><BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
 </UL>
 
-<P><STRONG><a name="[5b]"></a>main</STRONG> (Thumb, 2486 bytes, Stack size 40 bytes, main.o(i.main))
-<BR><BR>[Stack]<UL><LI>Max Depth = 296<LI>Call Chain = main &rArr; old_material_get_and_put_some_with_load_first &rArr; get_and_load_openloop &rArr; claw_spin_front &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
+<P><STRONG><a name="[5b]"></a>main</STRONG> (Thumb, 2276 bytes, Stack size 48 bytes, main.o(i.main))
+<BR><BR>[Stack]<UL><LI>Max Depth = 304<LI>Call Chain = main &rArr; old_material_get_and_put_some_with_load_first &rArr; get_and_load_openloop &rArr; claw_spin_front &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;whole_arm_spin
 <LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;state_spin_without_claw
-<LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_90
-<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_180
-<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
-<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_left_180
+<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_90
+<LI><a href="#[106]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right_180
+<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;spin_right
 <LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_up_top
-<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_up
-<LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down
+<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_up
+<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;open_claw_180
 <LI><a href="#[fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;my_servo_init
-<LI><a href="#[102]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
-<LI><a href="#[101]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position
+<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position_delay
+<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;move_all_direction_position
 <LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;claw_spin_front
 <LI><a href="#[e9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_stretch
 <LI><a href="#[ca]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;MX_USART3_UART_Init
@@ -1643,30 +1643,30 @@ Global Symbols
 <LI><a href="#[f9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_Base_Start_IT
 <LI><a href="#[83]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Init
 <LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
-<LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
-<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
+<LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
 <LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;print_to_screen
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_in_spin_plate_cricle_all_v2
 <LI><a href="#[d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SystemClock_Config
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Reliable_UART_Transmit
-<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
-<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rand
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> entry9a.o(.ARM.Collect$$$$0000000B)
 </UL>
-<P><STRONG><a name="[101]"></a>move_all_direction_position</STRONG> (Thumb, 770 bytes, Stack size 40 bytes, motor.o(i.move_all_direction_position))
+<P><STRONG><a name="[fe]"></a>move_all_direction_position</STRONG> (Thumb, 770 bytes, Stack size 40 bytes, motor.o(i.move_all_direction_position))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = move_all_direction_position &rArr; Emm_V5_Pos_Control &rArr; usart_SendCmd_u1 &rArr; usart_SendByte_u1
 </UL>
 <BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
-<LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_clk
+<LI><a href="#[10a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_clk
 <LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_Synchronous_motion
 <LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_Pos_Control
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[102]"></a>move_all_direction_position_delay</STRONG> (Thumb, 220 bytes, Stack size 56 bytes, motor.o(i.move_all_direction_position_delay))
+<P><STRONG><a name="[ff]"></a>move_all_direction_position_delay</STRONG> (Thumb, 220 bytes, Stack size 56 bytes, motor.o(i.move_all_direction_position_delay))
 <BR><BR>[Stack]<UL><LI>Max Depth = 144<LI>Call Chain = move_all_direction_position_delay &rArr; __aeabi_dmul &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[71]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_i2d
@@ -1674,7 +1674,7 @@ Global Symbols
 <LI><a href="#[73]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_d2iz
 <LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[72]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_ui2d
-<LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_distance_time
+<LI><a href="#[10b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_distance_time
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
@@ -1697,18 +1697,50 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
+<P><STRONG><a name="[fd]"></a>new_get_and_put_in_spin_plate_cricle_all_v2</STRONG> (Thumb, 118 bytes, Stack size 24 bytes, main.o(i.new_get_and_put_in_spin_plate_cricle_all_v2))
+<BR><BR>[Stack]<UL><LI>Max Depth = 216<LI>Call Chain = new_get_and_put_in_spin_plate_cricle_all_v2 &rArr; new_get_and_put_spin_plate &rArr; claw_spin_front &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
+</UL>
+<BR>[Calls]<UL><LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;open_claw_180
+<LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;adjust_plate
+<LI><a href="#[bf]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
+</UL>
+<BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+</UL>
+
+<P><STRONG><a name="[10c]"></a>new_get_and_put_spin_plate</STRONG> (Thumb, 142 bytes, Stack size 24 bytes, my_servo.o(i.new_get_and_put_spin_plate))
+<BR><BR>[Stack]<UL><LI>Max Depth = 192<LI>Call Chain = new_get_and_put_spin_plate &rArr; claw_spin_front &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
+</UL>
+<BR>[Calls]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_up_top
+<LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down_state
+<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down
+<LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;open_claw_180
+<LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;open_claw
+<LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;close_claw
+<LI><a href="#[ea]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;claw_spin_front
+<LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_shrink
+<LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
+<LI><a href="#[f6]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;state_spin
+<LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
+<LI><a href="#[eb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;claw_spin_state
+</UL>
+<BR>[Called By]<UL><LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_in_spin_plate_cricle_all_v2
+</UL>
+
 <P><STRONG><a name="[111]"></a>nopDelay</STRONG> (Thumb, 12 bytes, Stack size 0 bytes, scserail.o(i.nopDelay))
 <BR><BR>[Called By]<UL><LI><a href="#[cc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rFlushSCS
 </UL>
 
-<P><STRONG><a name="[108]"></a>old_get_from_plate_all_movement</STRONG> (Thumb, 362 bytes, Stack size 40 bytes, main.o(i.old_get_from_plate_all_movement))
-<BR><BR>[Stack]<UL><LI>Max Depth = 216<LI>Call Chain = old_get_from_plate_all_movement &rArr; adjust_plate &rArr; servo_move_with_limit &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
+<P><STRONG><a name="[104]"></a>old_get_from_plate_all_movement</STRONG> (Thumb, 442 bytes, Stack size 64 bytes, main.o(i.old_get_from_plate_all_movement))
+<BR><BR>[Stack]<UL><LI>Max Depth = 240<LI>Call Chain = old_get_from_plate_all_movement &rArr; adjust_plate &rArr; servo_move_with_limit &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;whole_arm_spin
 <LI><a href="#[ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;state_spin_without_claw
 <LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_up_top
 <LI><a href="#[f3]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down_state
-<LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down
+<LI><a href="#[103]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;put_claw_down
 <LI><a href="#[fc]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;open_claw_180
 <LI><a href="#[f4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;open_claw
 <LI><a href="#[f1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;close_claw
@@ -1718,11 +1750,13 @@ Global Symbols
 <LI><a href="#[e7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;arm_shrink
 <LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;adjust_plate
 <LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
+<LI><a href="#[d2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;print_to_screen
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[ff]"></a>old_material_get_and_put_some_with_load_first</STRONG> (Thumb, 398 bytes, Stack size 48 bytes, main.o(i.old_material_get_and_put_some_with_load_first))
+<P><STRONG><a name="[108]"></a>old_material_get_and_put_some_with_load_first</STRONG> (Thumb, 398 bytes, Stack size 48 bytes, main.o(i.old_material_get_and_put_some_with_load_first))
 <BR><BR>[Stack]<UL><LI>Max Depth = 256<LI>Call Chain = old_material_get_and_put_some_with_load_first &rArr; get_and_load_openloop &rArr; claw_spin_front &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[fb]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;whole_arm_spin
@@ -1744,21 +1778,24 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[f4]"></a>open_claw</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, my_servo.o(i.open_claw))
-<BR><BR>[Called By]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
+<BR><BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_load_openloop
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
 </UL>
 
 <P><STRONG><a name="[fc]"></a>open_claw_180</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, my_servo.o(i.open_claw_180))
-<BR><BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<BR><BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_in_spin_plate_cricle_all_v2
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
 <P><STRONG><a name="[ef]"></a>open_claw_bigger</STRONG> (Thumb, 10 bytes, Stack size 0 bytes, my_servo.o(i.open_claw_bigger))
 <BR><BR>[Called By]<UL><LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_load_openloop
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
 </UL>
 
 <P><STRONG><a name="[10f]"></a>print_clear_screen</STRONG> (Thumb, 48 bytes, Stack size 8 bytes, main.o(i.print_clear_screen))
@@ -1767,9 +1804,9 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
-<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<BR>[Called By]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
 </UL>
 
 <P><STRONG><a name="[10e]"></a>print_show_origin_data</STRONG> (Thumb, 334 bytes, Stack size 48 bytes, main.o(i.print_show_origin_data))
@@ -1782,29 +1819,32 @@ Global Symbols
 <LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
-<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<BR>[Called By]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
 </UL>
 
 <P><STRONG><a name="[d2]"></a>print_to_screen</STRONG> (Thumb, 34 bytes, Stack size 48 bytes, main.o(i.print_to_screen))
 <BR><BR>[Stack]<UL><LI>Max Depth = 72<LI>Call Chain = print_to_screen &rArr; __2sprintf
 </UL>
 <BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
-<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
+<LI><a href="#[100]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
 <LI><a href="#[110]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
-<BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
+<BR>[Called By]<UL><LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 <LI><a href="#[d1]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Reliable_UART_Transmit
 <LI><a href="#[e5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;servo_move_with_limit
 </UL>
 
-<P><STRONG><a name="[107]"></a>put_claw_down</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, my_servo.o(i.put_claw_down))
+<P><STRONG><a name="[103]"></a>put_claw_down</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, my_servo.o(i.put_claw_down))
 <BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = put_claw_down &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 </UL>
-<BR>[Called By]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[fd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_in_spin_plate_cricle_all_v2
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -1821,7 +1861,7 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<BR>[Called By]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
 </UL>
 
 <P><STRONG><a name="[f7]"></a>put_claw_down_near_ground</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, my_servo.o(i.put_claw_down_near_ground))
@@ -1845,12 +1885,13 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
+<BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_load_openloop
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
 </UL>
 
-<P><STRONG><a name="[fd]"></a>put_claw_up</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, my_servo.o(i.put_claw_up))
+<P><STRONG><a name="[102]"></a>put_claw_up</STRONG> (Thumb, 16 bytes, Stack size 0 bytes, my_servo.o(i.put_claw_up))
 <BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = put_claw_up &rArr; feetech_servo_move &rArr; WritePosEx &rArr; genWrite &rArr; Ack &rArr; checkHead &rArr; readSCS &rArr; Uart_Read &rArr; HAL_UART_Receive &rArr; UART_WaitOnFlagUntilTimeout
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
@@ -1863,10 +1904,11 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 </UL>
-<BR>[Called By]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
+<BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
 <LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_load_openloop
-<LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -1907,7 +1949,7 @@ Global Symbols
 <LI><a href="#[e4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;adjust_plate
 </UL>
 
-<P><STRONG><a name="[109]"></a>single_line_adjust</STRONG> (Thumb, 110 bytes, Stack size 24 bytes, main.o(i.single_line_adjust))
+<P><STRONG><a name="[105]"></a>single_line_adjust</STRONG> (Thumb, 110 bytes, Stack size 24 bytes, main.o(i.single_line_adjust))
 <BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = single_line_adjust &rArr; slight_spin_and_move &rArr; __aeabi_dmul &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;stop
@@ -1922,7 +1964,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[fe]"></a>single_line_circle_adjust</STRONG> (Thumb, 112 bytes, Stack size 24 bytes, main.o(i.single_line_circle_adjust))
+<P><STRONG><a name="[107]"></a>single_line_circle_adjust</STRONG> (Thumb, 112 bytes, Stack size 24 bytes, main.o(i.single_line_circle_adjust))
 <BR><BR>[Stack]<UL><LI>Max Depth = 176<LI>Call Chain = single_line_circle_adjust &rArr; slight_spin_and_move &rArr; __aeabi_dmul &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[116]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;stop
@@ -1948,8 +1990,8 @@ Global Symbols
 <LI><a href="#[d9]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_f2d
 <LI><a href="#[69]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dadd
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
-<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
+<BR>[Called By]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
 </UL>
 
 <P><STRONG><a name="[ac]"></a>spin_all_direction_tim</STRONG> (Thumb, 302 bytes, Stack size 8 bytes, motor.o(i.spin_all_direction_tim))
@@ -1962,17 +2004,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[9a]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_TIM_PeriodElapsedCallback
 </UL>
 
-<P><STRONG><a name="[103]"></a>spin_left_180</STRONG> (Thumb, 136 bytes, Stack size 40 bytes, motor.o(i.spin_left_180))
-<BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = spin_left_180 &rArr; Emm_V5_Pos_Control &rArr; usart_SendCmd_u1 &rArr; usart_SendByte_u1
-</UL>
-<BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
-<LI><a href="#[7e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_Synchronous_motion
-<LI><a href="#[7b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_Pos_Control
-</UL>
-<BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
-</UL>
-
-<P><STRONG><a name="[106]"></a>spin_right</STRONG> (Thumb, 206 bytes, Stack size 40 bytes, motor.o(i.spin_right))
+<P><STRONG><a name="[101]"></a>spin_right</STRONG> (Thumb, 206 bytes, Stack size 40 bytes, motor.o(i.spin_right))
 <BR><BR>[Stack]<UL><LI>Max Depth = 128<LI>Call Chain = spin_right &rArr; __aeabi_dmul &rArr; _double_epilogue &rArr; _double_round
 </UL>
 <BR>[Calls]<UL><LI><a href="#[6f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_dmul
@@ -1986,7 +2018,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[104]"></a>spin_right_180</STRONG> (Thumb, 136 bytes, Stack size 40 bytes, motor.o(i.spin_right_180))
+<P><STRONG><a name="[106]"></a>spin_right_180</STRONG> (Thumb, 136 bytes, Stack size 40 bytes, motor.o(i.spin_right_180))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = spin_right_180 &rArr; Emm_V5_Pos_Control &rArr; usart_SendCmd_u1 &rArr; usart_SendByte_u1
 </UL>
 <BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
@@ -1996,7 +2028,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
-<P><STRONG><a name="[10a]"></a>spin_right_90</STRONG> (Thumb, 136 bytes, Stack size 40 bytes, motor.o(i.spin_right_90))
+<P><STRONG><a name="[109]"></a>spin_right_90</STRONG> (Thumb, 136 bytes, Stack size 40 bytes, motor.o(i.spin_right_90))
 <BR><BR>[Stack]<UL><LI>Max Depth = 104<LI>Call Chain = spin_right_90 &rArr; Emm_V5_Pos_Control &rArr; usart_SendCmd_u1 &rArr; usart_SendByte_u1
 </UL>
 <BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
@@ -2007,12 +2039,13 @@ Global Symbols
 </UL>
 
 <P><STRONG><a name="[f6]"></a>state_spin</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, my_servo.o(i.state_spin))
-<BR><BR>[Called By]<UL><LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
+<BR><BR>[Called By]<UL><LI><a href="#[10c]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;new_get_and_put_spin_plate
+<LI><a href="#[f5]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_pre_put
 </UL>
 
 <P><STRONG><a name="[ee]"></a>state_spin_without_claw</STRONG> (Thumb, 30 bytes, Stack size 0 bytes, my_servo.o(i.state_spin_without_claw))
 <BR><BR>[Called By]<UL><LI><a href="#[ed]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;get_and_load_openloop
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 
@@ -2022,8 +2055,8 @@ Global Symbols
 <BR>[Calls]<UL><LI><a href="#[82]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_Delay
 <LI><a href="#[7d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Emm_V5_Stop_Now
 </UL>
-<BR>[Called By]<UL><LI><a href="#[fe]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
-<LI><a href="#[109]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
+<BR>[Called By]<UL><LI><a href="#[107]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_circle_adjust
+<LI><a href="#[105]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;single_line_adjust
 </UL>
 
 <P><STRONG><a name="[117]"></a>usart_SendByte_u1</STRONG> (Thumb, 50 bytes, Stack size 8 bytes, my_usart.o(i.usart_SendByte_u1))
@@ -2057,8 +2090,8 @@ Global Symbols
 </UL>
 <BR>[Calls]<UL><LI><a href="#[e8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;feetech_servo_move
 </UL>
-<BR>[Called By]<UL><LI><a href="#[ff]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
-<LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
+<BR>[Called By]<UL><LI><a href="#[108]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_material_get_and_put_some_with_load_first
+<LI><a href="#[104]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;old_get_from_plate_all_movement
 <LI><a href="#[5b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;main
 </UL>
 

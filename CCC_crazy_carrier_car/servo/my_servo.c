@@ -24,7 +24,7 @@ extern void print_to_screen(int t_num,char *pData);
 
 
 //? 夹爪舵机参数
-const int open_claw_avoid_collide_position = 110; //从物料的侧面过的张开角度 //TODO 待修改
+const int open_claw_avoid_collide_position = 113; //从物料的侧面过的张开角度 //TODO 待修改
 const int open_claw_180_position = 110; //49+30 
 const int open_claw_position = 92; 
 const int open_claw_bigger_position = 98; 
@@ -78,6 +78,18 @@ const int put_claw_down_near_plate_position = 2386+servo_1_add_num; //转盘放�
 
 
 
+//! 决赛物料
+// const int put_claw_down_pile_position = 2594+servo_1_add_num; //码垛位置 
+// const int put_claw_down_state_position = 1546 + servo_1_add_num;
+// const int put_claw_down_position = 2483+servo_1_add_num;  // 从转盘上取物料  
+// const int put_claw_down_ground_position = 3797+servo_1_add_num; // 放在地上 3144  3796    +786
+// const int put_claw_up_top_position =1066+servo_1_add_num; // 最高点  
+// const int put_claw_up_position =2453+servo_1_add_num; //  看粗调移动底盘的位置
+// const int put_claw_down_near_ground_position = 3556+servo_1_add_num; //!细调放置的位置
+// const int put_claw_down_near_plate_position = 2386+servo_1_add_num; //转盘放置细调的位置
+
+
+
 //? 机械臂前端旋转参数（二号舵机）
 const int claw_spin_position_front = 3340 ; // 2号精密舵机回到前方
 const int claw_spin_position_state = 1600; // 2号精密舵机回到载物盘
@@ -107,12 +119,12 @@ const int shrink_arm_all = 1860;
 //? 左中右三个动作对应的各自舵机参数
 //TODO 待测量（全部）
 const int left_2 = 3328; 
-const int left_3 = middle_arm-845;  
+const int left_3 = middle_arm-840;  
 const int left_3_pileup = left_3;
 const int left_4 =  3010; 
 
 const int right_2 = 3328; 
-const int right_3 = middle_arm+819; 
+const int right_3 = middle_arm+823; 
 const int right_3_pileup = right_3;
 const int right_4 =  2964; 
 
@@ -936,7 +948,7 @@ void new_get_and_load_openloop(int position,int is_default_position,material_ord
 
 /// @brief 国赛决赛使用，原省赛决赛使用，在转盘上放置(新优化了动作和速度)
 /// @param position 
-void new_get_and_pre_put_spin_plate_avoid_collide(int position, const material_order* order)
+void new_get_and_pre_put_spin_plate_avoid_collide(int position)
 {
     state_spin_without_claw_avoid_collide(position);
     open_claw_avoid_collide();
@@ -1769,15 +1781,15 @@ void state_spin_without_claw_avoid_collide(int state_position)
 {
     if(state_position == 1)
     {
-        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, state_spin_without_claw_position_1+20);
+        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, state_spin_without_claw_position_1+19);
     }
     else if(state_position == 2)
     {
-        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, state_spin_without_claw_position_2+20);
+        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, state_spin_without_claw_position_2+19);
     }
     else if(state_position == 3)
     {
-        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, state_spin_without_claw_position_2+20);
+        __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_4, state_spin_without_claw_position_2+19);
     }
 }
 

@@ -1133,9 +1133,11 @@ void UART_receive_process_3(void)
 
 
         //! 进行视觉闭环微调
-        // if(rxdata_u3[0] == 0x37 )
+        // if(rxdata_u3[1] == 0x10 &&  rxdata_u3[0] == '?' && is_servo_adjust == 1)
         // {
-        //     is_servo_adjust = 1;
+        //     is_servo_adjust = 0;
+        //     x_camera_error = 0;
+        //     y_camera_error = 0;
         // }
 
         // if(rxdata_u3[0] == 0x38 )

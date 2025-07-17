@@ -1,2 +1,21 @@
-Load "CCC_crazy_carrier_car\\CCC_crazy_carrier_car.axf" 
-Erase Done.Programming Done.Verify OK.Flash Load finished at 22:25:12
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
+Build target 'CCC_crazy_carrier_car'
+compiling main.c...
+../Core/Src/main.c(764): error:  #165: too few arguments in function call
+      new_get_and_put_in_spin_plate_cricle_all_v2(1);
+../Core/Src/main.c(1153): warning:  #128-D: loop is not reachable
+      while (1)
+../Core/Src/main.c(2048): warning:  #550-D: variable "r_servo_now_temp"  was set but never used
+      int r_servo_now_temp = 0;
+../Core/Src/main.c(2049): warning:  #550-D: variable "theta_servo_now_temp"  was set but never used
+      int theta_servo_now_temp = 0;
+../Core/Src/main.c(2167): warning:  #177-D: variable "r_servo_now_temp"  was declared but never referenced
+      int r_servo_now_temp = 0;
+../Core/Src/main.c(2168): warning:  #177-D: variable "theta_servo_now_temp"  was declared but never referenced
+      int theta_servo_now_temp = 0;
+../Core/Src/main.c(2169): warning:  #177-D: variable "is_first_get"  was declared but never referenced
+      int is_first_get = 1;
+../Core/Src/main.c: 6 warnings, 1 error
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 1 Error(s), 6 Warning(s).
+Target not created.
+Build Time Elapsed:  00:00:02

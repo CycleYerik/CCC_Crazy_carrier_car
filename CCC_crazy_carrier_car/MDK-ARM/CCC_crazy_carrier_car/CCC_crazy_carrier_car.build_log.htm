@@ -21,28 +21,29 @@ Target DLL:      CMSIS_AGDI.dll V1.33.0.0
 Dialog DLL:      TCM.DLL V1.53.0.0
  
 <h2>Project:</h2>
-D:\My_projects\CCC_Crazy_carrier_car\CCC_crazy_carrier_car\MDK-ARM\CCC_crazy_carrier_car.uvprojx
+d:\My_projects\CCC_Crazy_carrier_car\CCC_crazy_carrier_car\MDK-ARM\CCC_crazy_carrier_car.uvprojx
 Project File Date:  07/13/2025
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
-compiling my_servo.c...
-..\servo\my_servo.c(378): warning:  #177-D: variable "x_origin"  was declared but never referenced
-      int x_origin = x_error;
-..\servo\my_servo.c(379): warning:  #177-D: variable "y_origin"  was declared but never referenced
-      int y_origin = y_error;
-..\servo\my_servo.c(1125): warning:  #223-D: function "Reliable_UART_Transmit" declared implicitly
-          Reliable_UART_Transmit(&huart3, (uint8_t*)"update\n",strlen("update\n"), 1000); //! 更新中心值的功能
-..\servo\my_servo.c(1477): warning:  #223-D: function "Reliable_UART_Transmit" declared implicitly
-      Reliable_UART_Transmit(&huart3, (uint8_t*)"update\n", strlen("update\n"), 1000); //! 更新中心值的功能
-..\servo\my_servo.c(1933): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-      int position = (int)(50 + (200* (float)angle / 270.0));
-..\servo\my_servo.c: 5 warnings, 0 errors
-linking...
-Program Size: Code=25940 RO-data=548 RW-data=556 ZI-data=2612  
-FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 5 Warning(s).
+compiling main.c...
+../Core/Src/main.c(764): error:  #165: too few arguments in function call
+      new_get_and_put_in_spin_plate_cricle_all_v2(1);
+../Core/Src/main.c(1153): warning:  #128-D: loop is not reachable
+      while (1)
+../Core/Src/main.c(2048): warning:  #550-D: variable "r_servo_now_temp"  was set but never used
+      int r_servo_now_temp = 0;
+../Core/Src/main.c(2049): warning:  #550-D: variable "theta_servo_now_temp"  was set but never used
+      int theta_servo_now_temp = 0;
+../Core/Src/main.c(2167): warning:  #177-D: variable "r_servo_now_temp"  was declared but never referenced
+      int r_servo_now_temp = 0;
+../Core/Src/main.c(2168): warning:  #177-D: variable "theta_servo_now_temp"  was declared but never referenced
+      int theta_servo_now_temp = 0;
+../Core/Src/main.c(2169): warning:  #177-D: variable "is_first_get"  was declared but never referenced
+      int is_first_get = 1;
+../Core/Src/main.c: 6 warnings, 1 error
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 1 Error(s), 6 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -66,7 +67,8 @@ Package Vendor: Keil
 
    * Component: ARM::CMSIS:CORE:5.5.0
       Include file:  CMSIS\Core\Include\tz_context.h
-Build Time Elapsed:  00:00:01
+Target not created.
+Build Time Elapsed:  00:00:02
 </pre>
 </body>
 </html>
