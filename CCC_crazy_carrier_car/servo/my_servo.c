@@ -66,13 +66,19 @@ const int servo_1_add_num = 0; //! 应对位置变化的调整量
 //TODO 待修改（全部重新测）
 // //! 测量新值后务必注意有没有负值
 
-//! 初赛物料
-const int put_claw_down_pile_position = 2664+servo_1_add_num; //码垛位置 
-const int put_claw_down_state_position = 1528 + servo_1_add_num;
-const int put_claw_down_position = 2487+servo_1_add_num;  // 从转盘上取物料  
-const int put_claw_down_ground_position = 3796+servo_1_add_num; // 放在地上 3144  3796    +786
+//! 地上高度-2268 等于载物盘高度
+//! 地上高度-240 为nearground高度
+
+
+//! 通用物料高度
 const int put_claw_up_top_position =1066+servo_1_add_num; // 最高点  
 const int put_claw_up_position =2453+servo_1_add_num; //  看粗调移动底盘的位置
+
+//! 初赛物料
+const int put_claw_down_state_position = 1528 + servo_1_add_num;
+const int put_claw_down_position = 2487+servo_1_add_num;  // 从转盘上取物料  
+const int put_claw_down_pile_position = 2664+servo_1_add_num; //码垛位置 
+const int put_claw_down_ground_position = 3796+servo_1_add_num; // 放在地上 3144  3796    +786
 const int put_claw_down_near_ground_position = 3556+servo_1_add_num; //!细调放置的位置
 const int put_claw_down_near_plate_position = 2386+servo_1_add_num; //转盘放置细调的位置
 

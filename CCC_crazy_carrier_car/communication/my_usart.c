@@ -776,7 +776,7 @@ void UART_receive_process_3(void)
             
         // }
 
-        //! 又新版
+        //! 新版底盘调整
         if(rxdata_u3[0] == 0x01) {
             line_spin_error_1 = (int)rxdata_u3[1];
         } else if(rxdata_u3[0] == 0x02) {
