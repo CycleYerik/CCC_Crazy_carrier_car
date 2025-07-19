@@ -93,7 +93,7 @@ int is_show_origin_theta_data = 0;
 
 
 //! 目标颜色数组a
-volatile int target_colour[6] = {1,2,3,1,3,2}; // 物料颜色序列(1红,2绿,3蓝)
+volatile int target_colour[6] = {1,3,2,1,3,2}; // 物料颜色序列(1红,2绿,3蓝)
 volatile int material_place[3] = {0,0,0}; //从暂存区夹取随机位置的物料时用的数组
 
 //! 默认暂存区物料顺序
@@ -198,6 +198,7 @@ int timeout_limit_line = 400;
 //! 各种extern和声明（一般无需修改的）
 
 //串口相关变量
+extern int uart_receive_count3;
 char wifi_massage[50]; // 串口屏发送的数据
 int is_wifi_already_get_message = 0;
 int is_raspi_get_massage = 0;
@@ -329,10 +330,11 @@ void SystemClock_Config(void);
 /************************************函数声明及定义区****************************************/
 
 void guosai_test(void);
-void new_material_test(int test_num);
+void new_final_function_test(int test_num);
+void new_material_test(int test_num,int is_avoid);
 void new_motor_servo_screen_test(int test_num);
 void old_function_test(int test_num);
-void test_new_material_all_process(void);
+void test_new_material_all_process(int is_avoid);
 void old_new_init_car_arm(void);
 void old_all_process(void);
 
@@ -356,7 +358,7 @@ int fgetc(FILE *f)
 
 HAL_StatusTypeDef Reliable_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
 
-void test_new_material_all_process(void);
+void test_new_material_all_process(int is_avoid);
 
 void single_line_adjust(char *pData);
 void single_line_circle_adjust(char *pData);
@@ -367,7 +369,7 @@ void new_get_from_plate_all_movement_with_back_check(void);
 void old_material_get_and_put_some_with_load_first( int times,int is_pile_up,int is_load);
 void new_material_get_and_put_some_with_load_first(material_get_and_put_struct* new_get_and_put_struct, material_order* order);
 void new_get_and_put_in_spin_plate_cricle_all(int times);
-void new_get_and_put_in_spin_plate_cricle_all_v2(int times,int is_adjust_once, int is_avoid);
+void new_get_and_put_in_spin_plate_cricle_all_v2(uint8_t *pData,int times,int is_adjust_once, int is_avoid);
 void new_get_from_ground_in_random_position(int times);
 
 /* USER CODE END PFP */
@@ -510,7 +512,7 @@ int main(void)
 
 
     //! 新物料抓取放置功能测试
-    new_material_test(-1);
+    new_material_test(-1,1);
 
 
     //! 各种外设测试程序
@@ -520,6 +522,9 @@ int main(void)
     //! 单独初赛功能测试
     old_function_test(-1);
 
+
+    //! 单独决赛功能测试
+    new_final_function_test(-1);
 
 
     /***********************初赛所用的全流程***********************/
@@ -660,7 +665,41 @@ void guosai_test(void)
 
 
     //? 将物料放置在旋转转盘上
-    new_get_and_put_in_spin_plate_cricle_all_v2(1,1,1);
+    new_get_and_put_in_spin_plate_cricle_all_v2((uint8_t*)"HH\n",1,1,1);
+}
+
+/// @brief 决赛功能测试函数
+/// @param test_num  -1 不执行
+///                     1 从暂存区抓取随机顺序摆放物料
+///                     2 将物料放置在旋转转盘上
+void new_final_function_test(int test_num)
+{
+    switch(test_num)
+    {
+        case 1:
+            {
+                //? 从暂存区抓取随机顺序摆放物料
+                put_claw_up();
+                single_line_adjust("II\n");
+                new_get_from_ground_in_random_position(1);
+                while(1)
+                {
+                    HAL_Delay(1000);
+                }
+            }
+            break;
+            case 2:
+            {
+                new_get_and_put_in_spin_plate_cricle_all_v2((uint8_t*)"LL\n",1,1,1);
+                while(1)
+                {
+                    HAL_Delay(1000);
+                }
+            }
+            break;
+        default:
+            break;
+    }
 }
 
 /// @brief 国赛决赛新物料测试函数，直接将不同的值传入即可
@@ -675,13 +714,21 @@ void guosai_test(void)
  *   5 - 决赛抓放功能测试
  *   6 - 决赛物料半流程测试
  */
-void new_material_test(int test_num)
+void new_material_test(int test_num,int is_avoid)
 {
     
     switch(test_num)
     {
         case 0:
             //只夹紧爪子
+            {
+                close_claw();
+                while(1)
+                {
+                    HAL_Delay(1000);
+                }
+            }
+            break;
         
         case 1:
             {
@@ -690,7 +737,15 @@ void new_material_test(int test_num)
                 HAL_Delay(1000);
                 while(1)
                 {
-                    new_get_and_load_openloop_avoid(1,1,&default_material_order);
+                    if(is_avoid == 1)
+                    {
+                        new_get_and_load_openloop_avoid(2,1,&default_material_order);
+                    }
+                    else
+                    {
+                        new_get_and_load_openloop(2,1,&default_material_order);
+                    }
+                    HAL_Delay(1000);
                 }
             }
             break;
@@ -699,11 +754,11 @@ void new_material_test(int test_num)
             {
                 old_new_init_car_arm();
                 HAL_Delay(1000);
-                plate_get_struct new_plate_get_struct = { .is_avoid = 1, .empty_check = 0, .back_check = 0 };
+                plate_get_struct new_plate_get_struct = { .is_avoid = is_avoid, .empty_check = 0, .back_check = 0 };
                 while (1)
                 {
                     put_claw_down();
-                    HAL_Delay(1000);
+                    HAL_Delay(2000);
                     new_get_from_plate_all_movement(3,&new_plate_get_struct,1);
                 }
             }
@@ -713,7 +768,7 @@ void new_material_test(int test_num)
             {
                 old_new_init_car_arm();
                 HAL_Delay(1000);
-                plate_get_struct new_plate_get_struct_2 = { .is_avoid = 1, .empty_check = 0, .back_check = 1 };
+                plate_get_struct new_plate_get_struct_2 = { .is_avoid = is_avoid, .empty_check = 0, .back_check = 1 };
                 new_get_from_plate_all_movement(3,&new_plate_get_struct_2,0);
                 while (1)
                 {
@@ -730,7 +785,14 @@ void new_material_test(int test_num)
                 {
                     for(int i = 0; i < 3; i++)
                     {
-                        new_get_and_pre_put_avoid(i+1,0,1,0,&default_material_order);
+                        if(is_avoid == 1)
+                        {
+                            new_get_and_pre_put_avoid(i+1,0,1,0,&default_material_order);
+                        }
+                        else
+                        {
+                            new_get_and_pre_put(i+1,0,1,0,&default_material_order);
+                        }
                         put_claw_down_ground_slightly();
                         HAL_Delay(1000);
                         open_claw();
@@ -748,14 +810,25 @@ void new_material_test(int test_num)
                 old_new_init_car_arm();
                 HAL_Delay(1000);
                 material_get_and_put_struct struct_1  = {
-                    .times = 1, .run_round_number = 1, .is_load = 1, .is_pile_up = 0,
-                    .is_avoid_collide = 1, .is_adjust_without_material = 0,
-                    .is_none_pile_up_put_adjust = 1, .is_pile_up_adjust = 0,
-                    .is_get_from_car_plate_update = 1, .is_get_from_ground_check = 0,
+                    .times = 1, 
+                    .run_round_number = 3, 
+                    .is_load = 1, 
+                    .is_pile_up = 0,
+                    .is_avoid_collide = is_avoid, 
+                    .is_adjust_without_material = 0,
+                    .is_none_pile_up_put_adjust = 1, 
+                    .is_pile_up_adjust = 0,
+                    .is_get_from_car_plate_update = 0, 
+                    .is_get_from_ground_check = 0,
                 };
                 put_claw_up();
-                single_line_circle_adjust("KK12\n"); 
+                single_line_circle_adjust("CC12\n"); 
                 new_material_get_and_put_some_with_load_first(&struct_1,&default_material_order);
+                /**
+                 *  avoid， 码垛，先空看调整再放
+                 *  avoid, 普通，不调整直接放
+                 *  avoid  普通，先空看调整再放
+                 */
                 while(1)
                 {
                     HAL_Delay(1000); // 等待放置完成
@@ -767,7 +840,7 @@ void new_material_test(int test_num)
                 old_new_init_car_arm();
                 HAL_Delay(1000);
                 // 决赛物料半流程测试
-                test_new_material_all_process();
+                test_new_material_all_process(is_avoid);
                 while(1)
                 {
                     HAL_Delay(1000);
@@ -776,7 +849,7 @@ void new_material_test(int test_num)
             break;
         default:
             // 默认case，提示参数无效
-            print_to_screen(0,"fail");
+            // print_to_screen(0,"fail");
             break;
     }
 }
@@ -982,7 +1055,7 @@ void old_function_test(int test_num)
 
 
 /// @brief 国赛决赛新物料的流程测试函数
-void test_new_material_all_process(void)
+void test_new_material_all_process(int is_avoid)
 {
     //! 以下路径为7.15版本参数，待修改
     // 从初始位置到转盘的移动参数
@@ -1021,11 +1094,11 @@ void test_new_material_all_process(void)
 
     plate_get_struct new_plate_get_struct = 
     {
-        .is_avoid = 1,
+        .is_avoid = is_avoid,
         .empty_check = 0,
         .back_check = 1,
     };
-    new_get_from_plate_all_movement(1,&new_plate_get_struct,0);  // 执行从转盘抓取物料的动作序列
+    new_get_from_plate_all_movement(3,&new_plate_get_struct,0);  // 执行从转盘抓取物料的动作序列
 
 
     put_claw_up();  
@@ -1057,18 +1130,18 @@ void test_new_material_all_process(void)
     material_get_and_put_struct get_and_put = 
     {
         .times = 1,
-        .run_round_number = 1,
-        .is_avoid_collide = 1,
+        .run_round_number = 3,
+        .is_avoid_collide = is_avoid,
         .is_load = 1,
         .is_pile_up = 0,
         .is_adjust_without_material = 0,
         .is_none_pile_up_put_adjust = 1,
         .is_pile_up_adjust = 0,
-        .is_get_from_car_plate_update = 1,
+        .is_get_from_car_plate_update = 0,
         .is_get_from_ground_check = 0,
 
     };
-    single_line_circle_adjust("KK12\n");
+    single_line_circle_adjust("CC12\n");
     new_material_get_and_put_some_with_load_first(&get_and_put,&default_material_order);  // 执行放置动作序列
 
 
@@ -1324,10 +1397,10 @@ void new_get_and_put_in_spin_plate_cricle_all(int times)
 
 /// @brief 国赛决赛使用 将物料放置在转盘色环上的全流程函数（重写版本，实现单次识别单次放置 //TODO 需要考虑到容易掉落的物料，放慢速度
 /// @param times 
-void new_get_and_put_in_spin_plate_cricle_all_v2(int times,int is_adjust_once, int is_avoid)
+void new_get_and_put_in_spin_plate_cricle_all_v2(uint8_t *pData,int times,int is_adjust_once, int is_avoid)
 {
     // 发信号开始调整位置
-    HAL_UART_Transmit(&huart3, (uint8_t*)"HH\n", strlen("HH\n"), 1000);
+    HAL_UART_Transmit(&huart3, pData, strlen(pData), 1000);
     // Reliable_UART_Transmit(&huart3, (uint8_t*)"LL\n", strlen("LL\n"), 1000);
     int add_count = 0;
     if(times == 2)
@@ -1340,8 +1413,10 @@ void new_get_and_put_in_spin_plate_cricle_all_v2(int times,int is_adjust_once, i
     open_claw_180();
 
 
+    //保留得到的调整值
+    int theta_servo_adjust_plate = 0;
+    int r_servo_adjust_plate = 0;
     //! 注意：以下分支需要切换，保留一个
-
     //? 只调一次
     if(is_adjust_once == 1)
     {
@@ -1350,6 +1425,10 @@ void new_get_and_put_in_spin_plate_cricle_all_v2(int times,int is_adjust_once, i
         {
             HAL_Delay(50);
         }
+
+        //将x_plate_error和y_plate_error存起来
+        theta_servo_adjust_plate = x_plate_error;
+        r_servo_adjust_plate = y_plate_error;
     }
     else //! 多次调整
     {
@@ -1363,8 +1442,6 @@ void new_get_and_put_in_spin_plate_cricle_all_v2(int times,int is_adjust_once, i
         }
     }
 
-    adjust_plate(x_plate_error, y_plate_error);
-    is_adjust_plate_servo = 0;
 
 
 
@@ -1381,11 +1458,19 @@ void new_get_and_put_in_spin_plate_cricle_all_v2(int times,int is_adjust_once, i
         //! 根据是否需要avoid进行选择
         if(is_avoid == 1)
         {
+            if(is_adjust_once == 1 && i == 0)
+             {
+                adjust_plate(theta_servo_adjust_plate, r_servo_adjust_plate);
+            }
             new_get_and_pre_put_spin_plate_avoid_collide(target_colour[i+add_count]); 
         }
         else
         {
-        new_get_and_put_spin_plate(target_colour[i+add_count]); 
+            if(is_adjust_once == 1 && i == 0)
+            {
+                adjust_plate(theta_servo_adjust_plate, r_servo_adjust_plate);
+            }
+            new_get_and_put_spin_plate(target_colour[i+add_count]); 
         }
         open_claw_180(); //放下后张开
     }
@@ -1440,13 +1525,30 @@ void old_material_get_and_put_some_with_load_first( int times,int is_pile_up,int
             // char time_str[20];
             // sprintf(time_str, "time: %d ms", time); // 格式化时间字符串
             // print_to_screen(1,time_str); // 打印发送时间到口屏
-            HAL_Delay(10);
+
+
+    
+
+
+            uart_receive_count3 = 0;
             while (is_servo_adjust != 0 && tim3_count < timeout_limit_line) 
             {
+                // x_camera_error_array[x_camera_error_array_index] = x_camera_error;
+                // y_camera_error_array[y_camera_error_array_index] = y_camera_error;
+                // x_camera_error_array_index++;
+                // y_camera_error_array_index++;
                 adjust_position_with_camera(x_camera_error, y_camera_error,1);  
 				// adjust_position_with_camera_new(x_camera_error,y_camera_error,adjust_position_with_camera_time);
                 HAL_Delay(adjust_position_with_camera_time);  //10
             }
+
+            // char temp_str[20];
+            // sprintf(temp_str, "uart: %d", uart_receive_count3);
+            // print_to_screen(0,temp_str);
+            // uart_receive_count3 = 0;
+
+
+            // HAL_Delay(1000);
             theta_servo_value[target_colour[i+times_count]] = theta_servo_now;
             r_servo_value[target_colour[i+times_count]] = r_servo_now;
             is_servo_adjust = 0;
@@ -1496,6 +1598,8 @@ void old_material_get_and_put_some_with_load_first( int times,int is_pile_up,int
 /// @param new_get_and_put_struct 物料抓放结构体
 void new_material_get_and_put_some_with_load_first(material_get_and_put_struct* new_get_and_put_struct, material_order* order)
 {
+    
+    
     int times_count = 0; //用于计算target_colour的索引
     if(new_get_and_put_struct->times == 3 || new_get_and_put_struct->times == 4)
     {   
@@ -1511,7 +1615,8 @@ void new_material_get_and_put_some_with_load_first(material_get_and_put_struct* 
             servo_adjust_status = target_colour[i+times_count];
             is_servo_adjust = 1;
             tim3_count = 0;
-            HAL_UART_Transmit(&huart3, (uint8_t*)"nearground\n", strlen("nearground\n"), 1000);
+            put_claw_down_near_ground();
+            Reliable_UART_Transmit(&huart3, (uint8_t*)"nearground\n", strlen("nearground\n"), 1000);
             while (is_servo_adjust != 0 ) 
             {
                 adjust_position_with_camera(x_camera_error, y_camera_error,1);  
@@ -1541,6 +1646,7 @@ void new_material_get_and_put_some_with_load_first(material_get_and_put_struct* 
                 put_claw_down_ground_slightly();
                 HAL_Delay(200);
             }
+            HAL_Delay(1000);
             open_claw();
             HAL_Delay(300);
 
@@ -1584,7 +1690,7 @@ void new_material_get_and_put_some_with_load_first(material_get_and_put_struct* 
             {
                 put_claw_down_ground_slightly();
             }
-            HAL_Delay(500);
+            HAL_Delay(700);
             open_claw();
             HAL_Delay(300);
         }
@@ -1601,11 +1707,11 @@ void new_material_get_and_put_some_with_load_first(material_get_and_put_struct* 
         {
             if(new_get_and_put_struct->is_avoid_collide == 1) //是否从侧面过
             {
-                new_get_and_load_openloop_avoid(target_colour[i+times_count],0,order);
+                new_get_and_load_openloop_avoid(target_colour[i+times_count],!new_get_and_put_struct->is_none_pile_up_put_adjust,order);
             }
             else
             {
-                new_get_and_load_openloop(target_colour[i+times_count],0,order); 
+                new_get_and_load_openloop(target_colour[i+times_count],!new_get_and_put_struct->is_none_pile_up_put_adjust,order); 
             }
         }
     }
@@ -1767,11 +1873,11 @@ void new_get_from_plate_all_movement(int n, plate_get_struct* plate_struct ,int 
             state_spin_without_claw(temp_plate);
             close_claw();
             HAL_Delay(1000);
-            put_claw_up_top();
+            put_claw_up_top_slight();
             arm_shrink();
-            HAL_Delay(300);
-            claw_spin_state_without_claw();
-            HAL_Delay(600); 
+            HAL_Delay(800);
+            claw_spin_state_without_claw_slight();
+            HAL_Delay(800); 
 
 
             start_check_plate_back_state = 0;
@@ -1840,6 +1946,7 @@ void new_get_from_plate_all_movement(int n, plate_get_struct* plate_struct ,int 
                 }
                 get_plate = 0;
                 put_claw_down();
+                HAL_Delay(1000);
             } 
         }
         // get_plate = 0; //TODO ？
@@ -2565,6 +2672,7 @@ void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Size)
     {
         HAL_UARTEx_ReceiveToIdle_IT(huart, rxdata_u3, 40);
         is_raspi_get_massage = 1;
+        UART_handle_function_3();
     }
     else if(huart->Instance == UART4)
     {

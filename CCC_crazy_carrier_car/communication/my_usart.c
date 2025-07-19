@@ -4,7 +4,8 @@
 //!  
 
 
-
+// 串口接收次数
+int uart_receive_count3 = 0;
 
 
 
@@ -181,6 +182,11 @@ void UART_handle_function_2(void)
 void UART_handle_function_3(void)
 {
     UART_receive_process_3(); 
+    uart_receive_count3++;
+    if(uart_receive_count3 >= 10000)
+    {
+        uart_receive_count3 = 0;
+    }
     //! 
     // if(rxflag_u3 != 0)
     // {
@@ -495,6 +501,7 @@ void UART_receive_process_3(void)
     //! 灰色：左列由后往前第三个
     //! 蓝色：右列由后往前第四个
     //! 橙色：右列由前往后第六个
+
     
     // if (rxflag_u3 > 0)
     if(1) //! 由于使用了空闲中断，故不需要原先中断的判断
@@ -1218,6 +1225,7 @@ void UART_receive_process_3(void)
                     print_screen_buffer_index_xy = 0;
                 }
             }
+
         }
 
         if(is_put_material_in_plate == 0)

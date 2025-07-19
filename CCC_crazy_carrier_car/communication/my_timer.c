@@ -58,11 +58,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
         // {
             // UART_handle_function_3(); // 处理串口3接收到的数据
         // }
-        if(is_raspi_get_massage == 1)
-        {
-            is_raspi_get_massage = 0;
-            UART_handle_function_3();
-        }
+
+        //! 用了很久的处理
+        // if(is_raspi_get_massage == 1)
+        // {
+        //     is_raspi_get_massage = 0;
+        //     UART_handle_function_3();
+        // }
+
+
+        
         // if(tim2_count %8 == 2)
         // {
             // Emm_V5_Read_Sys_Params(1, S_CPOS); 

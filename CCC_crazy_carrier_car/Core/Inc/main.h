@@ -68,7 +68,7 @@ typedef struct
     int is_none_pile_up_put_adjust; //不进行码垛时放置是否调整
     int is_pile_up_adjust; //码垛时放置是否调整
     int is_get_from_car_plate_update; //从车身载物盘抓取物料时是否进行中心位置更新（用于物料中心与夹爪中心不重合的情况）
-    int is_get_from_ground_check; //从地面抓取物料时是否进行空抓判断
+    int is_get_from_ground_check; //暂时未启用从地面抓取物料时是否进行空抓判断
 } material_get_and_put_struct;
 
 // 定义一个在转盘抓放的结构体
