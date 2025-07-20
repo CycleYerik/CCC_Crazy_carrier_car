@@ -12,6 +12,19 @@
 
 ## 演示和展示
 
+省赛版本
+![省赛版本](./pictures/shengsai_che.jpg)
+
+省赛决赛现场（只放了一个）
+![省赛决赛现场](./pictures/shengsai_xianchang.jpg)
+
+国赛版本
+![国赛版本](./pictures/guosai_che.jpg)
+
+国赛车核心控制组件（拓展板、调试器、继电器）
+![国赛车核心控制组件](./pictures/hexin.jpg)
+
+
 ## 视觉队友
 Collaborators:[summersummer33](https://github.com/summersummer33)
 
