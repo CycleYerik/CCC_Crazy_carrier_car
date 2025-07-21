@@ -93,7 +93,7 @@ int is_show_origin_theta_data = 0;
 
 
 //! 目标颜色数组a
-volatile int target_colour[6] = {1,3,2,1,3,2}; // 物料颜色序列(1红,2绿,3蓝)
+volatile int target_colour[6] = {2,3,1,1,3,2}; // 物料颜色序列(1红,2绿,3蓝)
 volatile int material_place[3] = {0,0,0}; //从暂存区夹取随机位置的物料时用的数组
 
 //! 默认暂存区物料顺序
@@ -512,7 +512,7 @@ int main(void)
 
 
     //! 新物料抓取放置功能测试
-    new_material_test(-1,1);
+    new_material_test(0,0);
 
 
     //! 各种外设测试程序
@@ -690,7 +690,7 @@ void new_final_function_test(int test_num)
             break;
             case 2:
             {
-                new_get_and_put_in_spin_plate_cricle_all_v2((uint8_t*)"LL\n",1,1,1);
+                new_get_and_put_in_spin_plate_cricle_all_v2((uint8_t*)"LL\n",1,0,1);
                 while(1)
                 {
                     HAL_Delay(1000);
@@ -793,6 +793,7 @@ void new_material_test(int test_num,int is_avoid)
                         {
                             new_get_and_pre_put(i+1,0,1,0,&default_material_order);
                         }
+                        HAL_Delay(2000);
                         put_claw_down_ground_slightly();
                         HAL_Delay(1000);
                         open_claw();
@@ -1098,7 +1099,7 @@ void test_new_material_all_process(int is_avoid)
         .empty_check = 0,
         .back_check = 1,
     };
-    new_get_from_plate_all_movement(3,&new_plate_get_struct,0);  // 执行从转盘抓取物料的动作序列
+    new_get_from_plate_all_movement(2,&new_plate_get_struct,0);  // 执行从转盘抓取物料的动作序列
 
 
     put_claw_up();  
@@ -1130,7 +1131,7 @@ void test_new_material_all_process(int is_avoid)
     material_get_and_put_struct get_and_put = 
     {
         .times = 1,
-        .run_round_number = 3,
+        .run_round_number = 2,
         .is_avoid_collide = is_avoid,
         .is_load = 1,
         .is_pile_up = 0,
