@@ -101,9 +101,9 @@ material_order default_material_order = { .left = 3, .middle = 2, .right = 1};
 
 
 //!底盘调整相关参数
-const float Kp_slight_move = 0.56;  // 底盘前后左右微调PID参数
-const float Ki_slight_move = 0.01;
-const float Kd_slight_move = 0.25;
+const float Kp_slight_move = 0.35;  // 底盘前后左右微调PID参数
+const float Ki_slight_move = 0.02;
+const float Kd_slight_move = 0.5;
 
 const float Kp_line_spin = 1;      // 直线校正PID参数
 const float Ki_line_spin = 0.1;
@@ -138,10 +138,10 @@ int motor_pos_move_mode = 0; //如果是0则是位置模式按照上一条指令
 //!!!!!!!!      注意：机械臂还有大量参数在my_servo.c中
 
 //? 以下是旧版本的PID控制参数（配合adjust_position_with_camera）
-const float Kp_theta = 0.32;  // 机械臂旋转PID参数
+const float Kp_theta = 0.35;  // 机械臂旋转PID参数
 const float Ki_theta = 0.01;
 const float Kd_theta = 0.45;
-const float Kp_r = 0.35;     // 机械臂伸缩PID参数
+const float Kp_r = 0.42;     // 机械臂伸缩PID参数
 const float Ki_r = 0.01;
 const float Kd_r = 0.3;
 
@@ -182,8 +182,8 @@ const float y_plate_k = 4.5;
 
 
 //! 调整的超时时间
-int timeout_limit = 1000; // 超时时间限制，单位10ms
-int timeout_limit_line = 400;
+int timeout_limit = 600; // 超时时间限制，单位10ms
+int timeout_limit_line = 300;
 
 
 
@@ -379,6 +379,7 @@ void new_get_from_ground_in_random_position(int times);
 
 /* USER CODE END 0 */
 
+
 /**
   * @brief  The application entry point.
   * @retval int
@@ -508,11 +509,11 @@ int main(void)
 
 
     /*****************单独调试程序***********************/
-    HAL_Delay(3000);
+    // HAL_Delay(3000);
 
 
     //! 新物料抓取放置功能测试
-    new_material_test(0,0);
+    new_material_test(-1,1);
 
 
     //! 各种外设测试程序
@@ -609,7 +610,7 @@ void guosai_test(void)
     int move_x_1 = 0;
     int move_y_1 = 0;
     move_all_direction_position(acceleration, open_loop_move_velocity, move_x_1, move_y_1);
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, move_x_1, move_y_1);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, move_x_1, move_y_1,0);
 
 
     //? 底盘旋转
@@ -822,7 +823,8 @@ void new_material_test(int test_num,int is_avoid)
                     .is_get_from_car_plate_update = 0, 
                     .is_get_from_ground_check = 0,
                 };
-                put_claw_up();
+                put_claw_down_near_ground();
+                HAL_Delay(800);
                 single_line_circle_adjust("CC12\n"); 
                 new_material_get_and_put_some_with_load_first(&struct_1,&default_material_order);
                 /**
@@ -909,9 +911,9 @@ void new_motor_servo_screen_test(int test_num)
             while(1)
             {
                 move_all_direction_position(acceleration,open_loop_move_velocity,0,150);
-                move_all_direction_position_delay(acceleration,open_loop_move_velocity,0,150);
+                move_all_direction_position_delay(acceleration,open_loop_move_velocity,0,150,0);
                 move_all_direction_position(acceleration,open_loop_move_velocity,0,-150);
-                move_all_direction_position_delay(acceleration,open_loop_move_velocity,0,-150);
+                move_all_direction_position_delay(acceleration,open_loop_move_velocity,0,-150,0);
                 HAL_Delay(4000);
             }
             }
@@ -929,7 +931,7 @@ void new_motor_servo_screen_test(int test_num)
  *   1 - 单独测试old转盘抓取
  *   2 - 单独测试old直线校正
  *   3 - 单独测试old色环放置功能
- *   4 - 单独调试底盘持续定位和放置
+ *   4 - 单独调试old底盘持续定位、放置
  *   5 - 单独测试底盘旋转
  */
 void old_function_test(int test_num)
@@ -996,7 +998,8 @@ void old_function_test(int test_num)
             //? 单独调试底盘持续定位和放置
             {
             int rand_num_1, rand_num_2;
-            put_claw_up();
+            // put_claw_up();
+            put_claw_down_near_ground();
             while(1)
             {   
                 single_line_circle_adjust("CC12\n");  // 校正车身位置对准色环
@@ -1005,9 +1008,11 @@ void old_function_test(int test_num)
                 // 生成 -5 到 5 的随机整数（共11个可能值）
                 rand_num_1 = rand() % 5 - 2;  // [0,10] -5 -> [-5,5]
                 rand_num_2 = rand() % 5 - 2;  // [0,10] -5 -> [-5,5]
+                if(rand_num_1 < 2 && rand_num_1 > 0) rand_num_1 = 2;
+                if(rand_num_2 < 2 && rand_num_2 > 0) rand_num_2 = 2;
                 move_all_direction_position(acceleration, open_loop_move_velocity, rand_num_1, rand_num_2);
-                move_all_direction_position_delay(acceleration, open_loop_move_velocity, rand_num_1, rand_num_2);
-                put_claw_up();
+                move_all_direction_position_delay(acceleration, open_loop_move_velocity, rand_num_1, rand_num_2,0);
+                put_claw_down_near_ground();
                 // HAL_Delay(1000);    
                 // 随机旋转动作
 
@@ -1071,18 +1076,18 @@ void test_new_material_all_process(int is_avoid)
 
     //注意加速度改为acceleration-20
     move_all_direction_position(acceleration-20, open_loop_move_velocity, -start_move_x , start_move_y);  // 从启停区出来
-    move_all_direction_position_delay(acceleration-20, open_loop_move_velocity, -start_move_x , start_move_y);  
+    move_all_direction_position_delay(acceleration-20, open_loop_move_velocity, -start_move_x , start_move_y,0);  
     // HAL_Delay(500);
 
 
 
     move_all_direction_position(acceleration-20, open_loop_move_velocity, 0, move_to_qrcode);  // 出来后移动到二维码前
-    move_all_direction_position_delay(acceleration-20, open_loop_move_velocity, 0, move_to_qrcode);
+    move_all_direction_position_delay(acceleration-20, open_loop_move_velocity, 0, move_to_qrcode,0);
 
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table);  // 移动到转盘前
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table,0);
 
     spin_right(open_loop_spin_velocity,acceleration_spin,90);  // 右转90度面向转盘
     Reliable_UART_Transmit(&huart3, (uint8_t*)"NN1\n", strlen("NN1\n"), 1000);  // 通知树莓派开始识别转盘
@@ -1113,17 +1118,19 @@ void test_new_material_all_process(int is_avoid)
 
 
     move_all_direction_position(acceleration-20, open_loop_x_move_velocity, move_right_length_1,0);  // 向右移动到中轴线
-    move_all_direction_position_delay(acceleration-20, open_loop_x_move_velocity, move_right_length_1,0);
+    move_all_direction_position_delay(acceleration-20, open_loop_x_move_velocity, move_right_length_1,0,0);
 
 
     single_line_adjust("EE\n");  // 校正车身姿态与直线平行
     
     
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_1);// 后退到粗加工区
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_front_length_1);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_front_length_1,0);
+    put_claw_down_near_ground();
 
 
-    spin_right_180(open_loop_spin_velocity,acceleration_spin);  // 旋转180度面向色环
+
+    spin_right(open_loop_spin_velocity,acceleration_spin,180);  // 旋转180度面向色环
     HAL_Delay(1500); 
 
 
@@ -1762,7 +1769,7 @@ void old_get_from_plate_all_movement(int n)
             x_plate_error = 0;
             y_plate_error = 0;
             state_spin_without_claw(temp_plate);
-            close_claw();
+            close_claw_2();
             if(is_get_empty_finish == 0)
             {
                 start_judge_empty = 1; //首次抓取则开始判断是否抓空
@@ -1804,13 +1811,17 @@ void old_get_from_plate_all_movement(int n)
                 y_plate_error = 0;
                 put_claw_up_top(); 
                 HAL_Delay(400); 
-                claw_spin_front();
-                open_claw_180();
-                // feetech_servo_move(4,r_servo_now_temp,4000,feet_acc);
-                // feetech_servo_move(3,theta_servo_now_temp,4000,feet_acc);
-                HAL_Delay(500);
-                arm_stretch();
-                whole_arm_spin(1); //TODO 可能会撞到物料
+                if(get_plate_count != 2)
+                {
+                    claw_spin_front();
+                    open_claw_180();
+                    // feetech_servo_move(4,r_servo_now_temp,4000,feet_acc);
+                    // feetech_servo_move(3,theta_servo_now_temp,4000,feet_acc);
+                    HAL_Delay(500);
+                    arm_stretch();
+                    whole_arm_spin(1); //TODO 可能会撞到物料
+                    put_claw_down();
+                }
                 get_plate_count++;
                 if(temp_plate == 1)
                 {
@@ -1825,7 +1836,6 @@ void old_get_from_plate_all_movement(int n)
                     is_3_get = 1;
                 }
                 get_plate = 0;
-                put_claw_down();
             }
             is_get_empty = 0;
         }
@@ -2198,18 +2208,18 @@ void old_all_process(void)
 
     //注意加速度改为acceleration-20
     move_all_direction_position(acceleration-20, open_loop_move_velocity, -start_move_x , start_move_y);  // 从启停区出来
-    move_all_direction_position_delay(acceleration-20, open_loop_move_velocity, -start_move_x , start_move_y);  
+    move_all_direction_position_delay(acceleration-20, open_loop_move_velocity, -start_move_x , start_move_y,0);  
     // HAL_Delay(500);
 
 
 
     move_all_direction_position(acceleration-20, open_loop_move_velocity, 0, move_to_qrcode);  // 出来后移动到二维码前
-    move_all_direction_position_delay(acceleration-20, open_loop_move_velocity, 0, move_to_qrcode);
+    move_all_direction_position_delay(acceleration-20, open_loop_move_velocity, 0, move_to_qrcode,0);
 
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table);  // 移动到转盘前
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, move_from_qrcode_to_table,0);
 
     
     //显示二维码信息
@@ -2232,7 +2242,7 @@ void old_all_process(void)
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -little_back_1);  // 微调位置往后
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -little_back_1);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -little_back_1,0);
 
     if(is_single_route_test != 1)
     {
@@ -2245,10 +2255,6 @@ void old_all_process(void)
     }
 
 
-    //! 姿态的恢复
-    put_claw_up();  
-    whole_arm_spin(1); 
-    arm_stretch();
 
 
 
@@ -2272,17 +2278,25 @@ void old_all_process(void)
 
 
     move_all_direction_position(acceleration-20, open_loop_x_move_velocity, move_right_length_1,0);  // 向右移动到中轴线
-    move_all_direction_position_delay(acceleration-20, open_loop_x_move_velocity, move_right_length_1,0);
+    //! 姿态的恢复
+    claw_spin_front();
+    open_claw_180();
+    HAL_Delay(500);
+    arm_stretch();
+    whole_arm_spin(1); //TODO 可能会撞到物料
+    put_claw_down();
+    move_all_direction_position_delay(acceleration-20, open_loop_x_move_velocity, move_right_length_1,0,-500);
 
 
     single_line_adjust("EE\n");  // 校正车身姿态与直线平行
     
     
+    
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_1);// 后退到粗加工区
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_front_length_1);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_front_length_1,0);
+    put_claw_down_near_ground();
 
-
-    spin_right_180(open_loop_spin_velocity,acceleration_spin);  // 旋转180度面向色环
+    spin_right(open_loop_spin_velocity,acceleration_spin,180);  // 旋转180度面向色环
     HAL_Delay(1500); 
 
 
@@ -2311,22 +2325,22 @@ void old_all_process(void)
 
 
     //移动到暂存区参数
-    int move_front_length_2 = 82; 
-    int move_back_length_2 = 83; 
+    int move_front_length_2 = 82.5; 
+    int move_back_length_2 = 82.5; 
     
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_2);  // 后退到十字中心
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_2);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_2,0);
 
 
-    put_claw_up();//! 姿态的恢复
+    put_claw_down_near_ground();//! 姿态的恢复
     arm_stretch();
 
 
-    spin_right_90(open_loop_spin_velocity,acceleration_spin);  // 右转90度面向暂存区
+    spin_right(open_loop_spin_velocity,acceleration_spin,90.5);  // 右转90度面向暂存区
     HAL_Delay(1000);
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_2 );  // 前进到暂存区
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_2 );
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_2,0);
 
 
     if(is_single_route_test != 1)
@@ -2350,18 +2364,18 @@ void old_all_process(void)
 
 
     //移动回转盘参数
-    int move_right_length_b = 46.5;
+    int move_right_length_b = 44;
     int move_front_length_b = 88;
     
 
-    spin_right(open_loop_spin_velocity,acceleration_spin, 90);  // 右转90度
+    spin_right(open_loop_spin_velocity,acceleration_spin,90);  // 右转90度面向转盘
     HAL_Delay(1000);
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_b);  // 前进到转盘左侧
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_b);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_b,0);
 
     move_all_direction_position(acceleration, open_loop_x_move_velocity,move_right_length_b, 0);  // 向右移动到转盘
-    move_all_direction_position_delay(acceleration, open_loop_x_move_velocity,move_right_length_b, 0);
+    move_all_direction_position_delay(acceleration, open_loop_x_move_velocity,move_right_length_b, 0,0);
 
 
     if(is_single_route_test != 1)
@@ -2379,9 +2393,9 @@ void old_all_process(void)
         HAL_Delay(3000);
     }
 
-    put_claw_up();//! 姿态的恢复
-    whole_arm_spin(1); 
-    arm_stretch();
+    // put_claw_up();//! 姿态的恢复
+    // whole_arm_spin(1); 
+    // arm_stretch();
 
 
 
@@ -2394,24 +2408,30 @@ void old_all_process(void)
 
 
     //移动到粗加工区参数
-    float move_right_length_3 = 39; 
+    float move_right_length_3 = 40.5; 
     float move_front_length_3 = 170;  
 
 
     move_all_direction_position(acceleration-20, open_loop_x_move_velocity, move_right_length_3,0);  // 向右移动到中轴线
-    move_all_direction_position_delay(acceleration-20, open_loop_x_move_velocity, move_right_length_3,0);
+    claw_spin_front();
+    open_claw_180();
+    HAL_Delay(500);
+    arm_stretch();
+    whole_arm_spin(1); //TODO 可能会撞到物料
+    put_claw_down();
+    move_all_direction_position_delay(acceleration-20, open_loop_x_move_velocity, move_right_length_3,0,-500);
 
 
     single_line_adjust("EE\n");
-
+    put_claw_down_near_ground();
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_3);  // 后退到粗加工区
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_front_length_3);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_front_length_3,0);
 
 
-    put_claw_up();//! 姿态的恢复
+    // put_claw_up();//! 姿态的恢复
 
-    spin_right_180(open_loop_spin_velocity,acceleration_spin);  // 旋转180度面向色环
+    spin_right(open_loop_spin_velocity,acceleration_spin,180);  // 旋转180度面向色环
     HAL_Delay(1500);
 
     if(is_single_route_test != 1)
@@ -2431,21 +2451,20 @@ void old_all_process(void)
     /**************第二次  粗加工区  暂存区*****************/
 
     //移动到暂存区参数
-    float move_front_length_4 = 82; 
-    float move_back_length_4 = 83; 
-
+    float move_front_length_4 = 82.5; 
+    float move_back_length_4 = 82.5; 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_4);  // 后退到十字中心
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_4);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_4,0);
     // HAL_Delay(2000);
 
-    put_claw_up();//! 姿态的恢复
+    put_claw_down_near_ground();//! 姿态的恢复
     arm_stretch();
 
-    spin_right_90(open_loop_spin_velocity,acceleration_spin);  // 右转90度面向暂存区
+    spin_right(open_loop_spin_velocity,acceleration_spin,90.5);  // 右转90度面向暂存区
     HAL_Delay(1000);
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_4);  // 前进到暂存区
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_4);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_4,0);
     // HAL_Delay(1800);
 
 
@@ -2474,11 +2493,11 @@ void old_all_process(void)
     int move_right_length_5 = 0.1;
 
     move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length_5,0);  
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, move_right_length_5,0);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, move_right_length_5,0,0);
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,-move_back_length_5);  
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,-move_back_length_5);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,-move_back_length_5,0);
 
 
     open_claw_180();
@@ -2490,11 +2509,11 @@ void old_all_process(void)
     HAL_Delay(1000);
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_5);  
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_5);  
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_5,0);  
 
 
     move_all_direction_position(acceleration, open_loop_move_velocity, move_45_length_5_x, move_45_length_5_y);
-    move_all_direction_position_delay(acceleration, open_loop_move_velocity, move_45_length_5_x, move_45_length_5_y);
+    move_all_direction_position_delay(acceleration, open_loop_move_velocity, move_45_length_5_x, move_45_length_5_y,0);
 
 
     Reliable_UART_Transmit(&huart3, (uint8_t*)"end\n", strlen("end\n"), 1000);

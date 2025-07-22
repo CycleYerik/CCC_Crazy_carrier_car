@@ -50,7 +50,7 @@ const int state_spin_without_claw_position_3 = 111;//TODO 待修改
 
 
 //!     对于机械臂伸缩，2000步进对应12.4cm，0.0062cm/pulse
-//!     对于上升下降86mm  1420步进
+//!     对于上升下降86mm  1420步进 也就是16.5步进每mm
 
 
 
@@ -60,8 +60,6 @@ const int feet_acc_put_down_ground_slightly = 100;
 const int feet_acc_claw_spin = 0;
 const int feet_acc_claw_spin_slight = 90;
 
-//? 初赛物料升降参数（一号舵机）  
-const int servo_1_add_num = -55; //! 应对位置变化的调整量
 
 //TODO 待修改（全部重新测）
 // //! 测量新值后务必注意有没有负值
@@ -71,20 +69,29 @@ const int servo_1_add_num = -55; //! 应对位置变化的调整量
 
 
 //! 通用物料高度
-const int put_claw_up_top_position =1000; // 最高点  
-const int put_claw_up_position =2453; //  看粗调移动底盘的位置
+const int put_claw_up_top_position =900; // 最高点  
+const int put_claw_up_position =2408; //  看粗调移动底盘的位置
 
 //! 初赛物料
-const int put_claw_down_state_position = 1500 + servo_1_add_num;
-const int put_claw_down_position = 2351+servo_1_add_num;  // 从转盘上取物料  
-const int put_claw_down_pile_position = 2536+servo_1_add_num; //码垛位置 
-const int put_claw_down_ground_position = 3690+servo_1_add_num; // 放在地上 3144  3796    +786
-const int put_claw_down_near_ground_position = 3500+servo_1_add_num; //!细调放置的位置
-const int put_claw_down_near_plate_position = 2100+servo_1_add_num; //转盘放置细调的位置
+const int servo_1_add_num = 0; //! 应对位置变化的调整量
+const int put_claw_down_state_position = 1328 + servo_1_add_num;
+const int put_claw_down_position = 2306+servo_1_add_num;  // 从转盘上取物料  
+const int put_claw_down_pile_position = 2491+servo_1_add_num; //码垛位置 
+const int put_claw_down_ground_position = 3645+servo_1_add_num; // 放在地上 3144  3796    +786
+const int put_claw_down_near_ground_position = 3400+servo_1_add_num; //!细调放置的位置
+const int put_claw_down_near_plate_position = 2055+servo_1_add_num; //转盘放置细调的位置
     
- 
+//! 决赛物料（留待决赛）
+// const int servo_1_add_num = 0; //! 应对位置变化的调整量
+// const int put_claw_down_state_position = 1328 + servo_1_add_num;
+// const int put_claw_down_position = 2306+servo_1_add_num;  // 从转盘上取物料  
+// const int put_claw_down_pile_position = 2491+servo_1_add_num; //码垛位置 
+// const int put_claw_down_ground_position = 3645+servo_1_add_num; // 放在地上 3144  3796    +786
+// const int put_claw_down_near_ground_position = 3400+servo_1_add_num; //!细调放置的位置
+// const int put_claw_down_near_plate_position = 2055+servo_1_add_num; //转盘放置细调的位置
 
-//! 决赛物料(纯圆台)
+//! 决赛物料(纯圆台) -45
+// const int servo_1_add_num = -45;
 // const int put_claw_down_state_position = 1528 + servo_1_add_num;
 // const int put_claw_down_position = 2450+servo_1_add_num;  // 从转盘上取物料  
 // const int put_claw_down_pile_position = 2628+servo_1_add_num; //码垛位置 
@@ -94,6 +101,7 @@ const int put_claw_down_near_plate_position = 2100+servo_1_add_num; //转盘放�
 
 
 //! 国赛物料
+// const int servo_1_add_num = -45;
 // const int put_claw_down_state_position = 1673 + servo_1_add_num;
 // const int put_claw_down_position = 2554+servo_1_add_num;  // 从转盘上取物料  
 // const int put_claw_down_pile_position = 3021+servo_1_add_num; //码垛位置 
@@ -102,6 +110,7 @@ const int put_claw_down_near_plate_position = 2100+servo_1_add_num; //转盘放�
 // const int put_claw_down_near_plate_position = 2386+servo_1_add_num; //转盘放置细调的位置
 
 //! 凹圆台
+// const int servo_1_add_num = -45;
 // const int put_claw_down_state_position = 1450 + servo_1_add_num;
 // const int put_claw_down_position = 2380+servo_1_add_num;  // 从转盘上取物料  
 // const int put_claw_down_pile_position = 2536+servo_1_add_num; //码垛位置 
@@ -110,6 +119,7 @@ const int put_claw_down_near_plate_position = 2100+servo_1_add_num; //转盘放�
 // const int put_claw_down_near_plate_position = 2450+servo_1_add_num; //转盘放置细调的位置
 
 //! 凸圆台
+// const int servo_1_add_num = -45;
 // const int put_claw_down_state_position = 1600 + servo_1_add_num;
 // const int put_claw_down_position = 2518+servo_1_add_num;  // 从转盘上取物料  
 // const int put_claw_down_pile_position = 2686+servo_1_add_num; //码垛位置 
@@ -120,14 +130,14 @@ const int put_claw_down_near_plate_position = 2100+servo_1_add_num; //转盘放�
 
 //? 机械臂前端旋转参数（二号舵机）
 const int claw_spin_position_front = 3340 ; // 2号精密舵机回到前方
-const int claw_spin_position_state = 1600; // 2号精密舵机回到载物盘
-const int claw_spin_without_claw_position_state = 1600; //与上面一样
+const int claw_spin_position_state = 1590; // 2号精密舵机回到载物盘
+const int claw_spin_without_claw_position_state = claw_spin_position_state; //与上面一样
 
 
 //? 中板整体旋转参数（三号舵机）
 //! 测量新值后务必注意有没有负值
 // 左：-1083 右： +953
-const int middle_arm = 1925;  // 舵机3在不进行动作时的默认位置
+const int middle_arm = 1910;  // 舵机3在不进行动作时的默认位置
 const int theta_left_position_limit = middle_arm-1083;
 const int theta_right_position_limit = middle_arm+953 ;
 const int theta_right_position_rlimit = middle_arm + 550; 
@@ -147,14 +157,14 @@ const int shrink_arm_all = 1860;
 //? 左中右三个动作对应的各自舵机参数
 //TODO 待测量（全部）
 const int left_2 = 3328; 
-const int left_3 = middle_arm-840;  
+const int left_3 = middle_arm-825;  
 const int left_3_pileup = left_3;
-const int left_4 =  3010; 
+const int left_4 =  3016; 
 
 const int right_2 = 3328; 
-const int right_3 = middle_arm+828; 
+const int right_3 = middle_arm+840; 
 const int right_3_pileup = right_3;
-const int right_4 =  2964; 
+const int right_4 =  2968; 
 
 const int middle_2 = 3328;
 const int middle_3 = middle_arm;
@@ -808,12 +818,13 @@ void get_and_load_openloop(int position,int is_default_position,material_order* 
 {
     state_spin_without_claw(position);
     open_claw_bigger();
+    int servo_3_acc = 2000;
 
     if(position == order->right)
     {
         if( is_default_position == 1)
         {
-            feetech_servo_move(3,right_3,2000,feet_acc);
+            feetech_servo_move(3,right_3,servo_3_acc,feet_acc);
             HAL_Delay(20);
             feetech_servo_move(4,right_4,4095,feet_acc);
             HAL_Delay(20);
@@ -822,7 +833,7 @@ void get_and_load_openloop(int position,int is_default_position,material_order* 
         }
         else
         {
-            feetech_servo_move(3,theta_servo_value[position],2000,feet_acc);
+            feetech_servo_move(3,theta_servo_value[position],servo_3_acc,feet_acc);
             HAL_Delay(20);
             feetech_servo_move(4,r_servo_value[position],4095,feet_acc);
             HAL_Delay(20);
@@ -835,7 +846,7 @@ void get_and_load_openloop(int position,int is_default_position,material_order* 
     {
         if( is_default_position == 1)
         {
-            feetech_servo_move(3,middle_3,2000,feet_acc);
+            feetech_servo_move(3,middle_3,servo_3_acc,feet_acc);
             HAL_Delay(20);
             feetech_servo_move(4,middle_4,4095,feet_acc);
             HAL_Delay(20);
@@ -844,7 +855,7 @@ void get_and_load_openloop(int position,int is_default_position,material_order* 
         }
         else
         {
-            feetech_servo_move(3,theta_servo_value[position],2000,feet_acc);
+            feetech_servo_move(3,theta_servo_value[position],servo_3_acc,feet_acc);
             HAL_Delay(20);
             feetech_servo_move(4,r_servo_value[position],4095,feet_acc);
             HAL_Delay(20);
@@ -859,7 +870,7 @@ void get_and_load_openloop(int position,int is_default_position,material_order* 
     
         if(is_default_position == 1)
         {
-            feetech_servo_move(3,left_3,2000,feet_acc);
+            feetech_servo_move(3,left_3,servo_3_acc,feet_acc);
             HAL_Delay(20);
             feetech_servo_move(4,left_4,4095,feet_acc);
             HAL_Delay(20);
@@ -868,7 +879,7 @@ void get_and_load_openloop(int position,int is_default_position,material_order* 
         }
         else
         {
-            feetech_servo_move(3,theta_servo_value[position],2000,feet_acc);
+            feetech_servo_move(3,theta_servo_value[position],servo_3_acc,feet_acc);
             HAL_Delay(20);
             feetech_servo_move(4,r_servo_value[position],4095,feet_acc);
             HAL_Delay(20);
@@ -884,7 +895,7 @@ void get_and_load_openloop(int position,int is_default_position,material_order* 
     HAL_Delay(300);
     put_claw_down_ground();
     HAL_Delay(600);
-    close_claw();
+    close_claw_2();
     HAL_Delay(300);
     put_claw_up_top();
     arm_shrink();
@@ -1398,7 +1409,7 @@ void get_and_pre_put(int position,int is_pile_up, int is_default_position,const 
     HAL_Delay(500);
     put_claw_down_state();
     HAL_Delay(150); //400
-    close_claw();
+    close_claw_2();
     HAL_Delay(200);
     put_claw_up_top();
     // HAL_UART_Transmit(&huart3, (uint8_t*)"update", strlen("update"), 1000); //! 更新中心值的功能
@@ -1451,12 +1462,16 @@ void get_and_pre_put(int position,int is_pile_up, int is_default_position,const 
     {
         HAL_Delay(200);
         put_claw_down_pile();
+        close_claw_2();
         HAL_Delay(500);
     }
     else
     {
         put_claw_down_near_ground();
-        HAL_Delay(500);
+        close_claw();
+        HAL_Delay(600);
+        close_claw_2();
+        HAL_Delay(100);
     }
     if(is_pile_up != 1)
     {
@@ -1758,7 +1773,7 @@ void close_claw(void)
 
 void close_claw_2(void)
 {
-    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, close_claw_position+1);
+    __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, close_claw_position-1);
 }
 
 
