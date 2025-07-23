@@ -74,10 +74,10 @@ const int put_claw_up_position =2408; //  看粗调移动底盘的位置
 
 //! 初赛物料
 const int servo_1_add_num = 0; //! 应对位置变化的调整量
-const int put_claw_down_state_position = 1328 + servo_1_add_num;
-const int put_claw_down_position = 2306+servo_1_add_num;  // 从转盘上取物料  
-const int put_claw_down_pile_position = 2491+servo_1_add_num; //码垛位置 
-const int put_claw_down_ground_position = 3645+servo_1_add_num; // 放在地上 3144  3796    +786
+const int put_claw_down_state_position = 1395 + servo_1_add_num;
+const int put_claw_down_position = 2323+servo_1_add_num;  // 从转盘上取物料  
+const int put_claw_down_pile_position = 2531+servo_1_add_num; //码垛位置 
+const int put_claw_down_ground_position = 3647+servo_1_add_num; // 放在地上 3144  3796    +786
 const int put_claw_down_near_ground_position = 3400+servo_1_add_num; //!细调放置的位置
 const int put_claw_down_near_plate_position = 2055+servo_1_add_num; //转盘放置细调的位置
     
@@ -151,7 +151,7 @@ const int r_back_position_rlimit = 2568; // 当theta超过rlimit，r的限制值
 //TODO 待测量（全部）
 const int shrink_arm = 2973;  //机械臂运动到从车上载物盘抓取物料
 const int stretch_arm = 1860; // 机械臂默认伸长位置
-const int shrink_arm_all = 1860;
+const int shrink_arm_all = 3100;
 
 
 //? 左中右三个动作对应的各自舵机参数
@@ -743,9 +743,12 @@ void new_get_and_load_openloop_avoid(int position,int is_default_position,materi
     HAL_Delay(300);  //?
     open_claw_avoid_collide();
     HAL_Delay(200);
+    arm_shrink_all();
+    HAL_Delay(200);
     state_spin_without_claw_avoid_collide(position);
-    HAL_Delay(500);
+    HAL_Delay(400);
     claw_spin_front();
+    arm_shrink();
     HAL_Delay(600);
     open_claw();
 
@@ -794,15 +797,16 @@ void new_get_and_load_openloop_with_temp_put(int position,int state_position)
     HAL_Delay(700); //? 
     put_claw_down_state(); //?
     HAL_Delay(300);  //?
-    open_claw_bigger();
+    open_claw_180();
+    arm_shrink_all();
     HAL_Delay(200);
     // put_claw_up_top();
     // HAL_Delay(400); //?
     state_spin_without_claw_avoid_collide(position);
-    HAL_Delay(400);
+    HAL_Delay(800);
     claw_spin_front();
     open_claw_avoid_collide();
-    HAL_Delay(600);
+    HAL_Delay(800);
     // arm_stretch();
     open_claw();
 
@@ -1025,12 +1029,13 @@ void new_get_and_pre_put_spin_plate_avoid_collide(int position)
     // HAL_Delay(500); //TODO 可能会撞到物料
     int temp_r_servo_position_plate = r_servo_now;
     int temp_theta_servo_position_plate = theta_servo_now;
-    arm_shrink(); //TODO 待区分
+    arm_shrink_all(); //TODO 待区分
     HAL_Delay(500);
     claw_spin_state_without_claw();
     HAL_Delay(400);
     put_claw_down_state();
     state_spin_without_claw(position);
+    arm_shrink();
     HAL_Delay(300); //400
     close_claw();
     HAL_Delay(600);
@@ -1133,7 +1138,7 @@ void new_get_and_pre_put_avoid(int position,int is_pile_up, int is_default_posit
     put_claw_down_state();
     HAL_Delay(600); //TODO 可能会撞到物料
     open_claw_avoid_collide();
-    arm_shrink(); //TODO 待区分
+    arm_shrink_all(); //TODO 待区分
     HAL_Delay(300);
     claw_spin_state();
     if(position == order->right) 
@@ -1197,6 +1202,7 @@ void new_get_and_pre_put_avoid(int position,int is_pile_up, int is_default_posit
         }
     }
     HAL_Delay(500);
+    arm_shrink();
     state_spin(position);
     HAL_Delay(200); //400
     close_claw();
@@ -1802,16 +1808,13 @@ void arm_shrink(void)
     // }
 }
 
-/// @brief 忘了干什么的
+/// @brief 机械臂伸长到最大
 /// @param  
 void arm_shrink_all(void)
 {
     // __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_1, arm_shrink_all_position);
-    if(ReadPos(4) < shrink_arm_all && ReadPos(4) >1500)
-    {
-        feetech_servo_move(4,shrink_arm_all,4095,feet_acc);
-        r_servo_now = shrink_arm_all;
-    }
+    feetech_servo_move(4,shrink_arm_all,4095,feet_acc);
+    r_servo_now = shrink_arm_all;
     
 }
 
