@@ -182,8 +182,8 @@ const float y_plate_k = 4.5;
 
 
 //! 调整的超时时间
-int timeout_limit = 600; // 超时时间限制，单位10ms
-int timeout_limit_line = 300;
+int timeout_limit = 800/2; // 超时时间限制，单位10ms
+int timeout_limit_line = 600/2;
 
 
 
@@ -526,6 +526,24 @@ int main(void)
 
     //! 单独决赛功能测试
     new_final_function_test(-1);
+
+
+    /**/
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, -14, 14);
+    // move_all_direction_position_delay(acceleration, open_loop_move_velocity, -14, 14,0);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 86);
+    // move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, 86,0);
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 82.5);
+    // move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, 82.5,0);
+
+    // move_all_direction_position(acceleration, open_loop_move_velocity, -89.5, 0);
+    // move_all_direction_position_delay(acceleration, open_loop_move_velocity, -89.5, 0,0);
+    // while(1)
+    // {
+    //     HAL_Delay(1000);
+    // }
 
 
     /***********************初赛所用的全流程***********************/
@@ -1625,7 +1643,7 @@ void new_material_get_and_put_some_with_load_first(material_get_and_put_struct* 
             tim3_count = 0;
             put_claw_down_near_ground();
             Reliable_UART_Transmit(&huart3, (uint8_t*)"nearground\n", strlen("nearground\n"), 1000);
-            while (is_servo_adjust != 0 ) 
+            while (is_servo_adjust != 0 && tim3_count < 600/2) 
             {
                 adjust_position_with_camera(x_camera_error, y_camera_error,1);  
                 HAL_Delay(adjust_position_with_camera_time); 
@@ -1679,7 +1697,7 @@ void new_material_get_and_put_some_with_load_first(material_get_and_put_struct* 
                 is_servo_adjust = 1;
                 tim3_count = 0;
                 Reliable_UART_Transmit(&huart3, (uint8_t*)"nearground\n", strlen("nearground\n"), 1000); 
-                while (is_servo_adjust != 0 && tim3_count < 400) 
+                while (is_servo_adjust != 0 && tim3_count < 600/2) 
                 {
                     adjust_position_with_camera(x_camera_error, y_camera_error,1);  
                     HAL_Delay(adjust_position_with_camera_time);
@@ -1863,7 +1881,7 @@ void new_get_from_plate_all_movement(int n, plate_get_struct* plate_struct ,int 
     int theta_servo_now_temp = 0;
     int is_first_get = 1;
     tim3_count = 0;
-    while(get_plate_count < n && tim3_count < 6000) //TODO 从转盘抓取n个色环或者超时，如果empty抓空，是否能给一个延时后直接离开
+    while(get_plate_count < n && tim3_count < 8000/2) //TODO 从转盘抓取n个色环或者超时，如果empty抓空，是否能给一个延时后直接离开
     {
         is_adjust_plate_servo = 1; //开始根据物料在转盘上的位置调整机械臂
         HAL_Delay(10);
@@ -1897,12 +1915,13 @@ void new_get_from_plate_all_movement(int n, plate_get_struct* plate_struct ,int 
             {
                 start_check_plate_back_state = 1;
                 Reliable_UART_Transmit(&huart3, (uint8_t*)"check\n", strlen("check\n"), 1000); //发给树莓派，开始判断是否抓空
-                HAL_Delay(1000); //只是延时，等待树莓派判断
+                HAL_Delay(700); //只是延时，等待树莓派判断
             }
             if(plate_struct->back_check == 1 && start_check_plate_back_state == 0) //抓空
             {
                 claw_spin_front();
                 HAL_Delay(500);
+                put_claw_up_top();
                 open_claw_180();
                 HAL_Delay(500);
                 arm_stretch();
@@ -1928,12 +1947,14 @@ void new_get_from_plate_all_movement(int n, plate_get_struct* plate_struct ,int 
                     HAL_Delay(300);  
                     open_claw_avoid_collide();
                     HAL_Delay(200);
-                    // put_claw_up_top();
+                    arm_shrink_all();
+                    put_claw_up_top();
                     state_spin_without_claw_avoid_collide(temp_plate);
                     HAL_Delay(500);
                     claw_spin_front();
                     HAL_Delay(600);
                     open_claw_180();
+                    arm_shrink();
                     put_claw_up_top(); 
                 }
 
@@ -1973,7 +1994,6 @@ void new_get_from_plate_all_movement(int n, plate_get_struct* plate_struct ,int 
     get_plate = 0;
     is_start_get_plate = 0;
 }
-
 
 /// @brief 国赛决赛使用 （未优化）转盘抓取（带有判断空抓）（先回到物料盘再判断）（需要提前完成爪子放低的动作）
 /// @param  
