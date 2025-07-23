@@ -27,9 +27,15 @@ Project File Date:  07/13/2025
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 7 (build 960)', folder: 'D:\MDK\ARM\ARMCC\Bin'
 Build target 'CCC_crazy_carrier_car'
+compiling my_servo.c...
+..\servo\my_servo.c(429): warning:  #177-D: variable "x_origin"  was declared but never referenced
+      int x_origin = x_error;
+..\servo\my_servo.c(430): warning:  #177-D: variable "y_origin"  was declared but never referenced
+      int y_origin = y_error;
+..\servo\my_servo.c(2038): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+      int position = (int)(50 + (200* (float)angle / 270.0));
+..\servo\my_servo.c: 3 warnings, 0 errors
 compiling main.c...
-../Core/Src/main.c(550): warning:  #111-D: statement is unreachable
-      old_all_process();
 ../Core/Src/main.c(709): warning:  #111-D: statement is unreachable
               break;
 ../Core/Src/main.c(718): warning:  #111-D: statement is unreachable
@@ -64,8 +70,8 @@ compiling main.c...
               break;
 ../Core/Src/main.c(1071): warning:  #111-D: statement is unreachable
               break;
-../Core/Src/main.c(1429): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
-      HAL_UART_Transmit(&huart3, pData, strlen(pData), 1000);
+../Core/Src/main.c(1430): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+      Reliable_UART_Transmit(&huart3, pData, strlen(pData), 1000);
 ../Core/Src/main.c(1758): warning:  #550-D: variable "r_servo_now_temp"  was set but never used
       int r_servo_now_temp = 0;
 ../Core/Src/main.c(1759): warning:  #550-D: variable "theta_servo_now_temp"  was set but never used
@@ -76,11 +82,11 @@ compiling main.c...
       int theta_servo_now_temp = 0;
 ../Core/Src/main.c(1882): warning:  #177-D: variable "is_first_get"  was declared but never referenced
       int is_first_get = 1;
-../Core/Src/main.c: 24 warnings, 0 errors
+../Core/Src/main.c: 23 warnings, 0 errors
 linking...
-Program Size: Code=31004 RO-data=716 RW-data=556 ZI-data=2612  
+Program Size: Code=32828 RO-data=716 RW-data=556 ZI-data=2612  
 FromELF: creating hex file...
-"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 24 Warning(s).
+"CCC_crazy_carrier_car\CCC_crazy_carrier_car.axf" - 0 Error(s), 26 Warning(s).
 
 <h2>Software Packages used:</h2>
 

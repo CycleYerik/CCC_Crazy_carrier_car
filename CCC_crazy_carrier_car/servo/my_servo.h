@@ -8,7 +8,7 @@
 
 //50ms
 
-
+extern HAL_StatusTypeDef Reliable_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
 
 void servo_move_with_limit(int d_theta_move_position,int d_r_move_position);
 
@@ -31,6 +31,7 @@ void put_claw_down_ground(void);
 void put_claw_down_ground_slightly(void);
 void put_claw_down_pile_slightly(void);
 void put_claw_down_near_ground(void);
+void put_claw_down_near_ground_move_and_line(void);
 void put_claw_down_state(void);
 void put_claw_down(void);
 void put_claw_down_slightly(void);

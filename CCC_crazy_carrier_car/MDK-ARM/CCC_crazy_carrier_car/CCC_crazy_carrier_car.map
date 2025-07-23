@@ -82,8 +82,7 @@ Section Cross References
     main.o(i.main) refers to main.o(i.new_motor_servo_screen_test) for new_motor_servo_screen_test
     main.o(i.main) refers to main.o(i.old_function_test) for old_function_test
     main.o(i.main) refers to main.o(i.new_final_function_test) for new_final_function_test
-    main.o(i.main) refers to motor.o(i.move_all_direction_position) for move_all_direction_position
-    main.o(i.main) refers to motor.o(i.move_all_direction_position_delay) for move_all_direction_position_delay
+    main.o(i.main) refers to main.o(i.old_all_process) for old_all_process
     main.o(i.main) refers to my_usart.o(.data) for received_rxdata_u5
     main.o(i.main) refers to usart.o(.bss) for huart5
     main.o(i.main) refers to my_usart.o(.bss) for rxdata_u3
@@ -113,7 +112,7 @@ Section Cross References
     main.o(i.new_get_and_put_in_spin_plate_cricle_all) refers to my_servo.o(.data) for y_camera_error
     main.o(i.new_get_and_put_in_spin_plate_cricle_all) refers to my_timer.o(.data) for tim3_count
     main.o(i.new_get_and_put_in_spin_plate_cricle_all_v2) refers to strlen.o(.text) for strlen
-    main.o(i.new_get_and_put_in_spin_plate_cricle_all_v2) refers to stm32f4xx_hal_uart.o(i.HAL_UART_Transmit) for HAL_UART_Transmit
+    main.o(i.new_get_and_put_in_spin_plate_cricle_all_v2) refers to main.o(i.Reliable_UART_Transmit) for Reliable_UART_Transmit
     main.o(i.new_get_and_put_in_spin_plate_cricle_all_v2) refers to my_servo.o(i.put_claw_down) for put_claw_down
     main.o(i.new_get_and_put_in_spin_plate_cricle_all_v2) refers to my_servo.o(i.open_claw_180) for open_claw_180
     main.o(i.new_get_and_put_in_spin_plate_cricle_all_v2) refers to my_servo.o(i.adjust_position_with_camera) for adjust_position_with_camera
@@ -257,7 +256,7 @@ Section Cross References
     main.o(i.old_all_process) refers to my_servo.o(i.arm_stretch) for arm_stretch
     main.o(i.old_all_process) refers to my_servo.o(i.whole_arm_spin) for whole_arm_spin
     main.o(i.old_all_process) refers to main.o(i.single_line_adjust) for single_line_adjust
-    main.o(i.old_all_process) refers to my_servo.o(i.put_claw_down_near_ground) for put_claw_down_near_ground
+    main.o(i.old_all_process) refers to my_servo.o(i.put_claw_down_near_ground_move_and_line) for put_claw_down_near_ground_move_and_line
     main.o(i.old_all_process) refers to main.o(i.single_line_circle_adjust) for single_line_circle_adjust
     main.o(i.old_all_process) refers to main.o(i.old_material_get_and_put_some_with_load_first) for old_material_get_and_put_some_with_load_first
     main.o(i.old_all_process) refers to main.o(.data) for .data
@@ -1174,6 +1173,7 @@ Section Cross References
     my_servo.o(i.put_claw_down_ground) refers to my_servo.o(i.feetech_servo_move) for feetech_servo_move
     my_servo.o(i.put_claw_down_ground_slightly) refers to my_servo.o(i.feetech_servo_move) for feetech_servo_move
     my_servo.o(i.put_claw_down_near_ground) refers to my_servo.o(i.feetech_servo_move) for feetech_servo_move
+    my_servo.o(i.put_claw_down_near_ground_move_and_line) refers to my_servo.o(i.feetech_servo_move) for feetech_servo_move
     my_servo.o(i.put_claw_down_near_plate) refers to my_servo.o(i.feetech_servo_move) for feetech_servo_move
     my_servo.o(i.put_claw_down_pile) refers to my_servo.o(i.feetech_servo_move) for feetech_servo_move
     my_servo.o(i.put_claw_down_pile_slightly) refers to my_servo.o(i.feetech_servo_move) for feetech_servo_move
@@ -1746,7 +1746,6 @@ Removing Unused input sections from the image.
     Removing main.o(i.guosai_test), (308 bytes).
     Removing main.o(i.new_get_and_put_in_spin_plate_cricle_all), (196 bytes).
     Removing main.o(i.new_get_from_plate_all_movement_with_back_check), (480 bytes).
-    Removing main.o(i.old_all_process), (2092 bytes).
     Removing main.o(i.single_circle_adjust), (136 bytes).
     Removing main.o(.bss), (400 bytes).
     Removing main.o(.constdata), (4 bytes).
@@ -2261,6 +2260,7 @@ Removing Unused input sections from the image.
     Removing my_servo.o(.constdata), (4 bytes).
     Removing my_servo.o(.constdata), (4 bytes).
     Removing my_servo.o(.constdata), (4 bytes).
+    Removing my_servo.o(.constdata), (4 bytes).
     Removing my_servo.o(.data), (4 bytes).
     Removing my_servo.o(.data), (4 bytes).
     Removing motor.o(.rev16_text), (4 bytes).
@@ -2334,7 +2334,7 @@ Removing Unused input sections from the image.
     Removing dfixul.o(.text), (48 bytes).
     Removing cdrcmple.o(.text), (48 bytes).
 
-595 unused section(s) (total 43241 bytes) removed from the image.
+595 unused section(s) (total 41153 bytes) removed from the image.
 
 ==============================================================================
 
@@ -2370,45 +2370,45 @@ Image Symbol Table
     ../clib/../cmprslib/zerorunl.c           0x00000000   Number         0  __dczerorl.o ABSOLUTE
     ../clib/microlib/division.c              0x00000000   Number         0  uldiv.o ABSOLUTE
     ../clib/microlib/division.c              0x00000000   Number         0  uidiv.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7b.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry5.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry2.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry12b.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry12a.o ABSOLUTE
-    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry7b.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11a.o ABSOLUTE
     ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10b.o ABSOLUTE
-    ../clib/microlib/longlong.c              0x00000000   Number         0  llshl.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry11b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry12a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry12b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry2.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry10a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9b.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry5.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry8a.o ABSOLUTE
+    ../clib/microlib/init/entry.s            0x00000000   Number         0  entry9a.o ABSOLUTE
     ../clib/microlib/longlong.c              0x00000000   Number         0  llsshr.o ABSOLUTE
+    ../clib/microlib/longlong.c              0x00000000   Number         0  llshl.o ABSOLUTE
     ../clib/microlib/longlong.c              0x00000000   Number         0  llushr.o ABSOLUTE
-    ../clib/microlib/malloc/malloc.c         0x00000000   Number         0  mallocr.o ABSOLUTE
-    ../clib/microlib/malloc/malloc.c         0x00000000   Number         0  malloc.o ABSOLUTE
     ../clib/microlib/malloc/malloc.c         0x00000000   Number         0  malloca.o ABSOLUTE
+    ../clib/microlib/malloc/malloc.c         0x00000000   Number         0  mallocr.o ABSOLUTE
     ../clib/microlib/malloc/malloc.c         0x00000000   Number         0  mallocra.o ABSOLUTE
+    ../clib/microlib/malloc/malloc.c         0x00000000   Number         0  malloc.o ABSOLUTE
     ../clib/microlib/malloc/mvars.c          0x00000000   Number         0  mvars.o ABSOLUTE
-    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printfa.o ABSOLUTE
+    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf4.o ABSOLUTE
     ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf3.o ABSOLUTE
-    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf1.o ABSOLUTE
-    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf8.o ABSOLUTE
-    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf0.o ABSOLUTE
     ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf2.o ABSOLUTE
-    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf7.o ABSOLUTE
+    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf0.o ABSOLUTE
     ../clib/microlib/printf/printf.c         0x00000000   Number         0  printfb.o ABSOLUTE
+    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf1.o ABSOLUTE
+    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printfa.o ABSOLUTE
+    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf8.o ABSOLUTE
+    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf7.o ABSOLUTE
     ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf6.o ABSOLUTE
     ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf5.o ABSOLUTE
-    ../clib/microlib/printf/printf.c         0x00000000   Number         0  printf4.o ABSOLUTE
     ../clib/microlib/printf/stubs.s          0x00000000   Number         0  stubs.o ABSOLUTE
     ../clib/microlib/stdio/streams.c         0x00000000   Number         0  stdout.o ABSOLUTE
     ../clib/microlib/stdlib/rand.c           0x00000000   Number         0  rand.o ABSOLUTE
-    ../clib/microlib/string/memcpy.c         0x00000000   Number         0  memcpyb.o ABSOLUTE
     ../clib/microlib/string/memcpy.c         0x00000000   Number         0  memcpya.o ABSOLUTE
+    ../clib/microlib/string/memcpy.c         0x00000000   Number         0  memcpyb.o ABSOLUTE
     ../clib/microlib/string/memset.c         0x00000000   Number         0  memseta.o ABSOLUTE
     ../clib/microlib/string/strlen.c         0x00000000   Number         0  strlen.o ABSOLUTE
     ../clib/microlib/stubs.s                 0x00000000   Number         0  iusefp.o ABSOLUTE
@@ -2418,11 +2418,11 @@ Image Symbol Table
     ../fplib/microlib/fpdiv.c                0x00000000   Number         0  ddiv.o ABSOLUTE
     ../fplib/microlib/fpepilogue.c           0x00000000   Number         0  depilogue.o ABSOLUTE
     ../fplib/microlib/fpepilogue.c           0x00000000   Number         0  fepilogue.o ABSOLUTE
-    ../fplib/microlib/fpfix.c                0x00000000   Number         0  dfixi.o ABSOLUTE
     ../fplib/microlib/fpfix.c                0x00000000   Number         0  dfixui.o ABSOLUTE
+    ../fplib/microlib/fpfix.c                0x00000000   Number         0  dfixi.o ABSOLUTE
     ../fplib/microlib/fpfix.c                0x00000000   Number         0  dfixul.o ABSOLUTE
-    ../fplib/microlib/fpflt.c                0x00000000   Number         0  dflti.o ABSOLUTE
     ../fplib/microlib/fpflt.c                0x00000000   Number         0  dfltui.o ABSOLUTE
+    ../fplib/microlib/fpflt.c                0x00000000   Number         0  dflti.o ABSOLUTE
     ../fplib/microlib/fpmul.c                0x00000000   Number         0  dmul.o ABSOLUTE
     ..\Core\Src\gpio.c                       0x00000000   Number         0  gpio.o ABSOLUTE
     ..\Core\Src\main.c                       0x00000000   Number         0  main.o ABSOLUTE
@@ -2660,101 +2660,103 @@ Image Symbol Table
     i.get_clk                                0x0800429c   Section        0  motor.o(i.get_clk)
     i.get_distance_time                      0x080042c0   Section        0  motor.o(i.get_distance_time)
     i.main                                   0x080042e8   Section        0  main.o(i.main)
-    i.move_all_direction_position            0x08004530   Section        0  motor.o(i.move_all_direction_position)
-    i.move_all_direction_position_delay      0x08004838   Section        0  motor.o(i.move_all_direction_position_delay)
-    i.move_all_direction_tim                 0x0800492c   Section        0  motor.o(i.move_all_direction_tim)
-    i.my_servo_init                          0x08004b44   Section        0  my_servo.o(i.my_servo_init)
-    i.new_final_function_test                0x08004b4c   Section        0  main.o(i.new_final_function_test)
-    i.new_get_and_load_openloop              0x08004b90   Section        0  my_servo.o(i.new_get_and_load_openloop)
-    i.new_get_and_load_openloop_avoid        0x08004da0   Section        0  my_servo.o(i.new_get_and_load_openloop_avoid)
-    i.new_get_and_load_openloop_with_temp_put 0x08004f7c   Section        0  my_servo.o(i.new_get_and_load_openloop_with_temp_put)
-    i.new_get_and_pre_put                    0x08005074   Section        0  my_servo.o(i.new_get_and_pre_put)
-    i.new_get_and_pre_put_avoid              0x08005204   Section        0  my_servo.o(i.new_get_and_pre_put_avoid)
-    i.new_get_and_pre_put_spin_plate_avoid_collide 0x080053b0   Section        0  my_servo.o(i.new_get_and_pre_put_spin_plate_avoid_collide)
-    i.new_get_and_pre_put_void               0x08005458   Section        0  my_servo.o(i.new_get_and_pre_put_void)
-    i.new_get_and_put_in_spin_plate_cricle_all_v2 0x08005530   Section        0  main.o(i.new_get_and_put_in_spin_plate_cricle_all_v2)
-    i.new_get_and_put_spin_plate             0x0800562c   Section        0  my_servo.o(i.new_get_and_put_spin_plate)
-    i.new_get_from_ground_in_random_position 0x080056c8   Section        0  main.o(i.new_get_from_ground_in_random_position)
-    i.new_get_from_plate_all_movement        0x080057e4   Section        0  main.o(i.new_get_from_plate_all_movement)
-    i.new_material_get_and_put_some_with_load_first 0x080059ec   Section        0  main.o(i.new_material_get_and_put_some_with_load_first)
-    i.new_material_test                      0x08005c44   Section        0  main.o(i.new_material_test)
-    i.new_motor_servo_screen_test            0x08005dbc   Section        0  main.o(i.new_motor_servo_screen_test)
-    i.nopDelay                               0x08005f18   Section        0  scserail.o(i.nopDelay)
-    i.old_function_test                      0x08005f24   Section        0  main.o(i.old_function_test)
-    i.old_get_from_plate_all_movement        0x080061b8   Section        0  main.o(i.old_get_from_plate_all_movement)
-    i.old_material_get_and_put_some_with_load_first 0x0800639c   Section        0  main.o(i.old_material_get_and_put_some_with_load_first)
-    i.old_new_init_car_arm                   0x08006564   Section        0  main.o(i.old_new_init_car_arm)
-    i.open_claw                              0x0800658c   Section        0  my_servo.o(i.open_claw)
-    i.open_claw_180                          0x0800659c   Section        0  my_servo.o(i.open_claw_180)
-    i.open_claw_avoid_collide                0x080065ac   Section        0  my_servo.o(i.open_claw_avoid_collide)
-    i.open_claw_bigger                       0x080065bc   Section        0  my_servo.o(i.open_claw_bigger)
-    i.print_clear_screen                     0x080065cc   Section        0  main.o(i.print_clear_screen)
-    i.print_show_origin_data                 0x08006638   Section        0  main.o(i.print_show_origin_data)
-    i.print_to_screen                        0x08006818   Section        0  main.o(i.print_to_screen)
-    i.put_claw_down                          0x08006850   Section        0  my_servo.o(i.put_claw_down)
-    i.put_claw_down_ground                   0x08006860   Section        0  my_servo.o(i.put_claw_down_ground)
-    i.put_claw_down_ground_slightly          0x08006870   Section        0  my_servo.o(i.put_claw_down_ground_slightly)
-    i.put_claw_down_near_ground              0x08006880   Section        0  my_servo.o(i.put_claw_down_near_ground)
-    i.put_claw_down_pile                     0x08006890   Section        0  my_servo.o(i.put_claw_down_pile)
-    i.put_claw_down_pile_slightly            0x080068a0   Section        0  my_servo.o(i.put_claw_down_pile_slightly)
-    i.put_claw_down_slightly                 0x080068b0   Section        0  my_servo.o(i.put_claw_down_slightly)
-    i.put_claw_down_state                    0x080068c0   Section        0  my_servo.o(i.put_claw_down_state)
-    i.put_claw_up                            0x080068d0   Section        0  my_servo.o(i.put_claw_up)
-    i.put_claw_up_top                        0x080068e0   Section        0  my_servo.o(i.put_claw_up_top)
-    i.put_claw_up_top_slight                 0x080068f0   Section        0  my_servo.o(i.put_claw_up_top_slight)
-    i.rFlushSCS                              0x08006900   Section        0  scserail.o(i.rFlushSCS)
-    i.readSCS                                0x08006904   Section        0  scserail.o(i.readSCS)
-    i.readWord                               0x08006914   Section        0  scs.o(i.readWord)
-    i.servo_move_with_limit                  0x08006938   Section        0  my_servo.o(i.servo_move_with_limit)
-    i.single_line_adjust                     0x08006a08   Section        0  main.o(i.single_line_adjust)
-    i.single_line_circle_adjust              0x08006a80   Section        0  main.o(i.single_line_circle_adjust)
-    i.slight_spin_and_move                   0x08006b00   Section        0  motor.o(i.slight_spin_and_move)
-    i.spin_all_direction_tim                 0x080071c0   Section        0  motor.o(i.spin_all_direction_tim)
-    i.spin_left_180                          0x080072f4   Section        0  motor.o(i.spin_left_180)
-    i.spin_left_90                           0x08007380   Section        0  motor.o(i.spin_left_90)
-    i.spin_right                             0x0800740c   Section        0  motor.o(i.spin_right)
-    i.spin_right_180                         0x080074f4   Section        0  motor.o(i.spin_right_180)
-    i.spin_right_90                          0x08007580   Section        0  motor.o(i.spin_right_90)
-    i.state_spin                             0x0800760c   Section        0  my_servo.o(i.state_spin)
-    i.state_spin_angles                      0x08007630   Section        0  my_servo.o(i.state_spin_angles)
-    i.state_spin_without_claw                0x0800763c   Section        0  my_servo.o(i.state_spin_without_claw)
-    i.state_spin_without_claw_avoid_collide  0x08007660   Section        0  my_servo.o(i.state_spin_without_claw_avoid_collide)
-    i.stop                                   0x08007680   Section        0  motor.o(i.stop)
-    i.test_new_material_all_process          0x080076c0   Section        0  main.o(i.test_new_material_all_process)
-    i.usart_SendByte_u1                      0x08007940   Section        0  my_usart.o(i.usart_SendByte_u1)
-    i.usart_SendCmd_u1                       0x08007978   Section        0  my_usart.o(i.usart_SendCmd_u1)
-    i.wFlushSCS                              0x080079a4   Section        0  scserail.o(i.wFlushSCS)
-    i.whole_arm_spin                         0x080079c4   Section        0  my_servo.o(i.whole_arm_spin)
-    i.writeBuf                               0x080079e8   Section        0  scs.o(i.writeBuf)
-    i.writeSCS                               0x08007a7c   Section        0  scserail.o(i.writeSCS)
-    .constdata                               0x08007aa4   Section        4  main.o(.constdata)
-    .constdata                               0x08007aa8   Section        4  main.o(.constdata)
-    .constdata                               0x08007aac   Section        4  main.o(.constdata)
-    .constdata                               0x08007ab0   Section        4  main.o(.constdata)
-    .constdata                               0x08007ab4   Section        4  main.o(.constdata)
-    .constdata                               0x08007ab8   Section        4  main.o(.constdata)
-    .constdata                               0x08007abc   Section        4  main.o(.constdata)
-    .constdata                               0x08007ac0   Section        4  main.o(.constdata)
-    .constdata                               0x08007ac4   Section        4  main.o(.constdata)
-    .constdata                               0x08007ac8   Section        4  main.o(.constdata)
-    .constdata                               0x08007acc   Section        4  main.o(.constdata)
-    .constdata                               0x08007ad0   Section        4  main.o(.constdata)
-    .constdata                               0x08007ad4   Section        4  main.o(.constdata)
-    .constdata                               0x08007ad8   Section        4  main.o(.constdata)
-    .constdata                               0x08007adc   Section        4  main.o(.constdata)
-    .constdata                               0x08007ae0   Section        4  main.o(.constdata)
-    .constdata                               0x08007ae4   Section        4  main.o(.constdata)
-    .constdata                               0x08007ae8   Section        4  main.o(.constdata)
-    .constdata                               0x08007aec   Section        4  main.o(.constdata)
-    .constdata                               0x08007af0   Section        4  main.o(.constdata)
-    .constdata                               0x08007af4   Section        4  main.o(.constdata)
-    .constdata                               0x08007af8   Section        4  main.o(.constdata)
-    .constdata                               0x08007afc   Section        4  main.o(.constdata)
-    .constdata                               0x08007b00   Section      168  main.o(.constdata)
-    .constdata                               0x08007ba8   Section       16  system_stm32f4xx.o(.constdata)
-    .constdata                               0x08007bb8   Section        8  system_stm32f4xx.o(.constdata)
-    .constdata                               0x08007bc0   Section        4  my_servo.o(.constdata)
-    .constdata                               0x08007bc4   Section        4  my_servo.o(.constdata)
+    i.move_all_direction_position            0x0800440c   Section        0  motor.o(i.move_all_direction_position)
+    i.move_all_direction_position_delay      0x08004714   Section        0  motor.o(i.move_all_direction_position_delay)
+    i.move_all_direction_tim                 0x08004808   Section        0  motor.o(i.move_all_direction_tim)
+    i.my_servo_init                          0x08004a20   Section        0  my_servo.o(i.my_servo_init)
+    i.new_final_function_test                0x08004a28   Section        0  main.o(i.new_final_function_test)
+    i.new_get_and_load_openloop              0x08004a6c   Section        0  my_servo.o(i.new_get_and_load_openloop)
+    i.new_get_and_load_openloop_avoid        0x08004c7c   Section        0  my_servo.o(i.new_get_and_load_openloop_avoid)
+    i.new_get_and_load_openloop_with_temp_put 0x08004e58   Section        0  my_servo.o(i.new_get_and_load_openloop_with_temp_put)
+    i.new_get_and_pre_put                    0x08004f50   Section        0  my_servo.o(i.new_get_and_pre_put)
+    i.new_get_and_pre_put_avoid              0x080050e0   Section        0  my_servo.o(i.new_get_and_pre_put_avoid)
+    i.new_get_and_pre_put_spin_plate_avoid_collide 0x0800528c   Section        0  my_servo.o(i.new_get_and_pre_put_spin_plate_avoid_collide)
+    i.new_get_and_pre_put_void               0x08005334   Section        0  my_servo.o(i.new_get_and_pre_put_void)
+    i.new_get_and_put_in_spin_plate_cricle_all_v2 0x0800540c   Section        0  main.o(i.new_get_and_put_in_spin_plate_cricle_all_v2)
+    i.new_get_and_put_spin_plate             0x08005508   Section        0  my_servo.o(i.new_get_and_put_spin_plate)
+    i.new_get_from_ground_in_random_position 0x080055a4   Section        0  main.o(i.new_get_from_ground_in_random_position)
+    i.new_get_from_plate_all_movement        0x080056c0   Section        0  main.o(i.new_get_from_plate_all_movement)
+    i.new_material_get_and_put_some_with_load_first 0x080058c8   Section        0  main.o(i.new_material_get_and_put_some_with_load_first)
+    i.new_material_test                      0x08005b20   Section        0  main.o(i.new_material_test)
+    i.new_motor_servo_screen_test            0x08005c98   Section        0  main.o(i.new_motor_servo_screen_test)
+    i.nopDelay                               0x08005df4   Section        0  scserail.o(i.nopDelay)
+    i.old_all_process                        0x08005e00   Section        0  main.o(i.old_all_process)
+    i.old_function_test                      0x08006634   Section        0  main.o(i.old_function_test)
+    i.old_get_from_plate_all_movement        0x080068c8   Section        0  main.o(i.old_get_from_plate_all_movement)
+    i.old_material_get_and_put_some_with_load_first 0x08006aac   Section        0  main.o(i.old_material_get_and_put_some_with_load_first)
+    i.old_new_init_car_arm                   0x08006c74   Section        0  main.o(i.old_new_init_car_arm)
+    i.open_claw                              0x08006c9c   Section        0  my_servo.o(i.open_claw)
+    i.open_claw_180                          0x08006cac   Section        0  my_servo.o(i.open_claw_180)
+    i.open_claw_avoid_collide                0x08006cbc   Section        0  my_servo.o(i.open_claw_avoid_collide)
+    i.open_claw_bigger                       0x08006ccc   Section        0  my_servo.o(i.open_claw_bigger)
+    i.print_clear_screen                     0x08006cdc   Section        0  main.o(i.print_clear_screen)
+    i.print_show_origin_data                 0x08006d48   Section        0  main.o(i.print_show_origin_data)
+    i.print_to_screen                        0x08006f28   Section        0  main.o(i.print_to_screen)
+    i.put_claw_down                          0x08006f60   Section        0  my_servo.o(i.put_claw_down)
+    i.put_claw_down_ground                   0x08006f70   Section        0  my_servo.o(i.put_claw_down_ground)
+    i.put_claw_down_ground_slightly          0x08006f80   Section        0  my_servo.o(i.put_claw_down_ground_slightly)
+    i.put_claw_down_near_ground              0x08006f90   Section        0  my_servo.o(i.put_claw_down_near_ground)
+    i.put_claw_down_near_ground_move_and_line 0x08006fa0   Section        0  my_servo.o(i.put_claw_down_near_ground_move_and_line)
+    i.put_claw_down_pile                     0x08006fb0   Section        0  my_servo.o(i.put_claw_down_pile)
+    i.put_claw_down_pile_slightly            0x08006fc0   Section        0  my_servo.o(i.put_claw_down_pile_slightly)
+    i.put_claw_down_slightly                 0x08006fd0   Section        0  my_servo.o(i.put_claw_down_slightly)
+    i.put_claw_down_state                    0x08006fe0   Section        0  my_servo.o(i.put_claw_down_state)
+    i.put_claw_up                            0x08006ff0   Section        0  my_servo.o(i.put_claw_up)
+    i.put_claw_up_top                        0x08007000   Section        0  my_servo.o(i.put_claw_up_top)
+    i.put_claw_up_top_slight                 0x08007010   Section        0  my_servo.o(i.put_claw_up_top_slight)
+    i.rFlushSCS                              0x08007020   Section        0  scserail.o(i.rFlushSCS)
+    i.readSCS                                0x08007024   Section        0  scserail.o(i.readSCS)
+    i.readWord                               0x08007034   Section        0  scs.o(i.readWord)
+    i.servo_move_with_limit                  0x08007058   Section        0  my_servo.o(i.servo_move_with_limit)
+    i.single_line_adjust                     0x08007128   Section        0  main.o(i.single_line_adjust)
+    i.single_line_circle_adjust              0x080071a0   Section        0  main.o(i.single_line_circle_adjust)
+    i.slight_spin_and_move                   0x08007220   Section        0  motor.o(i.slight_spin_and_move)
+    i.spin_all_direction_tim                 0x080078e0   Section        0  motor.o(i.spin_all_direction_tim)
+    i.spin_left_180                          0x08007a14   Section        0  motor.o(i.spin_left_180)
+    i.spin_left_90                           0x08007aa0   Section        0  motor.o(i.spin_left_90)
+    i.spin_right                             0x08007b2c   Section        0  motor.o(i.spin_right)
+    i.spin_right_180                         0x08007c14   Section        0  motor.o(i.spin_right_180)
+    i.spin_right_90                          0x08007ca0   Section        0  motor.o(i.spin_right_90)
+    i.state_spin                             0x08007d2c   Section        0  my_servo.o(i.state_spin)
+    i.state_spin_angles                      0x08007d50   Section        0  my_servo.o(i.state_spin_angles)
+    i.state_spin_without_claw                0x08007d5c   Section        0  my_servo.o(i.state_spin_without_claw)
+    i.state_spin_without_claw_avoid_collide  0x08007d80   Section        0  my_servo.o(i.state_spin_without_claw_avoid_collide)
+    i.stop                                   0x08007da0   Section        0  motor.o(i.stop)
+    i.test_new_material_all_process          0x08007de0   Section        0  main.o(i.test_new_material_all_process)
+    i.usart_SendByte_u1                      0x08008060   Section        0  my_usart.o(i.usart_SendByte_u1)
+    i.usart_SendCmd_u1                       0x08008098   Section        0  my_usart.o(i.usart_SendCmd_u1)
+    i.wFlushSCS                              0x080080c4   Section        0  scserail.o(i.wFlushSCS)
+    i.whole_arm_spin                         0x080080e4   Section        0  my_servo.o(i.whole_arm_spin)
+    i.writeBuf                               0x08008108   Section        0  scs.o(i.writeBuf)
+    i.writeSCS                               0x0800819c   Section        0  scserail.o(i.writeSCS)
+    .constdata                               0x080081c4   Section        4  main.o(.constdata)
+    .constdata                               0x080081c8   Section        4  main.o(.constdata)
+    .constdata                               0x080081cc   Section        4  main.o(.constdata)
+    .constdata                               0x080081d0   Section        4  main.o(.constdata)
+    .constdata                               0x080081d4   Section        4  main.o(.constdata)
+    .constdata                               0x080081d8   Section        4  main.o(.constdata)
+    .constdata                               0x080081dc   Section        4  main.o(.constdata)
+    .constdata                               0x080081e0   Section        4  main.o(.constdata)
+    .constdata                               0x080081e4   Section        4  main.o(.constdata)
+    .constdata                               0x080081e8   Section        4  main.o(.constdata)
+    .constdata                               0x080081ec   Section        4  main.o(.constdata)
+    .constdata                               0x080081f0   Section        4  main.o(.constdata)
+    .constdata                               0x080081f4   Section        4  main.o(.constdata)
+    .constdata                               0x080081f8   Section        4  main.o(.constdata)
+    .constdata                               0x080081fc   Section        4  main.o(.constdata)
+    .constdata                               0x08008200   Section        4  main.o(.constdata)
+    .constdata                               0x08008204   Section        4  main.o(.constdata)
+    .constdata                               0x08008208   Section        4  main.o(.constdata)
+    .constdata                               0x0800820c   Section        4  main.o(.constdata)
+    .constdata                               0x08008210   Section        4  main.o(.constdata)
+    .constdata                               0x08008214   Section        4  main.o(.constdata)
+    .constdata                               0x08008218   Section        4  main.o(.constdata)
+    .constdata                               0x0800821c   Section        4  main.o(.constdata)
+    .constdata                               0x08008220   Section      168  main.o(.constdata)
+    .constdata                               0x080082c8   Section       16  system_stm32f4xx.o(.constdata)
+    .constdata                               0x080082d8   Section        8  system_stm32f4xx.o(.constdata)
+    .constdata                               0x080082e0   Section        4  my_servo.o(.constdata)
+    .constdata                               0x080082e4   Section        4  my_servo.o(.constdata)
     .data                                    0x20000000   Section      172  main.o(.data)
     adjust_delay                             0x2000007c   Data           4  main.o(.data)
     adjust_delay                             0x20000080   Data           4  main.o(.data)
@@ -3122,103 +3124,105 @@ Image Symbol Table
     get_and_pre_put                          0x0800412d   Thumb Code   354  my_servo.o(i.get_and_pre_put)
     get_clk                                  0x0800429d   Thumb Code    26  motor.o(i.get_clk)
     get_distance_time                        0x080042c1   Thumb Code    30  motor.o(i.get_distance_time)
-    main                                     0x080042e9   Thumb Code   510  main.o(i.main)
-    move_all_direction_position              0x08004531   Thumb Code   770  motor.o(i.move_all_direction_position)
-    move_all_direction_position_delay        0x08004839   Thumb Code   236  motor.o(i.move_all_direction_position_delay)
-    move_all_direction_tim                   0x0800492d   Thumb Code   536  motor.o(i.move_all_direction_tim)
-    my_servo_init                            0x08004b45   Thumb Code     8  my_servo.o(i.my_servo_init)
-    new_final_function_test                  0x08004b4d   Thumb Code    60  main.o(i.new_final_function_test)
-    new_get_and_load_openloop                0x08004b91   Thumb Code   514  my_servo.o(i.new_get_and_load_openloop)
-    new_get_and_load_openloop_avoid          0x08004da1   Thumb Code   462  my_servo.o(i.new_get_and_load_openloop_avoid)
-    new_get_and_load_openloop_with_temp_put  0x08004f7d   Thumb Code   242  my_servo.o(i.new_get_and_load_openloop_with_temp_put)
-    new_get_and_pre_put                      0x08005075   Thumb Code   374  my_servo.o(i.new_get_and_pre_put)
-    new_get_and_pre_put_avoid                0x08005205   Thumb Code   404  my_servo.o(i.new_get_and_pre_put_avoid)
-    new_get_and_pre_put_spin_plate_avoid_collide 0x080053b1   Thumb Code   162  my_servo.o(i.new_get_and_pre_put_spin_plate_avoid_collide)
-    new_get_and_pre_put_void                 0x08005459   Thumb Code   212  my_servo.o(i.new_get_and_pre_put_void)
-    new_get_and_put_in_spin_plate_cricle_all_v2 0x08005531   Thumb Code   224  main.o(i.new_get_and_put_in_spin_plate_cricle_all_v2)
-    new_get_and_put_spin_plate               0x0800562d   Thumb Code   152  my_servo.o(i.new_get_and_put_spin_plate)
-    new_get_from_ground_in_random_position   0x080056c9   Thumb Code   246  main.o(i.new_get_from_ground_in_random_position)
-    new_get_from_plate_all_movement          0x080057e5   Thumb Code   490  main.o(i.new_get_from_plate_all_movement)
-    new_material_get_and_put_some_with_load_first 0x080059ed   Thumb Code   556  main.o(i.new_material_get_and_put_some_with_load_first)
-    new_material_test                        0x08005c45   Thumb Code   360  main.o(i.new_material_test)
-    new_motor_servo_screen_test              0x08005dbd   Thumb Code   296  main.o(i.new_motor_servo_screen_test)
-    nopDelay                                 0x08005f19   Thumb Code    12  scserail.o(i.nopDelay)
-    old_function_test                        0x08005f25   Thumb Code   622  main.o(i.old_function_test)
-    old_get_from_plate_all_movement          0x080061b9   Thumb Code   446  main.o(i.old_get_from_plate_all_movement)
-    old_material_get_and_put_some_with_load_first 0x0800639d   Thumb Code   406  main.o(i.old_material_get_and_put_some_with_load_first)
-    old_new_init_car_arm                     0x08006565   Thumb Code    40  main.o(i.old_new_init_car_arm)
-    open_claw                                0x0800658d   Thumb Code    10  my_servo.o(i.open_claw)
-    open_claw_180                            0x0800659d   Thumb Code    10  my_servo.o(i.open_claw_180)
-    open_claw_avoid_collide                  0x080065ad   Thumb Code    10  my_servo.o(i.open_claw_avoid_collide)
-    open_claw_bigger                         0x080065bd   Thumb Code    10  my_servo.o(i.open_claw_bigger)
-    print_clear_screen                       0x080065cd   Thumb Code    48  main.o(i.print_clear_screen)
-    print_show_origin_data                   0x08006639   Thumb Code   334  main.o(i.print_show_origin_data)
-    print_to_screen                          0x08006819   Thumb Code    34  main.o(i.print_to_screen)
-    put_claw_down                            0x08006851   Thumb Code    16  my_servo.o(i.put_claw_down)
-    put_claw_down_ground                     0x08006861   Thumb Code    16  my_servo.o(i.put_claw_down_ground)
-    put_claw_down_ground_slightly            0x08006871   Thumb Code    16  my_servo.o(i.put_claw_down_ground_slightly)
-    put_claw_down_near_ground                0x08006881   Thumb Code    16  my_servo.o(i.put_claw_down_near_ground)
-    put_claw_down_pile                       0x08006891   Thumb Code    16  my_servo.o(i.put_claw_down_pile)
-    put_claw_down_pile_slightly              0x080068a1   Thumb Code    16  my_servo.o(i.put_claw_down_pile_slightly)
-    put_claw_down_slightly                   0x080068b1   Thumb Code    16  my_servo.o(i.put_claw_down_slightly)
-    put_claw_down_state                      0x080068c1   Thumb Code    16  my_servo.o(i.put_claw_down_state)
-    put_claw_up                              0x080068d1   Thumb Code    16  my_servo.o(i.put_claw_up)
-    put_claw_up_top                          0x080068e1   Thumb Code    16  my_servo.o(i.put_claw_up_top)
-    put_claw_up_top_slight                   0x080068f1   Thumb Code    16  my_servo.o(i.put_claw_up_top_slight)
-    rFlushSCS                                0x08006901   Thumb Code     4  scserail.o(i.rFlushSCS)
-    readSCS                                  0x08006905   Thumb Code    10  scserail.o(i.readSCS)
-    readWord                                 0x08006915   Thumb Code    36  scs.o(i.readWord)
-    servo_move_with_limit                    0x08006939   Thumb Code   164  my_servo.o(i.servo_move_with_limit)
-    single_line_adjust                       0x08006a09   Thumb Code   104  main.o(i.single_line_adjust)
-    single_line_circle_adjust                0x08006a81   Thumb Code   112  main.o(i.single_line_circle_adjust)
-    slight_spin_and_move                     0x08006b01   Thumb Code  1718  motor.o(i.slight_spin_and_move)
-    spin_all_direction_tim                   0x080071c1   Thumb Code   302  motor.o(i.spin_all_direction_tim)
-    spin_left_180                            0x080072f5   Thumb Code   136  motor.o(i.spin_left_180)
-    spin_left_90                             0x08007381   Thumb Code   136  motor.o(i.spin_left_90)
-    spin_right                               0x0800740d   Thumb Code   198  motor.o(i.spin_right)
-    spin_right_180                           0x080074f5   Thumb Code   136  motor.o(i.spin_right_180)
-    spin_right_90                            0x08007581   Thumb Code   136  motor.o(i.spin_right_90)
-    state_spin                               0x0800760d   Thumb Code    30  my_servo.o(i.state_spin)
-    state_spin_angles                        0x08007631   Thumb Code     8  my_servo.o(i.state_spin_angles)
-    state_spin_without_claw                  0x0800763d   Thumb Code    30  my_servo.o(i.state_spin_without_claw)
-    state_spin_without_claw_avoid_collide    0x08007661   Thumb Code    28  my_servo.o(i.state_spin_without_claw_avoid_collide)
-    stop                                     0x08007681   Thumb Code    62  motor.o(i.stop)
-    test_new_material_all_process            0x080076c1   Thumb Code   578  main.o(i.test_new_material_all_process)
-    usart_SendByte_u1                        0x08007941   Thumb Code    50  my_usart.o(i.usart_SendByte_u1)
-    usart_SendCmd_u1                         0x08007979   Thumb Code    44  my_usart.o(i.usart_SendCmd_u1)
-    wFlushSCS                                0x080079a5   Thumb Code    22  scserail.o(i.wFlushSCS)
-    whole_arm_spin                           0x080079c5   Thumb Code    30  my_servo.o(i.whole_arm_spin)
-    writeBuf                                 0x080079e9   Thumb Code   148  scs.o(i.writeBuf)
-    writeSCS                                 0x08007a7d   Thumb Code    32  scserail.o(i.writeSCS)
-    Kp_slight_move                           0x08007aa4   Data           4  main.o(.constdata)
-    Ki_slight_move                           0x08007aa8   Data           4  main.o(.constdata)
-    Kd_slight_move                           0x08007aac   Data           4  main.o(.constdata)
-    Kp_line_spin                             0x08007ab0   Data           4  main.o(.constdata)
-    Ki_line_spin                             0x08007ab4   Data           4  main.o(.constdata)
-    Kd_line_spin                             0x08007ab8   Data           4  main.o(.constdata)
-    xy_move_k                                0x08007abc   Data           4  main.o(.constdata)
-    adjust_spin_scale                        0x08007ac0   Data           4  main.o(.constdata)
-    adjust_move_scale                        0x08007ac4   Data           4  main.o(.constdata)
-    spin_limit_max                           0x08007ac8   Data           4  main.o(.constdata)
-    spin_limit_min                           0x08007acc   Data           4  main.o(.constdata)
-    move_limit_max                           0x08007ad0   Data           4  main.o(.constdata)
-    move_limit_min                           0x08007ad4   Data           4  main.o(.constdata)
-    Kp_theta                                 0x08007ad8   Data           4  main.o(.constdata)
-    Ki_theta                                 0x08007adc   Data           4  main.o(.constdata)
-    Kd_theta                                 0x08007ae0   Data           4  main.o(.constdata)
-    Kp_r                                     0x08007ae4   Data           4  main.o(.constdata)
-    Ki_r                                     0x08007ae8   Data           4  main.o(.constdata)
-    Kd_r                                     0x08007aec   Data           4  main.o(.constdata)
-    pixel_to_distance_theta                  0x08007af0   Data           4  main.o(.constdata)
-    pixel_to_distance_r                      0x08007af4   Data           4  main.o(.constdata)
-    x_plate_k                                0x08007af8   Data           4  main.o(.constdata)
-    y_plate_k                                0x08007afc   Data           4  main.o(.constdata)
-    AHBPrescTable                            0x08007ba8   Data          16  system_stm32f4xx.o(.constdata)
-    APBPrescTable                            0x08007bb8   Data           8  system_stm32f4xx.o(.constdata)
-    middle_arm                               0x08007bc0   Data           4  my_servo.o(.constdata)
-    stretch_arm                              0x08007bc4   Data           4  my_servo.o(.constdata)
-    Region$$Table$$Base                      0x08007bc8   Number         0  anon$$obj.o(Region$$Table)
-    Region$$Table$$Limit                     0x08007be8   Number         0  anon$$obj.o(Region$$Table)
+    main                                     0x080042e9   Thumb Code   234  main.o(i.main)
+    move_all_direction_position              0x0800440d   Thumb Code   770  motor.o(i.move_all_direction_position)
+    move_all_direction_position_delay        0x08004715   Thumb Code   236  motor.o(i.move_all_direction_position_delay)
+    move_all_direction_tim                   0x08004809   Thumb Code   536  motor.o(i.move_all_direction_tim)
+    my_servo_init                            0x08004a21   Thumb Code     8  my_servo.o(i.my_servo_init)
+    new_final_function_test                  0x08004a29   Thumb Code    60  main.o(i.new_final_function_test)
+    new_get_and_load_openloop                0x08004a6d   Thumb Code   514  my_servo.o(i.new_get_and_load_openloop)
+    new_get_and_load_openloop_avoid          0x08004c7d   Thumb Code   462  my_servo.o(i.new_get_and_load_openloop_avoid)
+    new_get_and_load_openloop_with_temp_put  0x08004e59   Thumb Code   242  my_servo.o(i.new_get_and_load_openloop_with_temp_put)
+    new_get_and_pre_put                      0x08004f51   Thumb Code   374  my_servo.o(i.new_get_and_pre_put)
+    new_get_and_pre_put_avoid                0x080050e1   Thumb Code   404  my_servo.o(i.new_get_and_pre_put_avoid)
+    new_get_and_pre_put_spin_plate_avoid_collide 0x0800528d   Thumb Code   162  my_servo.o(i.new_get_and_pre_put_spin_plate_avoid_collide)
+    new_get_and_pre_put_void                 0x08005335   Thumb Code   212  my_servo.o(i.new_get_and_pre_put_void)
+    new_get_and_put_in_spin_plate_cricle_all_v2 0x0800540d   Thumb Code   224  main.o(i.new_get_and_put_in_spin_plate_cricle_all_v2)
+    new_get_and_put_spin_plate               0x08005509   Thumb Code   152  my_servo.o(i.new_get_and_put_spin_plate)
+    new_get_from_ground_in_random_position   0x080055a5   Thumb Code   246  main.o(i.new_get_from_ground_in_random_position)
+    new_get_from_plate_all_movement          0x080056c1   Thumb Code   490  main.o(i.new_get_from_plate_all_movement)
+    new_material_get_and_put_some_with_load_first 0x080058c9   Thumb Code   556  main.o(i.new_material_get_and_put_some_with_load_first)
+    new_material_test                        0x08005b21   Thumb Code   360  main.o(i.new_material_test)
+    new_motor_servo_screen_test              0x08005c99   Thumb Code   296  main.o(i.new_motor_servo_screen_test)
+    nopDelay                                 0x08005df5   Thumb Code    12  scserail.o(i.nopDelay)
+    old_all_process                          0x08005e01   Thumb Code  2052  main.o(i.old_all_process)
+    old_function_test                        0x08006635   Thumb Code   622  main.o(i.old_function_test)
+    old_get_from_plate_all_movement          0x080068c9   Thumb Code   446  main.o(i.old_get_from_plate_all_movement)
+    old_material_get_and_put_some_with_load_first 0x08006aad   Thumb Code   406  main.o(i.old_material_get_and_put_some_with_load_first)
+    old_new_init_car_arm                     0x08006c75   Thumb Code    40  main.o(i.old_new_init_car_arm)
+    open_claw                                0x08006c9d   Thumb Code    10  my_servo.o(i.open_claw)
+    open_claw_180                            0x08006cad   Thumb Code    10  my_servo.o(i.open_claw_180)
+    open_claw_avoid_collide                  0x08006cbd   Thumb Code    10  my_servo.o(i.open_claw_avoid_collide)
+    open_claw_bigger                         0x08006ccd   Thumb Code    10  my_servo.o(i.open_claw_bigger)
+    print_clear_screen                       0x08006cdd   Thumb Code    48  main.o(i.print_clear_screen)
+    print_show_origin_data                   0x08006d49   Thumb Code   334  main.o(i.print_show_origin_data)
+    print_to_screen                          0x08006f29   Thumb Code    34  main.o(i.print_to_screen)
+    put_claw_down                            0x08006f61   Thumb Code    16  my_servo.o(i.put_claw_down)
+    put_claw_down_ground                     0x08006f71   Thumb Code    16  my_servo.o(i.put_claw_down_ground)
+    put_claw_down_ground_slightly            0x08006f81   Thumb Code    16  my_servo.o(i.put_claw_down_ground_slightly)
+    put_claw_down_near_ground                0x08006f91   Thumb Code    16  my_servo.o(i.put_claw_down_near_ground)
+    put_claw_down_near_ground_move_and_line  0x08006fa1   Thumb Code    16  my_servo.o(i.put_claw_down_near_ground_move_and_line)
+    put_claw_down_pile                       0x08006fb1   Thumb Code    16  my_servo.o(i.put_claw_down_pile)
+    put_claw_down_pile_slightly              0x08006fc1   Thumb Code    16  my_servo.o(i.put_claw_down_pile_slightly)
+    put_claw_down_slightly                   0x08006fd1   Thumb Code    16  my_servo.o(i.put_claw_down_slightly)
+    put_claw_down_state                      0x08006fe1   Thumb Code    16  my_servo.o(i.put_claw_down_state)
+    put_claw_up                              0x08006ff1   Thumb Code    16  my_servo.o(i.put_claw_up)
+    put_claw_up_top                          0x08007001   Thumb Code    16  my_servo.o(i.put_claw_up_top)
+    put_claw_up_top_slight                   0x08007011   Thumb Code    16  my_servo.o(i.put_claw_up_top_slight)
+    rFlushSCS                                0x08007021   Thumb Code     4  scserail.o(i.rFlushSCS)
+    readSCS                                  0x08007025   Thumb Code    10  scserail.o(i.readSCS)
+    readWord                                 0x08007035   Thumb Code    36  scs.o(i.readWord)
+    servo_move_with_limit                    0x08007059   Thumb Code   164  my_servo.o(i.servo_move_with_limit)
+    single_line_adjust                       0x08007129   Thumb Code   104  main.o(i.single_line_adjust)
+    single_line_circle_adjust                0x080071a1   Thumb Code   112  main.o(i.single_line_circle_adjust)
+    slight_spin_and_move                     0x08007221   Thumb Code  1718  motor.o(i.slight_spin_and_move)
+    spin_all_direction_tim                   0x080078e1   Thumb Code   302  motor.o(i.spin_all_direction_tim)
+    spin_left_180                            0x08007a15   Thumb Code   136  motor.o(i.spin_left_180)
+    spin_left_90                             0x08007aa1   Thumb Code   136  motor.o(i.spin_left_90)
+    spin_right                               0x08007b2d   Thumb Code   198  motor.o(i.spin_right)
+    spin_right_180                           0x08007c15   Thumb Code   136  motor.o(i.spin_right_180)
+    spin_right_90                            0x08007ca1   Thumb Code   136  motor.o(i.spin_right_90)
+    state_spin                               0x08007d2d   Thumb Code    30  my_servo.o(i.state_spin)
+    state_spin_angles                        0x08007d51   Thumb Code     8  my_servo.o(i.state_spin_angles)
+    state_spin_without_claw                  0x08007d5d   Thumb Code    30  my_servo.o(i.state_spin_without_claw)
+    state_spin_without_claw_avoid_collide    0x08007d81   Thumb Code    28  my_servo.o(i.state_spin_without_claw_avoid_collide)
+    stop                                     0x08007da1   Thumb Code    62  motor.o(i.stop)
+    test_new_material_all_process            0x08007de1   Thumb Code   578  main.o(i.test_new_material_all_process)
+    usart_SendByte_u1                        0x08008061   Thumb Code    50  my_usart.o(i.usart_SendByte_u1)
+    usart_SendCmd_u1                         0x08008099   Thumb Code    44  my_usart.o(i.usart_SendCmd_u1)
+    wFlushSCS                                0x080080c5   Thumb Code    22  scserail.o(i.wFlushSCS)
+    whole_arm_spin                           0x080080e5   Thumb Code    30  my_servo.o(i.whole_arm_spin)
+    writeBuf                                 0x08008109   Thumb Code   148  scs.o(i.writeBuf)
+    writeSCS                                 0x0800819d   Thumb Code    32  scserail.o(i.writeSCS)
+    Kp_slight_move                           0x080081c4   Data           4  main.o(.constdata)
+    Ki_slight_move                           0x080081c8   Data           4  main.o(.constdata)
+    Kd_slight_move                           0x080081cc   Data           4  main.o(.constdata)
+    Kp_line_spin                             0x080081d0   Data           4  main.o(.constdata)
+    Ki_line_spin                             0x080081d4   Data           4  main.o(.constdata)
+    Kd_line_spin                             0x080081d8   Data           4  main.o(.constdata)
+    xy_move_k                                0x080081dc   Data           4  main.o(.constdata)
+    adjust_spin_scale                        0x080081e0   Data           4  main.o(.constdata)
+    adjust_move_scale                        0x080081e4   Data           4  main.o(.constdata)
+    spin_limit_max                           0x080081e8   Data           4  main.o(.constdata)
+    spin_limit_min                           0x080081ec   Data           4  main.o(.constdata)
+    move_limit_max                           0x080081f0   Data           4  main.o(.constdata)
+    move_limit_min                           0x080081f4   Data           4  main.o(.constdata)
+    Kp_theta                                 0x080081f8   Data           4  main.o(.constdata)
+    Ki_theta                                 0x080081fc   Data           4  main.o(.constdata)
+    Kd_theta                                 0x08008200   Data           4  main.o(.constdata)
+    Kp_r                                     0x08008204   Data           4  main.o(.constdata)
+    Ki_r                                     0x08008208   Data           4  main.o(.constdata)
+    Kd_r                                     0x0800820c   Data           4  main.o(.constdata)
+    pixel_to_distance_theta                  0x08008210   Data           4  main.o(.constdata)
+    pixel_to_distance_r                      0x08008214   Data           4  main.o(.constdata)
+    x_plate_k                                0x08008218   Data           4  main.o(.constdata)
+    y_plate_k                                0x0800821c   Data           4  main.o(.constdata)
+    AHBPrescTable                            0x080082c8   Data          16  system_stm32f4xx.o(.constdata)
+    APBPrescTable                            0x080082d8   Data           8  system_stm32f4xx.o(.constdata)
+    middle_arm                               0x080082e0   Data           4  my_servo.o(.constdata)
+    stretch_arm                              0x080082e4   Data           4  my_servo.o(.constdata)
+    Region$$Table$$Base                      0x080082e8   Number         0  anon$$obj.o(Region$$Table)
+    Region$$Table$$Limit                     0x08008308   Number         0  anon$$obj.o(Region$$Table)
     is_get_material_from_temp_area           0x20000000   Data           4  main.o(.data)
     is_single_route_test                     0x20000004   Data           4  main.o(.data)
     is_show_origin_xy_data                   0x20000008   Data           4  main.o(.data)
@@ -3377,57 +3381,57 @@ Memory Map of the image
 
   Image Entry point : 0x08000189
 
-  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00007e14, Max: 0x00080000, ABSOLUTE, COMPRESSED[0x00007c3c])
+  Load Region LR_IROM1 (Base: 0x08000000, Size: 0x00008534, Max: 0x00080000, ABSOLUTE, COMPRESSED[0x0000835c])
 
-    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00007be8, Max: 0x00080000, ABSOLUTE)
+    Execution Region ER_IROM1 (Exec base: 0x08000000, Load base: 0x08000000, Size: 0x00008308, Max: 0x00080000, ABSOLUTE)
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
     0x08000000   0x08000000   0x00000188   Data   RO            3    RESET               startup_stm32f407xx.o
-    0x08000188   0x08000188   0x00000000   Code   RO         4509  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
-    0x08000188   0x08000188   0x00000004   Code   RO         4832    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
-    0x0800018c   0x0800018c   0x00000004   Code   RO         4835    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
-    0x08000190   0x08000190   0x00000000   Code   RO         4837    .ARM.Collect$$$$00000008  mc_w.l(entry7b.o)
-    0x08000190   0x08000190   0x00000000   Code   RO         4839    .ARM.Collect$$$$0000000A  mc_w.l(entry8b.o)
-    0x08000190   0x08000190   0x00000008   Code   RO         4840    .ARM.Collect$$$$0000000B  mc_w.l(entry9a.o)
-    0x08000198   0x08000198   0x00000004   Code   RO         4847    .ARM.Collect$$$$0000000E  mc_w.l(entry12b.o)
-    0x0800019c   0x0800019c   0x00000000   Code   RO         4842    .ARM.Collect$$$$0000000F  mc_w.l(entry10a.o)
-    0x0800019c   0x0800019c   0x00000000   Code   RO         4844    .ARM.Collect$$$$00000011  mc_w.l(entry11a.o)
-    0x0800019c   0x0800019c   0x00000004   Code   RO         4833    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
+    0x08000188   0x08000188   0x00000000   Code   RO         4516  * .ARM.Collect$$$$00000000  mc_w.l(entry.o)
+    0x08000188   0x08000188   0x00000004   Code   RO         4839    .ARM.Collect$$$$00000001  mc_w.l(entry2.o)
+    0x0800018c   0x0800018c   0x00000004   Code   RO         4842    .ARM.Collect$$$$00000004  mc_w.l(entry5.o)
+    0x08000190   0x08000190   0x00000000   Code   RO         4844    .ARM.Collect$$$$00000008  mc_w.l(entry7b.o)
+    0x08000190   0x08000190   0x00000000   Code   RO         4846    .ARM.Collect$$$$0000000A  mc_w.l(entry8b.o)
+    0x08000190   0x08000190   0x00000008   Code   RO         4847    .ARM.Collect$$$$0000000B  mc_w.l(entry9a.o)
+    0x08000198   0x08000198   0x00000004   Code   RO         4854    .ARM.Collect$$$$0000000E  mc_w.l(entry12b.o)
+    0x0800019c   0x0800019c   0x00000000   Code   RO         4849    .ARM.Collect$$$$0000000F  mc_w.l(entry10a.o)
+    0x0800019c   0x0800019c   0x00000000   Code   RO         4851    .ARM.Collect$$$$00000011  mc_w.l(entry11a.o)
+    0x0800019c   0x0800019c   0x00000004   Code   RO         4840    .ARM.Collect$$$$00002712  mc_w.l(entry2.o)
     0x080001a0   0x080001a0   0x00000024   Code   RO            4    .text               startup_stm32f407xx.o
-    0x080001c4   0x080001c4   0x00000062   Code   RO         4512    .text               mc_w.l(uldiv.o)
+    0x080001c4   0x080001c4   0x00000062   Code   RO         4519    .text               mc_w.l(uldiv.o)
     0x08000226   0x08000226   0x00000002   PAD
-    0x08000228   0x08000228   0x00000024   Code   RO         4514    .text               mc_w.l(rand.o)
-    0x0800024c   0x0800024c   0x00000024   Code   RO         4517    .text               mc_w.l(memcpya.o)
-    0x08000270   0x08000270   0x00000024   Code   RO         4519    .text               mc_w.l(memseta.o)
-    0x08000294   0x08000294   0x0000000e   Code   RO         4521    .text               mc_w.l(strlen.o)
-    0x080002a2   0x080002a2   0x0000014e   Code   RO         4814    .text               mf_w.l(dadd.o)
-    0x080003f0   0x080003f0   0x000000e4   Code   RO         4816    .text               mf_w.l(dmul.o)
-    0x080004d4   0x080004d4   0x000000de   Code   RO         4818    .text               mf_w.l(ddiv.o)
-    0x080005b2   0x080005b2   0x00000022   Code   RO         4820    .text               mf_w.l(dflti.o)
-    0x080005d4   0x080005d4   0x0000001a   Code   RO         4822    .text               mf_w.l(dfltui.o)
-    0x080005ee   0x080005ee   0x0000003e   Code   RO         4824    .text               mf_w.l(dfixi.o)
-    0x0800062c   0x0800062c   0x00000032   Code   RO         4826    .text               mf_w.l(dfixui.o)
-    0x0800065e   0x0800065e   0x00000026   Code   RO         4828    .text               mf_w.l(f2d.o)
-    0x08000684   0x08000684   0x00000038   Code   RO         4830    .text               mf_w.l(d2f.o)
-    0x080006bc   0x080006bc   0x0000002c   Code   RO         4849    .text               mc_w.l(uidiv.o)
-    0x080006e8   0x080006e8   0x0000001e   Code   RO         4851    .text               mc_w.l(llshl.o)
-    0x08000706   0x08000706   0x00000020   Code   RO         4853    .text               mc_w.l(llushr.o)
-    0x08000726   0x08000726   0x00000024   Code   RO         4855    .text               mc_w.l(llsshr.o)
-    0x0800074a   0x0800074a   0x00000000   Code   RO         4859    .text               mc_w.l(iusefp.o)
-    0x0800074a   0x0800074a   0x0000006e   Code   RO         4860    .text               mf_w.l(fepilogue.o)
-    0x080007b8   0x080007b8   0x000000ba   Code   RO         4862    .text               mf_w.l(depilogue.o)
+    0x08000228   0x08000228   0x00000024   Code   RO         4521    .text               mc_w.l(rand.o)
+    0x0800024c   0x0800024c   0x00000024   Code   RO         4524    .text               mc_w.l(memcpya.o)
+    0x08000270   0x08000270   0x00000024   Code   RO         4526    .text               mc_w.l(memseta.o)
+    0x08000294   0x08000294   0x0000000e   Code   RO         4528    .text               mc_w.l(strlen.o)
+    0x080002a2   0x080002a2   0x0000014e   Code   RO         4821    .text               mf_w.l(dadd.o)
+    0x080003f0   0x080003f0   0x000000e4   Code   RO         4823    .text               mf_w.l(dmul.o)
+    0x080004d4   0x080004d4   0x000000de   Code   RO         4825    .text               mf_w.l(ddiv.o)
+    0x080005b2   0x080005b2   0x00000022   Code   RO         4827    .text               mf_w.l(dflti.o)
+    0x080005d4   0x080005d4   0x0000001a   Code   RO         4829    .text               mf_w.l(dfltui.o)
+    0x080005ee   0x080005ee   0x0000003e   Code   RO         4831    .text               mf_w.l(dfixi.o)
+    0x0800062c   0x0800062c   0x00000032   Code   RO         4833    .text               mf_w.l(dfixui.o)
+    0x0800065e   0x0800065e   0x00000026   Code   RO         4835    .text               mf_w.l(f2d.o)
+    0x08000684   0x08000684   0x00000038   Code   RO         4837    .text               mf_w.l(d2f.o)
+    0x080006bc   0x080006bc   0x0000002c   Code   RO         4856    .text               mc_w.l(uidiv.o)
+    0x080006e8   0x080006e8   0x0000001e   Code   RO         4858    .text               mc_w.l(llshl.o)
+    0x08000706   0x08000706   0x00000020   Code   RO         4860    .text               mc_w.l(llushr.o)
+    0x08000726   0x08000726   0x00000024   Code   RO         4862    .text               mc_w.l(llsshr.o)
+    0x0800074a   0x0800074a   0x00000000   Code   RO         4866    .text               mc_w.l(iusefp.o)
+    0x0800074a   0x0800074a   0x0000006e   Code   RO         4867    .text               mf_w.l(fepilogue.o)
+    0x080007b8   0x080007b8   0x000000ba   Code   RO         4869    .text               mf_w.l(depilogue.o)
     0x08000872   0x08000872   0x00000002   PAD
-    0x08000874   0x08000874   0x00000024   Code   RO         4868    .text               mc_w.l(init.o)
-    0x08000898   0x08000898   0x0000003a   Code   RO         4878    .text               mc_w.l(__dczerorl.o)
+    0x08000874   0x08000874   0x00000024   Code   RO         4875    .text               mc_w.l(init.o)
+    0x08000898   0x08000898   0x0000003a   Code   RO         4885    .text               mc_w.l(__dczerorl.o)
     0x080008d2   0x080008d2   0x00000002   PAD
     0x080008d4   0x080008d4   0x00000058   Code   RO         3260    i.Ack               scs.o
     0x0800092c   0x0800092c   0x00000002   Code   RO          591    i.BusFault_Handler  stm32f4xx_it.o
     0x0800092e   0x0800092e   0x00000002   Code   RO          592    i.DebugMon_Handler  stm32f4xx_it.o
-    0x08000930   0x08000930   0x00000060   Code   RO         4013    i.Emm_V5_Pos_Control  motor.o
-    0x08000990   0x08000990   0x00000030   Code   RO         4016    i.Emm_V5_Stop_Now   motor.o
-    0x080009c0   0x080009c0   0x0000002c   Code   RO         4017    i.Emm_V5_Synchronous_motion  motor.o
-    0x080009ec   0x080009ec   0x0000003e   Code   RO         4018    i.Emm_V5_Vel_Control  motor.o
+    0x08000930   0x08000930   0x00000060   Code   RO         4020    i.Emm_V5_Pos_Control  motor.o
+    0x08000990   0x08000990   0x00000030   Code   RO         4023    i.Emm_V5_Stop_Now   motor.o
+    0x080009c0   0x080009c0   0x0000002c   Code   RO         4024    i.Emm_V5_Synchronous_motion  motor.o
+    0x080009ec   0x080009ec   0x0000003e   Code   RO         4025    i.Emm_V5_Vel_Control  motor.o
     0x08000a2a   0x08000a2a   0x00000004   Code   RO           13    i.Error_Handler     main.o
     0x08000a2e   0x08000a2e   0x00000092   Code   RO         2174    i.HAL_DMA_Abort     stm32f4xx_hal_dma.o
     0x08000ac0   0x08000ac0   0x00000024   Code   RO         2175    i.HAL_DMA_Abort_IT  stm32f4xx_hal_dma.o
@@ -3469,7 +3473,7 @@ Memory Map of the image
     0x08001940   0x08001940   0x00000002   Code   RO          818    i.HAL_TIM_PWM_MspInit  stm32f4xx_hal_tim.o
     0x08001942   0x08001942   0x00000002   Code   RO          819    i.HAL_TIM_PWM_PulseFinishedCallback  stm32f4xx_hal_tim.o
     0x08001944   0x08001944   0x000000c8   Code   RO          821    i.HAL_TIM_PWM_Start  stm32f4xx_hal_tim.o
-    0x08001a0c   0x08001a0c   0x000001d8   Code   RO         4481    i.HAL_TIM_PeriodElapsedCallback  my_timer.o
+    0x08001a0c   0x08001a0c   0x000001d8   Code   RO         4488    i.HAL_TIM_PeriodElapsedCallback  my_timer.o
     0x08001be4   0x08001be4   0x00000002   Code   RO          832    i.HAL_TIM_TriggerCallback  stm32f4xx_hal_tim.o
     0x08001be6   0x08001be6   0x0000004e   Code   RO         2873    i.HAL_UARTEx_ReceiveToIdle_IT  stm32f4xx_hal_uart.o
     0x08001c34   0x08001c34   0x00000070   Code   RO           14    i.HAL_UARTEx_RxEventCallback  main.o
@@ -3531,10 +3535,10 @@ Memory Map of the image
     0x08002ca0   0x08002ca0   0x0000010c   Code   RO         2918    i.UART_SetConfig    stm32f4xx_hal_uart.o
     0x08002dac   0x08002dac   0x00000036   Code   RO         2920    i.UART_Start_Receive_IT  stm32f4xx_hal_uart.o
     0x08002de2   0x08002de2   0x00000072   Code   RO         2921    i.UART_WaitOnFlagUntilTimeout  stm32f4xx_hal_uart.o
-    0x08002e54   0x08002e54   0x00000020   Code   RO         4373    i.UART_handle_function_3  my_usart.o
-    0x08002e74   0x08002e74   0x00000002   Code   RO         4374    i.UART_handle_function_4  my_usart.o
+    0x08002e54   0x08002e54   0x00000020   Code   RO         4380    i.UART_handle_function_3  my_usart.o
+    0x08002e74   0x08002e74   0x00000002   Code   RO         4381    i.UART_handle_function_4  my_usart.o
     0x08002e76   0x08002e76   0x00000002   PAD
-    0x08002e78   0x08002e78   0x000008ec   Code   RO         4378    i.UART_receive_process_3  my_usart.o
+    0x08002e78   0x08002e78   0x000008ec   Code   RO         4385    i.UART_receive_process_3  my_usart.o
     0x08003764   0x08003764   0x0000000c   Code   RO          604    i.USART1_IRQHandler  stm32f4xx_it.o
     0x08003770   0x08003770   0x0000000c   Code   RO          605    i.USART2_IRQHandler  stm32f4xx_it.o
     0x0800377c   0x0800377c   0x0000000c   Code   RO          606    i.USART3_IRQHandler  stm32f4xx_it.o
@@ -3544,15 +3548,15 @@ Memory Map of the image
     0x0800381c   0x0800381c   0x00000002   Code   RO          607    i.UsageFault_Handler  stm32f4xx_it.o
     0x0800381e   0x0800381e   0x00000044   Code   RO         3485    i.WritePosEx        sms_sts.o
     0x08003862   0x08003862   0x00000002   PAD
-    0x08003864   0x08003864   0x00000020   Code   RO         4614    i.__0printf$3       mc_w.l(printf3.o)
-    0x08003884   0x08003884   0x00000028   Code   RO         4616    i.__0sprintf$3      mc_w.l(printf3.o)
+    0x08003864   0x08003864   0x00000020   Code   RO         4621    i.__0printf$3       mc_w.l(printf3.o)
+    0x08003884   0x08003884   0x00000028   Code   RO         4623    i.__0sprintf$3      mc_w.l(printf3.o)
     0x080038ac   0x080038ac   0x00000020   Code   RO         2472    i.__NVIC_SetPriority  stm32f4xx_hal_cortex.o
-    0x080038cc   0x080038cc   0x0000000e   Code   RO         4872    i.__scatterload_copy  mc_w.l(handlers.o)
-    0x080038da   0x080038da   0x00000002   Code   RO         4873    i.__scatterload_null  mc_w.l(handlers.o)
-    0x080038dc   0x080038dc   0x0000000e   Code   RO         4874    i.__scatterload_zeroinit  mc_w.l(handlers.o)
+    0x080038cc   0x080038cc   0x0000000e   Code   RO         4879    i.__scatterload_copy  mc_w.l(handlers.o)
+    0x080038da   0x080038da   0x00000002   Code   RO         4880    i.__scatterload_null  mc_w.l(handlers.o)
+    0x080038dc   0x080038dc   0x0000000e   Code   RO         4881    i.__scatterload_zeroinit  mc_w.l(handlers.o)
     0x080038ea   0x080038ea   0x00000002   PAD
-    0x080038ec   0x080038ec   0x000001b8   Code   RO         4621    i._printf_core      mc_w.l(printf3.o)
-    0x08003aa4   0x08003aa4   0x0000000a   Code   RO         4623    i._sputc            mc_w.l(printf3.o)
+    0x080038ec   0x080038ec   0x000001b8   Code   RO         4628    i._printf_core      mc_w.l(printf3.o)
+    0x08003aa4   0x08003aa4   0x0000000a   Code   RO         4630    i._sputc            mc_w.l(printf3.o)
     0x08003aae   0x08003aae   0x00000004   Code   RO         3641    i.adjust_plate      my_servo.o
     0x08003ab2   0x08003ab2   0x00000002   PAD
     0x08003ab4   0x08003ab4   0x000001f4   Code   RO         3642    i.adjust_position_with_camera  my_servo.o
@@ -3565,7 +3569,7 @@ Memory Map of the image
     0x08003dec   0x08003dec   0x0000004c   Code   RO         3649    i.claw_spin_state   my_servo.o
     0x08003e38   0x08003e38   0x00000010   Code   RO         3650    i.claw_spin_state_without_claw  my_servo.o
     0x08003e48   0x08003e48   0x00000010   Code   RO         3651    i.claw_spin_state_without_claw_slight  my_servo.o
-    0x08003e58   0x08003e58   0x00000068   Code   RO         4027    i.clear_motor_error  motor.o
+    0x08003e58   0x08003e58   0x00000068   Code   RO         4034    i.clear_motor_error  motor.o
     0x08003ec0   0x08003ec0   0x00000010   Code   RO         3653    i.close_claw        my_servo.o
     0x08003ed0   0x08003ed0   0x00000010   Code   RO         3654    i.close_claw_2      my_servo.o
     0x08003ee0   0x08003ee0   0x00000004   Code   RO         3655    i.feetech_servo_move  my_servo.o
@@ -3573,109 +3577,111 @@ Memory Map of the image
     0x08003efc   0x08003efc   0x0000002c   Code   RO         3266    i.genWrite          scs.o
     0x08003f28   0x08003f28   0x00000204   Code   RO         3656    i.get_and_load_openloop  my_servo.o
     0x0800412c   0x0800412c   0x00000170   Code   RO         3657    i.get_and_pre_put   my_servo.o
-    0x0800429c   0x0800429c   0x00000024   Code   RO         4029    i.get_clk           motor.o
-    0x080042c0   0x080042c0   0x00000028   Code   RO         4030    i.get_distance_time  motor.o
-    0x080042e8   0x080042e8   0x00000248   Code   RO           20    i.main              main.o
-    0x08004530   0x08004530   0x00000308   Code   RO         4032    i.move_all_direction_position  motor.o
-    0x08004838   0x08004838   0x000000f4   Code   RO         4033    i.move_all_direction_position_delay  motor.o
-    0x0800492c   0x0800492c   0x00000218   Code   RO         4036    i.move_all_direction_tim  motor.o
-    0x08004b44   0x08004b44   0x00000008   Code   RO         3658    i.my_servo_init     my_servo.o
-    0x08004b4c   0x08004b4c   0x00000044   Code   RO           21    i.new_final_function_test  main.o
-    0x08004b90   0x08004b90   0x00000210   Code   RO         3659    i.new_get_and_load_openloop  my_servo.o
-    0x08004da0   0x08004da0   0x000001dc   Code   RO         3660    i.new_get_and_load_openloop_avoid  my_servo.o
-    0x08004f7c   0x08004f7c   0x000000f8   Code   RO         3661    i.new_get_and_load_openloop_with_temp_put  my_servo.o
-    0x08005074   0x08005074   0x00000190   Code   RO         3662    i.new_get_and_pre_put  my_servo.o
-    0x08005204   0x08005204   0x000001ac   Code   RO         3663    i.new_get_and_pre_put_avoid  my_servo.o
-    0x080053b0   0x080053b0   0x000000a8   Code   RO         3665    i.new_get_and_pre_put_spin_plate_avoid_collide  my_servo.o
-    0x08005458   0x08005458   0x000000d8   Code   RO         3666    i.new_get_and_pre_put_void  my_servo.o
-    0x08005530   0x08005530   0x000000fc   Code   RO           23    i.new_get_and_put_in_spin_plate_cricle_all_v2  main.o
-    0x0800562c   0x0800562c   0x0000009c   Code   RO         3668    i.new_get_and_put_spin_plate  my_servo.o
-    0x080056c8   0x080056c8   0x0000011c   Code   RO           24    i.new_get_from_ground_in_random_position  main.o
-    0x080057e4   0x080057e4   0x00000208   Code   RO           25    i.new_get_from_plate_all_movement  main.o
-    0x080059ec   0x080059ec   0x00000258   Code   RO           27    i.new_material_get_and_put_some_with_load_first  main.o
-    0x08005c44   0x08005c44   0x00000178   Code   RO           28    i.new_material_test  main.o
-    0x08005dbc   0x08005dbc   0x0000015c   Code   RO           29    i.new_motor_servo_screen_test  main.o
-    0x08005f18   0x08005f18   0x0000000c   Code   RO         3412    i.nopDelay          scserail.o
-    0x08005f24   0x08005f24   0x00000294   Code   RO           31    i.old_function_test  main.o
-    0x080061b8   0x080061b8   0x000001e4   Code   RO           32    i.old_get_from_plate_all_movement  main.o
-    0x0800639c   0x0800639c   0x000001c8   Code   RO           33    i.old_material_get_and_put_some_with_load_first  main.o
-    0x08006564   0x08006564   0x00000028   Code   RO           34    i.old_new_init_car_arm  main.o
-    0x0800658c   0x0800658c   0x00000010   Code   RO         3669    i.open_claw         my_servo.o
-    0x0800659c   0x0800659c   0x00000010   Code   RO         3670    i.open_claw_180     my_servo.o
-    0x080065ac   0x080065ac   0x00000010   Code   RO         3671    i.open_claw_avoid_collide  my_servo.o
-    0x080065bc   0x080065bc   0x00000010   Code   RO         3672    i.open_claw_bigger  my_servo.o
-    0x080065cc   0x080065cc   0x0000006c   Code   RO           35    i.print_clear_screen  main.o
-    0x08006638   0x08006638   0x000001e0   Code   RO           36    i.print_show_origin_data  main.o
-    0x08006818   0x08006818   0x00000038   Code   RO           37    i.print_to_screen   main.o
-    0x08006850   0x08006850   0x00000010   Code   RO         3673    i.put_claw_down     my_servo.o
-    0x08006860   0x08006860   0x00000010   Code   RO         3674    i.put_claw_down_ground  my_servo.o
-    0x08006870   0x08006870   0x00000010   Code   RO         3675    i.put_claw_down_ground_slightly  my_servo.o
-    0x08006880   0x08006880   0x00000010   Code   RO         3676    i.put_claw_down_near_ground  my_servo.o
-    0x08006890   0x08006890   0x00000010   Code   RO         3678    i.put_claw_down_pile  my_servo.o
-    0x080068a0   0x080068a0   0x00000010   Code   RO         3679    i.put_claw_down_pile_slightly  my_servo.o
-    0x080068b0   0x080068b0   0x00000010   Code   RO         3680    i.put_claw_down_slightly  my_servo.o
-    0x080068c0   0x080068c0   0x00000010   Code   RO         3681    i.put_claw_down_state  my_servo.o
-    0x080068d0   0x080068d0   0x00000010   Code   RO         3682    i.put_claw_up       my_servo.o
-    0x080068e0   0x080068e0   0x00000010   Code   RO         3683    i.put_claw_up_top   my_servo.o
-    0x080068f0   0x080068f0   0x00000010   Code   RO         3684    i.put_claw_up_top_slight  my_servo.o
-    0x08006900   0x08006900   0x00000004   Code   RO         3413    i.rFlushSCS         scserail.o
-    0x08006904   0x08006904   0x00000010   Code   RO         3414    i.readSCS           scserail.o
-    0x08006914   0x08006914   0x00000024   Code   RO         3269    i.readWord          scs.o
-    0x08006938   0x08006938   0x000000d0   Code   RO         3686    i.servo_move_with_limit  my_servo.o
-    0x08006a08   0x08006a08   0x00000078   Code   RO           39    i.single_line_adjust  main.o
-    0x08006a80   0x08006a80   0x00000080   Code   RO           40    i.single_line_circle_adjust  main.o
-    0x08006b00   0x08006b00   0x000006c0   Code   RO         4044    i.slight_spin_and_move  motor.o
-    0x080071c0   0x080071c0   0x00000134   Code   RO         4046    i.spin_all_direction_tim  motor.o
-    0x080072f4   0x080072f4   0x0000008c   Code   RO         4048    i.spin_left_180     motor.o
-    0x08007380   0x08007380   0x0000008c   Code   RO         4050    i.spin_left_90      motor.o
-    0x0800740c   0x0800740c   0x000000e8   Code   RO         4053    i.spin_right        motor.o
-    0x080074f4   0x080074f4   0x0000008c   Code   RO         4054    i.spin_right_180    motor.o
-    0x08007580   0x08007580   0x0000008c   Code   RO         4056    i.spin_right_90     motor.o
-    0x0800760c   0x0800760c   0x00000024   Code   RO         3687    i.state_spin        my_servo.o
-    0x08007630   0x08007630   0x0000000c   Code   RO         3688    i.state_spin_angles  my_servo.o
-    0x0800763c   0x0800763c   0x00000024   Code   RO         3689    i.state_spin_without_claw  my_servo.o
-    0x08007660   0x08007660   0x00000020   Code   RO         3690    i.state_spin_without_claw_avoid_collide  my_servo.o
-    0x08007680   0x08007680   0x0000003e   Code   RO         4059    i.stop              motor.o
-    0x080076be   0x080076be   0x00000002   PAD
-    0x080076c0   0x080076c0   0x00000280   Code   RO           41    i.test_new_material_all_process  main.o
-    0x08007940   0x08007940   0x00000038   Code   RO         4381    i.usart_SendByte_u1  my_usart.o
-    0x08007978   0x08007978   0x0000002c   Code   RO         4382    i.usart_SendCmd_u1  my_usart.o
-    0x080079a4   0x080079a4   0x00000020   Code   RO         3415    i.wFlushSCS         scserail.o
-    0x080079c4   0x080079c4   0x00000024   Code   RO         3691    i.whole_arm_spin    my_servo.o
-    0x080079e8   0x080079e8   0x00000094   Code   RO         3279    i.writeBuf          scs.o
-    0x08007a7c   0x08007a7c   0x00000028   Code   RO         3417    i.writeSCS          scserail.o
-    0x08007aa4   0x08007aa4   0x00000004   Data   RO           44    .constdata          main.o
-    0x08007aa8   0x08007aa8   0x00000004   Data   RO           45    .constdata          main.o
-    0x08007aac   0x08007aac   0x00000004   Data   RO           46    .constdata          main.o
-    0x08007ab0   0x08007ab0   0x00000004   Data   RO           47    .constdata          main.o
-    0x08007ab4   0x08007ab4   0x00000004   Data   RO           48    .constdata          main.o
-    0x08007ab8   0x08007ab8   0x00000004   Data   RO           49    .constdata          main.o
-    0x08007abc   0x08007abc   0x00000004   Data   RO           50    .constdata          main.o
-    0x08007ac0   0x08007ac0   0x00000004   Data   RO           51    .constdata          main.o
-    0x08007ac4   0x08007ac4   0x00000004   Data   RO           52    .constdata          main.o
-    0x08007ac8   0x08007ac8   0x00000004   Data   RO           53    .constdata          main.o
-    0x08007acc   0x08007acc   0x00000004   Data   RO           54    .constdata          main.o
-    0x08007ad0   0x08007ad0   0x00000004   Data   RO           55    .constdata          main.o
-    0x08007ad4   0x08007ad4   0x00000004   Data   RO           56    .constdata          main.o
-    0x08007ad8   0x08007ad8   0x00000004   Data   RO           57    .constdata          main.o
-    0x08007adc   0x08007adc   0x00000004   Data   RO           58    .constdata          main.o
-    0x08007ae0   0x08007ae0   0x00000004   Data   RO           59    .constdata          main.o
-    0x08007ae4   0x08007ae4   0x00000004   Data   RO           60    .constdata          main.o
-    0x08007ae8   0x08007ae8   0x00000004   Data   RO           61    .constdata          main.o
-    0x08007aec   0x08007aec   0x00000004   Data   RO           62    .constdata          main.o
-    0x08007af0   0x08007af0   0x00000004   Data   RO           63    .constdata          main.o
-    0x08007af4   0x08007af4   0x00000004   Data   RO           64    .constdata          main.o
-    0x08007af8   0x08007af8   0x00000004   Data   RO           70    .constdata          main.o
-    0x08007afc   0x08007afc   0x00000004   Data   RO           71    .constdata          main.o
-    0x08007b00   0x08007b00   0x000000a8   Data   RO           72    .constdata          main.o
-    0x08007ba8   0x08007ba8   0x00000010   Data   RO         3227    .constdata          system_stm32f4xx.o
-    0x08007bb8   0x08007bb8   0x00000008   Data   RO         3228    .constdata          system_stm32f4xx.o
-    0x08007bc0   0x08007bc0   0x00000004   Data   RO         3722    .constdata          my_servo.o
-    0x08007bc4   0x08007bc4   0x00000004   Data   RO         3731    .constdata          my_servo.o
-    0x08007bc8   0x08007bc8   0x00000020   Data   RO         4870    Region$$Table       anon$$obj.o
+    0x0800429c   0x0800429c   0x00000024   Code   RO         4036    i.get_clk           motor.o
+    0x080042c0   0x080042c0   0x00000028   Code   RO         4037    i.get_distance_time  motor.o
+    0x080042e8   0x080042e8   0x00000124   Code   RO           20    i.main              main.o
+    0x0800440c   0x0800440c   0x00000308   Code   RO         4039    i.move_all_direction_position  motor.o
+    0x08004714   0x08004714   0x000000f4   Code   RO         4040    i.move_all_direction_position_delay  motor.o
+    0x08004808   0x08004808   0x00000218   Code   RO         4043    i.move_all_direction_tim  motor.o
+    0x08004a20   0x08004a20   0x00000008   Code   RO         3658    i.my_servo_init     my_servo.o
+    0x08004a28   0x08004a28   0x00000044   Code   RO           21    i.new_final_function_test  main.o
+    0x08004a6c   0x08004a6c   0x00000210   Code   RO         3659    i.new_get_and_load_openloop  my_servo.o
+    0x08004c7c   0x08004c7c   0x000001dc   Code   RO         3660    i.new_get_and_load_openloop_avoid  my_servo.o
+    0x08004e58   0x08004e58   0x000000f8   Code   RO         3661    i.new_get_and_load_openloop_with_temp_put  my_servo.o
+    0x08004f50   0x08004f50   0x00000190   Code   RO         3662    i.new_get_and_pre_put  my_servo.o
+    0x080050e0   0x080050e0   0x000001ac   Code   RO         3663    i.new_get_and_pre_put_avoid  my_servo.o
+    0x0800528c   0x0800528c   0x000000a8   Code   RO         3665    i.new_get_and_pre_put_spin_plate_avoid_collide  my_servo.o
+    0x08005334   0x08005334   0x000000d8   Code   RO         3666    i.new_get_and_pre_put_void  my_servo.o
+    0x0800540c   0x0800540c   0x000000fc   Code   RO           23    i.new_get_and_put_in_spin_plate_cricle_all_v2  main.o
+    0x08005508   0x08005508   0x0000009c   Code   RO         3668    i.new_get_and_put_spin_plate  my_servo.o
+    0x080055a4   0x080055a4   0x0000011c   Code   RO           24    i.new_get_from_ground_in_random_position  main.o
+    0x080056c0   0x080056c0   0x00000208   Code   RO           25    i.new_get_from_plate_all_movement  main.o
+    0x080058c8   0x080058c8   0x00000258   Code   RO           27    i.new_material_get_and_put_some_with_load_first  main.o
+    0x08005b20   0x08005b20   0x00000178   Code   RO           28    i.new_material_test  main.o
+    0x08005c98   0x08005c98   0x0000015c   Code   RO           29    i.new_motor_servo_screen_test  main.o
+    0x08005df4   0x08005df4   0x0000000c   Code   RO         3412    i.nopDelay          scserail.o
+    0x08005e00   0x08005e00   0x00000834   Code   RO           30    i.old_all_process   main.o
+    0x08006634   0x08006634   0x00000294   Code   RO           31    i.old_function_test  main.o
+    0x080068c8   0x080068c8   0x000001e4   Code   RO           32    i.old_get_from_plate_all_movement  main.o
+    0x08006aac   0x08006aac   0x000001c8   Code   RO           33    i.old_material_get_and_put_some_with_load_first  main.o
+    0x08006c74   0x08006c74   0x00000028   Code   RO           34    i.old_new_init_car_arm  main.o
+    0x08006c9c   0x08006c9c   0x00000010   Code   RO         3669    i.open_claw         my_servo.o
+    0x08006cac   0x08006cac   0x00000010   Code   RO         3670    i.open_claw_180     my_servo.o
+    0x08006cbc   0x08006cbc   0x00000010   Code   RO         3671    i.open_claw_avoid_collide  my_servo.o
+    0x08006ccc   0x08006ccc   0x00000010   Code   RO         3672    i.open_claw_bigger  my_servo.o
+    0x08006cdc   0x08006cdc   0x0000006c   Code   RO           35    i.print_clear_screen  main.o
+    0x08006d48   0x08006d48   0x000001e0   Code   RO           36    i.print_show_origin_data  main.o
+    0x08006f28   0x08006f28   0x00000038   Code   RO           37    i.print_to_screen   main.o
+    0x08006f60   0x08006f60   0x00000010   Code   RO         3673    i.put_claw_down     my_servo.o
+    0x08006f70   0x08006f70   0x00000010   Code   RO         3674    i.put_claw_down_ground  my_servo.o
+    0x08006f80   0x08006f80   0x00000010   Code   RO         3675    i.put_claw_down_ground_slightly  my_servo.o
+    0x08006f90   0x08006f90   0x00000010   Code   RO         3676    i.put_claw_down_near_ground  my_servo.o
+    0x08006fa0   0x08006fa0   0x00000010   Code   RO         3677    i.put_claw_down_near_ground_move_and_line  my_servo.o
+    0x08006fb0   0x08006fb0   0x00000010   Code   RO         3679    i.put_claw_down_pile  my_servo.o
+    0x08006fc0   0x08006fc0   0x00000010   Code   RO         3680    i.put_claw_down_pile_slightly  my_servo.o
+    0x08006fd0   0x08006fd0   0x00000010   Code   RO         3681    i.put_claw_down_slightly  my_servo.o
+    0x08006fe0   0x08006fe0   0x00000010   Code   RO         3682    i.put_claw_down_state  my_servo.o
+    0x08006ff0   0x08006ff0   0x00000010   Code   RO         3683    i.put_claw_up       my_servo.o
+    0x08007000   0x08007000   0x00000010   Code   RO         3684    i.put_claw_up_top   my_servo.o
+    0x08007010   0x08007010   0x00000010   Code   RO         3685    i.put_claw_up_top_slight  my_servo.o
+    0x08007020   0x08007020   0x00000004   Code   RO         3413    i.rFlushSCS         scserail.o
+    0x08007024   0x08007024   0x00000010   Code   RO         3414    i.readSCS           scserail.o
+    0x08007034   0x08007034   0x00000024   Code   RO         3269    i.readWord          scs.o
+    0x08007058   0x08007058   0x000000d0   Code   RO         3687    i.servo_move_with_limit  my_servo.o
+    0x08007128   0x08007128   0x00000078   Code   RO           39    i.single_line_adjust  main.o
+    0x080071a0   0x080071a0   0x00000080   Code   RO           40    i.single_line_circle_adjust  main.o
+    0x08007220   0x08007220   0x000006c0   Code   RO         4051    i.slight_spin_and_move  motor.o
+    0x080078e0   0x080078e0   0x00000134   Code   RO         4053    i.spin_all_direction_tim  motor.o
+    0x08007a14   0x08007a14   0x0000008c   Code   RO         4055    i.spin_left_180     motor.o
+    0x08007aa0   0x08007aa0   0x0000008c   Code   RO         4057    i.spin_left_90      motor.o
+    0x08007b2c   0x08007b2c   0x000000e8   Code   RO         4060    i.spin_right        motor.o
+    0x08007c14   0x08007c14   0x0000008c   Code   RO         4061    i.spin_right_180    motor.o
+    0x08007ca0   0x08007ca0   0x0000008c   Code   RO         4063    i.spin_right_90     motor.o
+    0x08007d2c   0x08007d2c   0x00000024   Code   RO         3688    i.state_spin        my_servo.o
+    0x08007d50   0x08007d50   0x0000000c   Code   RO         3689    i.state_spin_angles  my_servo.o
+    0x08007d5c   0x08007d5c   0x00000024   Code   RO         3690    i.state_spin_without_claw  my_servo.o
+    0x08007d80   0x08007d80   0x00000020   Code   RO         3691    i.state_spin_without_claw_avoid_collide  my_servo.o
+    0x08007da0   0x08007da0   0x0000003e   Code   RO         4066    i.stop              motor.o
+    0x08007dde   0x08007dde   0x00000002   PAD
+    0x08007de0   0x08007de0   0x00000280   Code   RO           41    i.test_new_material_all_process  main.o
+    0x08008060   0x08008060   0x00000038   Code   RO         4388    i.usart_SendByte_u1  my_usart.o
+    0x08008098   0x08008098   0x0000002c   Code   RO         4389    i.usart_SendCmd_u1  my_usart.o
+    0x080080c4   0x080080c4   0x00000020   Code   RO         3415    i.wFlushSCS         scserail.o
+    0x080080e4   0x080080e4   0x00000024   Code   RO         3692    i.whole_arm_spin    my_servo.o
+    0x08008108   0x08008108   0x00000094   Code   RO         3279    i.writeBuf          scs.o
+    0x0800819c   0x0800819c   0x00000028   Code   RO         3417    i.writeSCS          scserail.o
+    0x080081c4   0x080081c4   0x00000004   Data   RO           44    .constdata          main.o
+    0x080081c8   0x080081c8   0x00000004   Data   RO           45    .constdata          main.o
+    0x080081cc   0x080081cc   0x00000004   Data   RO           46    .constdata          main.o
+    0x080081d0   0x080081d0   0x00000004   Data   RO           47    .constdata          main.o
+    0x080081d4   0x080081d4   0x00000004   Data   RO           48    .constdata          main.o
+    0x080081d8   0x080081d8   0x00000004   Data   RO           49    .constdata          main.o
+    0x080081dc   0x080081dc   0x00000004   Data   RO           50    .constdata          main.o
+    0x080081e0   0x080081e0   0x00000004   Data   RO           51    .constdata          main.o
+    0x080081e4   0x080081e4   0x00000004   Data   RO           52    .constdata          main.o
+    0x080081e8   0x080081e8   0x00000004   Data   RO           53    .constdata          main.o
+    0x080081ec   0x080081ec   0x00000004   Data   RO           54    .constdata          main.o
+    0x080081f0   0x080081f0   0x00000004   Data   RO           55    .constdata          main.o
+    0x080081f4   0x080081f4   0x00000004   Data   RO           56    .constdata          main.o
+    0x080081f8   0x080081f8   0x00000004   Data   RO           57    .constdata          main.o
+    0x080081fc   0x080081fc   0x00000004   Data   RO           58    .constdata          main.o
+    0x08008200   0x08008200   0x00000004   Data   RO           59    .constdata          main.o
+    0x08008204   0x08008204   0x00000004   Data   RO           60    .constdata          main.o
+    0x08008208   0x08008208   0x00000004   Data   RO           61    .constdata          main.o
+    0x0800820c   0x0800820c   0x00000004   Data   RO           62    .constdata          main.o
+    0x08008210   0x08008210   0x00000004   Data   RO           63    .constdata          main.o
+    0x08008214   0x08008214   0x00000004   Data   RO           64    .constdata          main.o
+    0x08008218   0x08008218   0x00000004   Data   RO           70    .constdata          main.o
+    0x0800821c   0x0800821c   0x00000004   Data   RO           71    .constdata          main.o
+    0x08008220   0x08008220   0x000000a8   Data   RO           72    .constdata          main.o
+    0x080082c8   0x080082c8   0x00000010   Data   RO         3227    .constdata          system_stm32f4xx.o
+    0x080082d8   0x080082d8   0x00000008   Data   RO         3228    .constdata          system_stm32f4xx.o
+    0x080082e0   0x080082e0   0x00000004   Data   RO         3724    .constdata          my_servo.o
+    0x080082e4   0x080082e4   0x00000004   Data   RO         3733    .constdata          my_servo.o
+    0x080082e8   0x080082e8   0x00000020   Data   RO         4877    Region$$Table       anon$$obj.o
 
 
-    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08007be8, Size: 0x00000c60, Max: 0x0001c000, ABSOLUTE, COMPRESSED[0x00000054])
+    Execution Region RW_IRAM1 (Exec base: 0x20000000, Load base: 0x08008308, Size: 0x00000c60, Max: 0x0001c000, ABSOLUTE, COMPRESSED[0x00000054])
 
     Exec Addr    Load Addr    Size         Type   Attr      Idx    E Section Name        Object
 
@@ -3702,18 +3708,18 @@ Memory Map of the image
     0x20000100   COMPRESSED   0x00000014   Data   RW         3282    .data               scs.o
     0x20000114   COMPRESSED   0x00000008   Data   RW         3419    .data               scserail.o
     0x2000011c   COMPRESSED   0x00000004   Data   RW         3490    .data               sms_sts.o
-    0x20000120   COMPRESSED   0x00000004   Data   RW         3745    .data               my_servo.o
-    0x20000124   COMPRESSED   0x00000004   Data   RW         3746    .data               my_servo.o
-    0x20000128   COMPRESSED   0x00000030   Data   RW         3747    .data               my_servo.o
-    0x20000158   COMPRESSED   0x00000020   Data   RW         4068    .data               motor.o
-    0x20000178   COMPRESSED   0x00000070   Data   RW         4386    .data               my_usart.o
-    0x200001e8   COMPRESSED   0x00000004   Data   RW         4389    .data               my_usart.o
-    0x200001ec   COMPRESSED   0x00000001   Data   RW         4394    .data               my_usart.o
+    0x20000120   COMPRESSED   0x00000004   Data   RW         3747    .data               my_servo.o
+    0x20000124   COMPRESSED   0x00000004   Data   RW         3748    .data               my_servo.o
+    0x20000128   COMPRESSED   0x00000030   Data   RW         3749    .data               my_servo.o
+    0x20000158   COMPRESSED   0x00000020   Data   RW         4075    .data               motor.o
+    0x20000178   COMPRESSED   0x00000070   Data   RW         4393    .data               my_usart.o
+    0x200001e8   COMPRESSED   0x00000004   Data   RW         4396    .data               my_usart.o
+    0x200001ec   COMPRESSED   0x00000001   Data   RW         4401    .data               my_usart.o
     0x200001ed   COMPRESSED   0x00000003   PAD
-    0x200001f0   COMPRESSED   0x00000030   Data   RW         4482    .data               my_timer.o
-    0x20000220   COMPRESSED   0x00000004   Data   RW         4483    .data               my_timer.o
-    0x20000224   COMPRESSED   0x00000004   Data   RW         4515    .data               mc_w.l(rand.o)
-    0x20000228   COMPRESSED   0x00000004   Data   RW         4848    .data               mc_w.l(stdout.o)
+    0x200001f0   COMPRESSED   0x00000030   Data   RW         4489    .data               my_timer.o
+    0x20000220   COMPRESSED   0x00000004   Data   RW         4490    .data               my_timer.o
+    0x20000224   COMPRESSED   0x00000004   Data   RW         4522    .data               mc_w.l(rand.o)
+    0x20000228   COMPRESSED   0x00000004   Data   RW         4855    .data               mc_w.l(stdout.o)
     0x2000022c        -       0x000001fe   Zero   RW           42    .bss                main.o
     0x2000042a   COMPRESSED   0x00000002   PAD
     0x2000042c        -       0x000000d8   Zero   RW          470    .bss                tim.o
@@ -3722,13 +3728,13 @@ Memory Map of the image
     0x200006ec        -       0x0000000f   Zero   RW         3489    .bss                sms_sts.o
     0x200006fb   COMPRESSED   0x00000001   PAD
     0x200006fc        -       0x00000048   Zero   RW         3605    .bss                uart.o
-    0x20000744        -       0x000000e4   Zero   RW         4383    .bss                my_usart.o
-    0x20000828        -       0x00000032   Zero   RW         4384    .bss                my_usart.o
+    0x20000744        -       0x000000e4   Zero   RW         4390    .bss                my_usart.o
+    0x20000828        -       0x00000032   Zero   RW         4391    .bss                my_usart.o
     0x2000085a   COMPRESSED   0x00000006   PAD
     0x20000860        -       0x00000400   Zero   RW            1    STACK               startup_stm32f407xx.o
 
 
-    Execution Region RW_IRAM2 (Exec base: 0x2001c000, Load base: 0x08007c3c, Size: 0x00000000, Max: 0x00004000, ABSOLUTE)
+    Execution Region RW_IRAM2 (Exec base: 0x2001c000, Load base: 0x0800835c, Size: 0x00000000, Max: 0x00004000, ABSOLUTE)
 
     **** No section assigned to this execution region ****
 
@@ -3741,9 +3747,9 @@ Image component sizes
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   Object Name
 
        176         14          0          0          0       2003   gpio.o
-      6560        798        260        240        510     725313   main.o
+      8368        942        260        240        510     726943   main.o
       4876        288          0         32          0      18019   motor.o
-      5028        378          8         56          0      35038   my_servo.o
+      5044        378          8         56          0      35673   my_servo.o
        472         32          0         52          0       2868   my_timer.o
       2418        264          0        117        278      11540   my_usart.o
        588         20          0         20          0       6786   scs.o
@@ -3766,7 +3772,7 @@ Image component sizes
        776         82          0          0        360       4718   usart.o
 
     ----------------------------------------------------------------------
-     28618       2394        716        548       2612     917213   Object Totals
+     30442       2538        716        548       2612     919478   Object Totals
          0          0         32          0          0          0   (incl. Generated)
         28          0          0          3          9          0   (incl. Padding)
 
@@ -3831,15 +3837,15 @@ Image component sizes
 
       Code (inc. data)   RO Data    RW Data    ZI Data      Debug   
 
-     31004       2440        716        556       2612     899513   Grand Totals
-     31004       2440        716         84       2612     899513   ELF Image Totals (compressed)
-     31004       2440        716         84          0          0   ROM Totals
+     32828       2584        716        556       2612     901578   Grand Totals
+     32828       2584        716         84       2612     901578   ELF Image Totals (compressed)
+     32828       2584        716         84          0          0   ROM Totals
 
 ==============================================================================
 
-    Total RO  Size (Code + RO Data)                31720 (  30.98kB)
+    Total RO  Size (Code + RO Data)                33544 (  32.76kB)
     Total RW  Size (RW Data + ZI Data)              3168 (   3.09kB)
-    Total ROM Size (Code + RO Data + RW Data)      31804 (  31.06kB)
+    Total ROM Size (Code + RO Data + RW Data)      33628 (  32.84kB)
 
 ==============================================================================
 

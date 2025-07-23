@@ -71,6 +71,7 @@ const int feet_acc_claw_spin_slight = 90;
 //! 通用物料高度
 const int put_claw_up_top_position =900; // 最高点  
 const int put_claw_up_position =2408; //  看粗调移动底盘的位置
+const int put_claw_down_near_ground_move_and_line_position = 3300; //底盘定位放置位置
 
 //! 初赛物料
 const int servo_1_add_num = 0; //! 应对位置变化的调整量
@@ -1894,6 +1895,11 @@ void put_claw_down_pile_slightly(void)
 void put_claw_down_near_ground(void)
 {
     feetech_servo_move(1,put_claw_down_near_ground_position,4095,feet_acc_claw_up_down);
+}
+
+void put_claw_down_near_ground_move_and_line(void)
+{
+    feetech_servo_move(1,put_claw_down_near_ground_move_and_line_position,4095,feet_acc_claw_up_down);
 }
 
 void put_claw_down_near_plate(void)

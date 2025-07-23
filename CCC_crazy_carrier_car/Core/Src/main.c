@@ -1426,8 +1426,8 @@ void new_get_and_put_in_spin_plate_cricle_all(int times)
 void new_get_and_put_in_spin_plate_cricle_all_v2(uint8_t *pData,int times,int is_adjust_once, int is_avoid)
 {
     // 发信号开始调整位置
-    HAL_UART_Transmit(&huart3, pData, strlen(pData), 1000);
-    // Reliable_UART_Transmit(&huart3, (uint8_t*)"LL\n", strlen("LL\n"), 1000);
+    // HAL_UART_Transmit(&huart3, pData, strlen(pData), 1000);
+    Reliable_UART_Transmit(&huart3, pData, strlen(pData), 1000);
     int add_count = 0;
     if(times == 2)
     {
@@ -2314,7 +2314,7 @@ void old_all_process(void)
     
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_1);// 后退到粗加工区
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_front_length_1,0);
-    put_claw_down_near_ground();
+    put_claw_down_near_ground_move_and_line();
 
     spin_right(open_loop_spin_velocity,acceleration_spin,180);  // 旋转180度面向色环
     HAL_Delay(1500); 
@@ -2345,14 +2345,14 @@ void old_all_process(void)
 
 
     //移动到暂存区参数
-    int move_front_length_2 = 82.5; 
-    int move_back_length_2 = 82.5; 
+    float move_front_length_2 = 82.5; 
+    float move_back_length_2 = 82.5; 
     
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_2);  // 后退到十字中心
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_2,0);
 
 
-    put_claw_down_near_ground();//! 姿态的恢复
+    put_claw_down_near_ground_move_and_line();//! 姿态的恢复
     arm_stretch();
 
 
@@ -2384,8 +2384,8 @@ void old_all_process(void)
 
 
     //移动回转盘参数
-    int move_right_length_b = 44;
-    int move_front_length_b = 88;
+    float move_right_length_b = 44;
+    float move_front_length_b = 88;
     
 
     spin_right(open_loop_spin_velocity,acceleration_spin,90);  // 右转90度面向转盘
@@ -2443,7 +2443,7 @@ void old_all_process(void)
 
 
     single_line_adjust("EE\n");
-    put_claw_down_near_ground();
+    put_claw_down_near_ground_move_and_line();
 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_3);  // 后退到粗加工区
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_front_length_3,0);
@@ -2477,7 +2477,7 @@ void old_all_process(void)
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_4,0);
     // HAL_Delay(2000);
 
-    put_claw_down_near_ground();//! 姿态的恢复
+    put_claw_down_near_ground_move_and_line();//! 姿态的恢复
     arm_stretch();
 
     spin_right(open_loop_spin_velocity,acceleration_spin,90.5);  // 右转90度面向暂存区
@@ -2506,11 +2506,11 @@ void old_all_process(void)
     /**************暂存区  原点*****************/
 
     //移动回原点参数
-    int move_45_length_5_x = 20.5;
-    int move_45_length_5_y = 28;
-    int move_front_length_5 = 75.5;
-    int move_back_length_5 = 169;
-    int move_right_length_5 = 0.1;
+    float move_45_length_5_x = 20.5;
+    float move_45_length_5_y = 28;
+    float move_front_length_5 = 75.5;
+    float move_back_length_5 = 169;
+    float move_right_length_5 = 0.1;
 
     move_all_direction_position(acceleration, open_loop_move_velocity, move_right_length_5,0);  
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, move_right_length_5,0,0);
