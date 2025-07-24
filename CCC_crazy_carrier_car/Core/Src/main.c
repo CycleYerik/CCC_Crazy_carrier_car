@@ -120,12 +120,13 @@ const float move_limit_max = 10;   // 移动速度的最大值
 const float move_limit_min = 0.5;  // 移动速度的最小值
 
 int motor_vel_adjust_with_spin = 50;  // 底盘直线调整时的最大速度20
-int open_loop_x_move_velocity = 120;  // 开环横向移动速度120
+int open_loop_x_move_velocity = 180;  // 开环横向移动速度120
 int open_loop_move_velocity = 180;    // 开环前进速度180
 int open_loop_spin_velocity = 150;    // 开环旋转速度150
 
 // 步进电机加速度
 float acceleration = 200;          // 直线运动加速度170  180会出现明显的震荡类似丢步
+float acceleration_x_move = 180;
 float acceleration_spin = 180;     // 旋转运动加速度180
 float acceleration_adjust = 0; //一直用的180
 int motor_pos_move_mode = 0; //如果是0则是位置模式按照上一条指令的目标位置进行相对移动；2则是按照当前的实际位置进行相对移动
@@ -485,7 +486,7 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2); // 开启TIM1通道2 PWM输出
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 开启TIM1通道3 PWM输出
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // 开启TIM1通道4 PWM输出  
-	HAL_Delay(1000); // TODO等待电机初始化完成，本该是4000ms,目前暂时减少时间
+	// HAL_Delay(1000); // TODO等待电机初始化完成，本该是4000ms,目前暂时减少时间
     my_servo_init(); //!精密舵机初始化，使用精密舵机则必须加入
     is_adjust_motor_in_tim = 0;
     motor_state = 1;
@@ -2297,7 +2298,7 @@ void old_all_process(void)
     float move_front_length_1 = 170;  
 
 
-    move_all_direction_position(acceleration-20, open_loop_x_move_velocity, move_right_length_1,0);  // 向右移动到中轴线
+    move_all_direction_position(acceleration_x_move, open_loop_x_move_velocity, move_right_length_1,0);  // 向右移动到中轴线
     //! 姿态的恢复
     claw_spin_front();
     open_claw_180();
@@ -2305,7 +2306,7 @@ void old_all_process(void)
     arm_stretch();
     whole_arm_spin(1); //TODO 可能会撞到物料
     put_claw_down();
-    move_all_direction_position_delay(acceleration-20, open_loop_x_move_velocity, move_right_length_1,0,-500);
+    move_all_direction_position_delay(acceleration_x_move, open_loop_x_move_velocity, move_right_length_1,0,-500);
 
 
     single_line_adjust("EE\n");  // 校正车身姿态与直线平行
@@ -2394,8 +2395,8 @@ void old_all_process(void)
     move_all_direction_position(acceleration, open_loop_move_velocity, 0,move_front_length_b);  // 前进到转盘左侧
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0,move_front_length_b,0);
 
-    move_all_direction_position(acceleration, open_loop_x_move_velocity,move_right_length_b, 0);  // 向右移动到转盘
-    move_all_direction_position_delay(acceleration, open_loop_x_move_velocity,move_right_length_b, 0,0);
+    move_all_direction_position(acceleration_x_move, open_loop_x_move_velocity,move_right_length_b, 0);  // 向右移动到转盘
+    move_all_direction_position_delay(acceleration_x_move, open_loop_x_move_velocity,move_right_length_b, 0,0);
 
 
     if(is_single_route_test != 1)
@@ -2428,18 +2429,18 @@ void old_all_process(void)
 
 
     //移动到粗加工区参数
-    float move_right_length_3 = 40.5; 
+    float move_right_length_3 = 40; 
     float move_front_length_3 = 170;  
 
 
-    move_all_direction_position(acceleration-20, open_loop_x_move_velocity, move_right_length_3,0);  // 向右移动到中轴线
+    move_all_direction_position(acceleration_x_move, open_loop_x_move_velocity, move_right_length_3,0);  // 向右移动到中轴线
     claw_spin_front();
     open_claw_180();
     HAL_Delay(500);
     arm_stretch();
     whole_arm_spin(1); //TODO 可能会撞到物料
     put_claw_down();
-    move_all_direction_position_delay(acceleration-20, open_loop_x_move_velocity, move_right_length_3,0,-500);
+    move_all_direction_position_delay(acceleration_x_move, open_loop_x_move_velocity, move_right_length_3,0,-500);
 
 
     single_line_adjust("EE\n");

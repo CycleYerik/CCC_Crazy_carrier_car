@@ -78,8 +78,8 @@ const int servo_1_add_num = 0; //! 应对位置变化的调整量
 const int put_claw_down_state_position = 1328 + servo_1_add_num;
 const int put_claw_down_position = 2306+servo_1_add_num;  // 从转盘上取物料  
 const int put_claw_down_pile_position = 2491+servo_1_add_num; //码垛位置 
-const int put_claw_down_ground_position = 3645+servo_1_add_num; // 放在地上 3144  3796    +786
-const int put_claw_down_near_ground_position = 3400+servo_1_add_num; //!细调放置的位置
+const int put_claw_down_ground_position = 3600+servo_1_add_num; // 放在地上 3144  3796    +786
+const int put_claw_down_near_ground_position = 3380+servo_1_add_num; //!细调放置的位置
 const int put_claw_down_near_plate_position = 2055+servo_1_add_num; //转盘放置细调的位置
     
 //! 决赛物料（留待决赛）
@@ -1212,7 +1212,8 @@ void new_get_and_pre_put_avoid(int position,int is_pile_up, int is_default_posit
     if(is_update == 1)
     {
         HAL_Delay(800);
-        Reliable_UART_Transmit(&huart3, (uint8_t*)"update\n",strlen("update\n"), 1000); //! 更新中心值的功能
+
+			Reliable_UART_Transmit(&huart3, (uint8_t*)"update\n",strlen("update\n"), 1000); //! 更新中心值的功能
         HAL_Delay(800); //200
     }
     HAL_Delay(1000); 
@@ -1951,43 +1952,45 @@ void put_claw_up_top_slight(void)
 /// @param  
 void claw_spin_front(void)
 {
-    if(ReadPos(2) > claw_spin_position_state - 800)
-    {
+    // if(ReadPos(2) > claw_spin_position_state - 800)
+    // {
         feetech_servo_move(2,claw_spin_position_front,4000,feet_acc_claw_spin);
-    }
-    else
-    {
-        HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_back", strlen("claw_tooooo_back"), 1000);
-    }
+    // }
+    // else
+    // {
+    //     HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_back", strlen("claw_tooooo_back"), 1000);
+    // }
 }
 
 /// @brief 夹爪缓慢旋转到朝向前方
 /// @param  
 void claw_spin_front_slight(void)
 {
-    if(ReadPos(2) > claw_spin_position_state - 800)
-    {
-        feetech_servo_move(2,claw_spin_position_front,4000,feet_acc_claw_spin_slight);
-    }
-    else
-    {
-        HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_back", strlen("claw_tooooo_back"), 1000);
-    }
+    // if(ReadPos(2) > claw_spin_position_state - 800)
+    // {
+    //     feetech_servo_move(2,claw_spin_position_front,4000,feet_acc_claw_spin_slight);
+    // }
+    // else
+    // {
+    //     HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_back", strlen("claw_tooooo_back"), 1000);
+    // }
+    feetech_servo_move(2,claw_spin_position_front,4000,feet_acc_claw_spin_slight);
 }
 
 /// @brief 夹爪旋转到朝向载物台
 /// @param
 void claw_spin_state(void)
 {
-    int now_position = ReadPos(2);
-    if(now_position > claw_spin_position_state)
-    {
-        feetech_servo_move(2,claw_spin_position_state,4000,feet_acc_claw_spin);
-    }
-    else
-    {
-        HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_right", strlen("claw_tooooo_right"), 1000);
-    }
+    // int now_position = ReadPos(2);
+    // if(now_position > claw_spin_position_state)
+    // {
+    //     feetech_servo_move(2,claw_spin_position_state,4000,feet_acc_claw_spin);
+    // }
+    // else
+    // {
+    //     HAL_UART_Transmit(&huart3, (uint8_t*)"claw_tooooo_right", strlen("claw_tooooo_right"), 1000);
+    // }
+    feetech_servo_move(2,claw_spin_position_state,4000,feet_acc_claw_spin);
 }
 
 void claw_spin_state_without_claw(void)
