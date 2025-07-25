@@ -965,7 +965,6 @@ void move_all_direction_position_delay(uint8_t acc,uint16_t velocity, float x_mo
     // char temp_print[30];
     // sprintf(temp_print,"t0.txt=\"%d,%d\"\xff\xff\xff",timex,timey);
     // HAL_UART_Transmit(&huart5, (uint8_t *)temp_print, strlen(temp_print), 1000);
-
     int delay_time = timex > timey ? timex : timey;
     if(delay_time + additional_time > 0)
     {
@@ -973,6 +972,48 @@ void move_all_direction_position_delay(uint8_t acc,uint16_t velocity, float x_mo
     }
     
 }
+
+/// @brief 配合move_all_direction_position使用，计算时间并延时
+/// @param acc 
+/// @param velocity 
+/// @param x_move_length 
+/// @param y_move_length 
+void move_all_direction_position_delay_xy_new(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int additional_time)
+{
+    if(x_move_length < 0)
+    {
+        x_move_length = -x_move_length;
+    }
+    if(y_move_length < 0)
+    {
+        y_move_length = -y_move_length;
+    }
+    int timex =  get_distance_time(x_move_length, (int)velocity)+0.05*(int)velocity*(256-acc);
+    int timey = get_distance_time(y_move_length, (int)velocity)+0.05*(int)velocity*(256-acc);
+    // HAL_Delay(timex > timey ? timex : timey);
+
+    //TODO 原计划是计算达不到匀速时的时间，但实际测试时间过长，遂舍去
+    // if(x_move_length < (float)((float)velocity * (float)velocity * speed_ratio  * (256-(int)acc) *20000.0))
+    // {
+    //     timex = 1000*sqrt(x_move_length *(256-acc) /20.0 / speed_ratio);
+    // }
+    // if(y_move_length < (float)((float)velocity * (float)velocity * speed_ratio  * (256-(int)acc) *20000.0))
+    // {
+    //     timey = 1000*sqrt(y_move_length *(256-acc) /20.0 / speed_ratio);
+    // }
+
+    // char temp_print[30];
+    // sprintf(temp_print,"t0.txt=\"%d,%d\"\xff\xff\xff",timex,timey);
+    // HAL_UART_Transmit(&huart5, (uint8_t *)temp_print, strlen(temp_print), 1000);
+    int delay_time = timex > timey ? timex : timey;
+    delay_time *= 1;
+    if(delay_time + additional_time > 0)
+    {
+        HAL_Delay(delay_time + additional_time);
+    }
+    
+}
+
 
 
 void move_all_direction_position_y42(uint16_t acc_start,uint16_t acc_stop, float vel,float x_move_length,float y_move_length)

@@ -106,7 +106,7 @@ const float Ki_slight_move = 0.02;
 const float Kd_slight_move = 0.5;
 
 const float Kp_line_spin = 1;      // 直线校正PID参数
-const float Ki_line_spin = 0.1;
+const float Ki_line_spin = 0.04;
 const float Kd_line_spin = 0.5;
 
 const float xy_move_k = 0.2; //底盘微调时xy乘上的比例 
@@ -358,7 +358,11 @@ int fgetc(FILE *f)
 }
 
 HAL_StatusTypeDef Reliable_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pData, uint16_t Size, uint32_t Timeout);
-
+HAL_StatusTypeDef Reliable_UART_Transmit_with_response(UART_HandleTypeDef *huart,
+                                                      uint8_t *pData,
+                                                      uint16_t Size,
+                                                      uint32_t Timeout,
+                                                      int retry_count);
 void test_new_material_all_process(int is_avoid);
 
 void single_line_adjust(char *pData);
@@ -486,8 +490,8 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_2); // 开启TIM1通道2 PWM输出
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_3); // 开启TIM1通道3 PWM输出
     HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_4); // 开启TIM1通道4 PWM输出  
-	// HAL_Delay(1000); // TODO等待电机初始化完成，本该是4000ms,目前暂时减少时间
     my_servo_init(); //!精密舵机初始化，使用精密舵机则必须加入
+    HAL_Delay(800); // TODO等待电机初始化完成，本该是4000ms,目前暂时减少时间
     is_adjust_motor_in_tim = 0;
     motor_state = 1;
 
@@ -510,11 +514,46 @@ int main(void)
 
 
     /*****************单独调试程序***********************/
-    // HAL_Delay(3000);
+    //! 单独测试串口通信
+    // HAL_StatusTypeDef status = Reliable_UART_Transmit_with_response(&huart3,(uint8_t*)"AA\n",strlen("AA\n"),1000,1);
+    // // if(status == HAL_OK)
+    // // {
+    // //     print_to_screen(1,"success");
+    // // }
+    // // else
+    // // {
+    // //     print_to_screen(1,"fail");
+    // // }   
+    // while(is_get_qrcode_target == 0)
+    // {
+    //     HAL_Delay(100);
+    // }
+    // print_to_screen(1,"get_code");
 
+    //单独测试移动延时计算
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 15, 12);
+    // move_all_direction_position_delay_xy_new(acceleration, open_loop_move_velocity, 15, 12,1000);
+    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 50);
+    // move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, 50,1000);
+    // while(1)
+    // {
+    //     HAL_Delay(1000);
+    // // }
+
+    // old_new_init_car_arm();
+    // put_claw_up();
+
+    // while(1)
+    // {
+    //     single_line_circle_adjust("CC5\n");
+    //     // old_material_get_and_put_some_with_load_first(1,0,1);
+    //     HAL_Delay(1000);
+    // }
+
+    // 
 
     //! 新物料抓取放置功能测试
-    new_material_test(-1,1);
+    new_material_test(-1,0);
 
 
     //! 各种外设测试程序
@@ -528,23 +567,6 @@ int main(void)
     //! 单独决赛功能测试
     new_final_function_test(-1);
 
-
-    /**/
-
-    // move_all_direction_position(acceleration, open_loop_move_velocity, -14, 14);
-    // move_all_direction_position_delay(acceleration, open_loop_move_velocity, -14, 14,0);
-    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 86);
-    // move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, 86,0);
-
-    // move_all_direction_position(acceleration, open_loop_move_velocity, 0, 82.5);
-    // move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, 82.5,0);
-
-    // move_all_direction_position(acceleration, open_loop_move_velocity, -89.5, 0);
-    // move_all_direction_position_delay(acceleration, open_loop_move_velocity, -89.5, 0,0);
-    // while(1)
-    // {
-    //     HAL_Delay(1000);
-    // }
 
 
     /***********************初赛所用的全流程***********************/
@@ -1123,7 +1145,7 @@ void test_new_material_all_process(int is_avoid)
         .empty_check = 0,
         .back_check = 1,
     };
-    new_get_from_plate_all_movement(2,&new_plate_get_struct,0);  // 执行从转盘抓取物料的动作序列
+    new_get_from_plate_all_movement(1,&new_plate_get_struct,0);  // 执行从转盘抓取物料的动作序列
 
 
     put_claw_up();  
@@ -1157,7 +1179,7 @@ void test_new_material_all_process(int is_avoid)
     material_get_and_put_struct get_and_put = 
     {
         .times = 1,
-        .run_round_number = 2,
+        .run_round_number = 1,
         .is_avoid_collide = is_avoid,
         .is_load = 1,
         .is_pile_up = 0,
@@ -1760,7 +1782,7 @@ void old_get_from_plate_all_movement(int n)
     int theta_servo_now_temp = 0;
     int is_first_get = 1;
     tim3_count = 0;
-    while(get_plate_count < n && tim3_count < 6000) //TODO 从转盘抓取n个色环或者超时，如果empty抓空，是否能给一个延时后直接离开
+    while(get_plate_count < n && tim3_count < 8000/2) //TODO 从转盘抓取n个色环或者超时，如果empty抓空，是否能给一个延时后直接离开
     {
         is_adjust_plate_servo = 1; //开始根据物料在转盘上的位置调整机械臂
         HAL_Delay(10);
@@ -2169,6 +2191,7 @@ void old_new_init_car_arm(void)
     claw_spin_front();           // 机械爪旋转到正前方
     open_claw_180();             // 机械爪完全张开
     state_spin_without_claw(1);  // 载物盘旋转到1号位
+    HAL_Delay(100);
 }
 
 /// @brief 国赛初赛全流程函数
@@ -2236,6 +2259,13 @@ void old_all_process(void)
 
     move_all_direction_position(acceleration-20, open_loop_move_velocity, 0, move_to_qrcode);  // 出来后移动到二维码前
     move_all_direction_position_delay(acceleration-20, open_loop_move_velocity, 0, move_to_qrcode,0);
+
+    
+    while(is_get_qrcode_target == 0 && is_single_route_test != 1)
+        {
+            HAL_Delay(100);
+        }
+        print_to_screen(1,"get_code");
 
 
 
@@ -2305,12 +2335,11 @@ void old_all_process(void)
     HAL_Delay(500);
     arm_stretch();
     whole_arm_spin(1); //TODO 可能会撞到物料
-    put_claw_down();
+    put_claw_up();
     move_all_direction_position_delay(acceleration_x_move, open_loop_x_move_velocity, move_right_length_1,0,-500);
 
 
     single_line_adjust("EE\n");  // 校正车身姿态与直线平行
-    
     
     
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_front_length_1);// 后退到粗加工区
@@ -2328,7 +2357,7 @@ void old_all_process(void)
     }
     else
     {
-        single_line_circle_adjust("CC4\n");
+        single_line_circle_adjust("CC5\n");
         HAL_Delay(3000);
     }
     
@@ -2347,7 +2376,7 @@ void old_all_process(void)
 
     //移动到暂存区参数
     float move_front_length_2 = 82.5; 
-    float move_back_length_2 = 82.5; 
+    float move_back_length_2 = 84; 
     
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_2);  // 后退到十字中心
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_2,0);
@@ -2371,7 +2400,7 @@ void old_all_process(void)
     }
     else
     {
-        single_line_circle_adjust("CC4\n");  // 校正位置对准暂存区
+        single_line_circle_adjust("CC5\n");  // 校正位置对准暂存区
         HAL_Delay(3000);
     }
     
@@ -2429,7 +2458,7 @@ void old_all_process(void)
 
 
     //移动到粗加工区参数
-    float move_right_length_3 = 40; 
+    float move_right_length_3 = 40.5; 
     float move_front_length_3 = 170;  
 
 
@@ -2462,7 +2491,7 @@ void old_all_process(void)
     }
     else
     {
-        single_line_circle_adjust("CC4\n");
+        single_line_circle_adjust("CC5\n");
         HAL_Delay(3000);
     }
 
@@ -2473,7 +2502,7 @@ void old_all_process(void)
 
     //移动到暂存区参数
     float move_front_length_4 = 82.5; 
-    float move_back_length_4 = 82.5; 
+    float move_back_length_4 = 84; 
     move_all_direction_position(acceleration, open_loop_move_velocity, 0, -move_back_length_4);  // 后退到十字中心
     move_all_direction_position_delay(acceleration, open_loop_move_velocity, 0, -move_back_length_4,0);
     // HAL_Delay(2000);
@@ -2497,7 +2526,7 @@ void old_all_process(void)
     }
     else
     {
-        single_line_circle_adjust("CC4\n");
+        single_line_circle_adjust("CC5\n");
         HAL_Delay(3000);
     }
     
@@ -2594,6 +2623,93 @@ HAL_StatusTypeDef Reliable_UART_Transmit(UART_HandleTypeDef *huart, uint8_t *pDa
 
     // 返回最终的状态
     return status;
+}
+
+/// @brief 带有应答机制的发送函数
+/// @param huart 
+/// @param pData 
+/// @param Size 
+/// @param Timeout 
+/// @param retry_count 
+/// @return
+HAL_StatusTypeDef Reliable_UART_Transmit_with_response(UART_HandleTypeDef *huart,
+                                                       uint8_t *pData,
+                                                       uint16_t Size,
+                                                       uint32_t Timeout,
+                                                       int retry_count)
+{
+    HAL_StatusTypeDef status = HAL_ERROR;
+    uint8_t rx;
+    char resp_buf[16] = {0};
+    int resp_idx = 0;
+    int try = 0;
+
+    // 临时禁用空闲中断接收
+    status = HAL_UART_AbortReceive_IT(huart);
+    if(status != HAL_OK)
+    {
+        HAL_Delay(10);
+        status = HAL_UART_AbortReceive_IT(huart);
+        if(status != HAL_OK)
+        {
+            return HAL_ERROR;
+        }
+    }
+
+    while (try < retry_count)
+    {
+        status = HAL_UART_Transmit(huart, pData, Size, Timeout);
+        if (status != HAL_OK)
+        {
+            try++;
+            HAL_Delay(100 * (try + 1));
+            continue;
+        }
+
+        resp_idx = 0;
+        memset(resp_buf, 0, sizeof(resp_buf));
+        uint32_t tickstart = HAL_GetTick();
+        
+        while ((HAL_GetTick() - tickstart) < Timeout)
+        {
+            status = HAL_UART_Receive(huart, &rx, 1, 100);
+            if (status == HAL_OK)
+            {
+                if (resp_idx < sizeof(resp_buf) - 1)
+                {
+                    resp_buf[resp_idx++] = rx;
+                    resp_buf[resp_idx] = 0;
+                    if (resp_idx >= 2)  // 至少收到2个字节才检查
+                    {
+                        if (resp_buf[resp_idx-2] == 0x01 && 
+                            resp_buf[resp_idx-1] == 0x6f)
+                        {
+                            HAL_UARTEx_ReceiveToIdle_IT(huart, rxdata_u3, 40);
+                            return HAL_OK;
+                        }
+                    }
+                }
+                else
+                {
+                    resp_idx = 0;
+                    memset(resp_buf, 0, sizeof(resp_buf));
+                }
+            }
+            else if (status == HAL_TIMEOUT)
+            {
+                continue;
+            }
+            else
+            {
+                break;
+            }
+        }
+        try++;
+        HAL_Delay(100 * try);
+    }
+
+    HAL_UARTEx_ReceiveToIdle_IT(huart, rxdata_u3, 40);
+    return HAL_TIMEOUT;
 }
 
 /// @brief 国赛初赛决赛使用 串口屏调试函数

@@ -822,7 +822,7 @@ void new_get_and_load_openloop_with_temp_put(int position,int state_position)
 void get_and_load_openloop(int position,int is_default_position,material_order* order)
 {
     state_spin_without_claw(position);
-    open_claw_bigger();
+    open_claw();
     int servo_3_acc = 2000;
 
     if(position == order->right)

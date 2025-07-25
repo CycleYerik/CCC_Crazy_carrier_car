@@ -60,6 +60,7 @@ void move_all_direction(uint8_t acc,float x_move_velocity,float y_move_velocity)
 // void move_all_direction_pid(uint8_t acc,float x_move_velocity,float y_move_velocity);
 void move_all_direction_position(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length);
 void move_all_direction_position_delay(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int additional_time);
+void move_all_direction_position_delay_xy_new(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int additional_time);
 void move_all_direction_position_y42(uint16_t acc_start,uint16_t acc_stop, float vel,float x_move_length,float y_move_length);
 void move_all_direction_position_tim(uint8_t acc,uint16_t velocity, float x_move_length,float y_move_length,int times_count);
 void move_all_direction_tim(uint8_t acc, float x_vel,float y_vel,int times_count);

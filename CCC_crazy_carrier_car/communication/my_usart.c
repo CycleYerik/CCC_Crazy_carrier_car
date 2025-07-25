@@ -659,7 +659,7 @@ void UART_receive_process_3(void)
         }
 
 
-        // 得到任务
+        // 得到二维码任务
         if (is_get_qrcode_target < 2) //! 此处还可以加入更复杂的校验位，避免误操作
         {
             if (rxdata_u3[0] == '*' )
@@ -785,9 +785,9 @@ void UART_receive_process_3(void)
 
         //! 新版底盘调整
         if(rxdata_u3[0] == 0x01) {
-            line_spin_error_1 = (int)rxdata_u3[1];
+            line_spin_error_1 = ((int)rxdata_u3[1])*0.1; //逆时针方向
         } else if(rxdata_u3[0] == 0x02) {
-            line_spin_error_1 = -(int)rxdata_u3[1];
+            line_spin_error_1 = -((int)rxdata_u3[1])*0.1;
         }
         if(rxdata_u3[2] == 0x01) {
             x_err_1 = (int)(rxdata_u3[3]<<8 | rxdata_u3[4]);
