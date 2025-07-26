@@ -58,7 +58,7 @@ const int feet_acc = 210; //TODO 待修改
 const int feet_acc_claw_up_down = 0;
 const int feet_acc_put_down_ground_slightly = 100;
 const int feet_acc_claw_spin = 0;
-const int feet_acc_claw_spin_slight = 90;
+const int feet_acc_claw_spin_slight = 70;
 
 
 //TODO 待修改（全部重新测）
@@ -131,7 +131,7 @@ const int put_claw_down_near_plate_position = 2055+servo_1_add_num; //转盘放�
 
 //? 机械臂前端旋转参数（二号舵机）
 const int claw_spin_position_front = 3340 ; // 2号精密舵机回到前方
-const int claw_spin_position_state = 1590; // 2号精密舵机回到载物盘
+const int claw_spin_position_state = 1590; // 2号精密舵机回到载物盘 1590 40mm 1585为50mm中心位置  1573为60mm中心位置
 const int claw_spin_without_claw_position_state = claw_spin_position_state; //与上面一样
 
 
@@ -150,9 +150,9 @@ const int r_back_position_rlimit = 2568; // 当theta超过rlimit，r的限制值
 
 //? 机械臂整体伸缩参数（四号舵机）
 //TODO 待测量（全部）
-const int shrink_arm = 2973;  //机械臂运动到从车上载物盘抓取物料
+const int shrink_arm = 2973;  //机械臂运动到从车上载物盘抓取物料 2973 40mm中心位置 3123为50mm中心位置 3270为60mm中心位置
 const int stretch_arm = 1860; // 机械臂默认伸长位置
-const int shrink_arm_all = 3200; //最长3350
+const int shrink_arm_all = 3350; //最长3350
 
 
 //? 左中右三个动作对应的各自舵机参数
@@ -675,7 +675,7 @@ void new_get_and_load_openloop_avoid(int position,int is_default_position,materi
     int servo_4_acc = 4095;
     
     state_spin_without_claw(position);
-    open_claw_bigger();
+    open_claw();
     if(position == order->right)
     {
         if(is_default_position == 1)
@@ -737,9 +737,9 @@ void new_get_and_load_openloop_avoid(int position,int is_default_position,materi
     HAL_Delay(600);
     put_claw_up_top_slight();
     arm_shrink();
-    HAL_Delay(800);
+    HAL_Delay(1200);
     claw_spin_state_without_claw_slight();
-    HAL_Delay(800); //? 
+    HAL_Delay(1000); //? 
     put_claw_down_state(); //?
     HAL_Delay(300);  //?
     open_claw_avoid_collide();
@@ -925,7 +925,7 @@ void get_and_load_openloop(int position,int is_default_position,material_order* 
 void new_get_and_load_openloop(int position,int is_default_position,material_order* order)
 {
     state_spin_without_claw(position);
-    open_claw_bigger();
+    open_claw();
 
     if(position == order->right)
     {
@@ -1006,9 +1006,9 @@ void new_get_and_load_openloop(int position,int is_default_position,material_ord
     HAL_Delay(300);
     put_claw_up_top_slight();
     arm_shrink();
-    HAL_Delay(500); //300
+    HAL_Delay(1200); //300
     claw_spin_state_without_claw_slight();
-    HAL_Delay(800); //? 
+    HAL_Delay(1000); //? 
     put_claw_down_state(); //?
     HAL_Delay(300);  //?
     open_claw();
@@ -1216,9 +1216,9 @@ void new_get_and_pre_put_avoid(int position,int is_pile_up, int is_default_posit
 			Reliable_UART_Transmit(&huart3, (uint8_t*)"update\n",strlen("update\n"), 1000); //! 更新中心值的功能
         HAL_Delay(800); //200
     }
-    HAL_Delay(1000); 
+    HAL_Delay(900); 
     claw_spin_front_slight();
-    HAL_Delay(500);
+    HAL_Delay(800);
     if(position == order->right) 
     {
         
@@ -1570,7 +1570,7 @@ void new_get_and_pre_put(int position,int is_pile_up, int is_default_position,in
     Reliable_UART_Transmit(&huart3, (uint8_t*)"update\n", strlen("update\n"), 1000); //! 更新中心值的功能
     HAL_Delay(800); 
     }
-    HAL_Delay(800);
+    HAL_Delay(900);
     claw_spin_front_slight(); 
     if(position == order->right) 
     {
@@ -1612,7 +1612,7 @@ void new_get_and_pre_put(int position,int is_pile_up, int is_default_position,in
             r_servo_now = left_4;
         }
     }
-    HAL_Delay(400);
+    HAL_Delay(1200);
     if(is_pile_up == 1)
     {
         HAL_Delay(200);

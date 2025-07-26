@@ -93,7 +93,7 @@ int is_show_origin_theta_data = 0;
 
 
 //! 目标颜色数组a
-volatile int target_colour[6] = {2,3,1,1,3,2}; // 物料颜色序列(1红,2绿,3蓝)
+volatile int target_colour[6] = {1,3,2,1,3,2}; // 物料颜色序列(1红,2绿,3蓝)
 volatile int material_place[3] = {0,0,0}; //从暂存区夹取随机位置的物料时用的数组
 
 //! 默认暂存区物料顺序
@@ -552,8 +552,22 @@ int main(void)
 
     // 
 
+    // while(1)
+    // {
+    //     __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 25);
+    //     feetech_servo_move(3,0,1000,100);
+    //     feetech_servo_move(1,0,1000,100);
+    //     feetech_servo_move(4,0,1000,100);
+    //     HAL_Delay(3000);
+    //     __HAL_TIM_SET_COMPARE(&htim4, TIM_CHANNEL_2, 125);
+    //     feetech_servo_move(3,4090,1000,100);
+    //     feetech_servo_move(1,4090,1000,100);
+    //     feetech_servo_move(4,4090,1000,100);
+    //     HAL_Delay(3000);
+    // }
+
     //! 新物料抓取放置功能测试
-    new_material_test(-1,0);
+    new_material_test(-1,1);
 
 
     //! 各种外设测试程序
@@ -765,6 +779,7 @@ void new_material_test(int test_num,int is_avoid)
             //只夹紧爪子
             {
                 close_claw();
+                state_spin(1);
                 while(1)
                 {
                     HAL_Delay(1000);
@@ -810,6 +825,7 @@ void new_material_test(int test_num,int is_avoid)
             {
                 old_new_init_car_arm();
                 HAL_Delay(1000);
+                Reliable_UART_Transmit(&huart3, (uint8_t*)"BB1\n", strlen("BB1\n"), 50);  // 通知树莓派开始识别转盘
                 plate_get_struct new_plate_get_struct_2 = { .is_avoid = is_avoid, .empty_check = 0, .back_check = 1 };
                 new_get_from_plate_all_movement(3,&new_plate_get_struct_2,0);
                 while (1)
@@ -1145,7 +1161,7 @@ void test_new_material_all_process(int is_avoid)
         .empty_check = 0,
         .back_check = 1,
     };
-    new_get_from_plate_all_movement(1,&new_plate_get_struct,0);  // 执行从转盘抓取物料的动作序列
+    new_get_from_plate_all_movement(3,&new_plate_get_struct,0);  // 执行从转盘抓取物料的动作序列
 
 
     put_claw_up();  
@@ -1179,7 +1195,7 @@ void test_new_material_all_process(int is_avoid)
     material_get_and_put_struct get_and_put = 
     {
         .times = 1,
-        .run_round_number = 1,
+        .run_round_number = 3,
         .is_avoid_collide = is_avoid,
         .is_load = 1,
         .is_pile_up = 0,
@@ -1929,7 +1945,7 @@ void new_get_from_plate_all_movement(int n, plate_get_struct* plate_struct ,int 
             arm_shrink();
             HAL_Delay(800);
             claw_spin_state_without_claw_slight();
-            HAL_Delay(800); 
+            HAL_Delay(1000); 
 
 
             start_check_plate_back_state = 0;
